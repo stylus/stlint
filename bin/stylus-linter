@@ -1,0 +1,25 @@
+#!/usr/bin/env node
+
+'use strict'
+
+const yargs = require( 'yargs' )
+const stylusLinter = require( '../' )
+
+
+const options = yargs
+	.usage( 'Usage: $0 [dir | file] ' )
+	.version(require( '../package' ).version)
+	.alias( 'version', 'v' )
+	.help( 'help' )
+	.alias( 'help', 'h' )
+	.alias( 'help', '?' )
+	.example( '$0 directory', 'Run Stylus Linter on all .styl-files in "directory"' )
+	.epilogue( 'MIT' )
+	.argv;
+
+stylusLinter( {}, {
+	watch: options.watch,
+	config: options.config,
+	strict: options.strict,
+	reporter: options.reporter
+}, options._[0]);

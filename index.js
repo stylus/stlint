@@ -7,11 +7,22 @@
  * @return {Object} [the composed stylint object]
  */
 var StylusLinter = function(path, config, callback) {
-	var Lint = function() {};
-
-
-
-	return Lint
+	console.log(JSON.stringify({
+		errors: [
+			{
+				message: [
+					{
+						descr: 'Something wrong1',
+						path: '/Users/v-chupurnov/WebstormProjects/stylus-linter/test.styl',
+						line: 3,
+						endline: 4,
+						start: 0,
+						end: 3
+					}
+				]
+			}
+		]
+	}));
 };
 
 module.exports = StylusLinter

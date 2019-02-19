@@ -25,7 +25,6 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "stampit": "^4.2.0",
     "stylus": "^0.54.5",
     "yargs": "^13.2.1"
   }
