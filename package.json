@@ -7,7 +7,8 @@
     "stylus-linter": "./bin/stylus-linter"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc --lib es2016,dom index.ts",
+    "test": "npm run build && ./bin/stylus-linter ./test.styl"
   },
   "keywords": [
     "cli",
@@ -27,5 +28,9 @@
   "dependencies": {
     "stylus": "^0.54.5",
     "yargs": "^13.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "^11.9.4",
+    "typescript": "^3.3.3"
   }
 }
