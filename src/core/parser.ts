@@ -1,7 +1,6 @@
 import { readFileSync } from 'fs';
 import Parser = require('stylus/lib/parser');
 import utils = require('stylus/lib/utils');
-import { Node } from './ast/Node';
 
 export class StylusParser {
 	options = {};
@@ -10,7 +9,7 @@ export class StylusParser {
 	 * @param {string} filename
 	 * @returns {*|Node}
 	 */
-	parse(filename): Node {
+	parse(filename) {
 		const content = readFileSync(filename, 'utf8');
 
 		const parser = new Parser(content, this.options);
