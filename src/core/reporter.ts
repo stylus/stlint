@@ -38,6 +38,6 @@ export class Reporter implements IReporter {
 		}
 
 		console.log(JSON.stringify(response));
-		writeFileSync(__dirname + '/../../response.txt', JSON.stringify(response), 'utf-8');
+		writeFileSync( './response.txt', JSON.stringify(response), 'utf-8');
 	}
 }

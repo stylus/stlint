@@ -34,5 +34,5 @@ module.exports = {
 		path: path.resolve(__dirname, './')
 	},
 
-	mode: 'production'
+	mode: 'development'
 };

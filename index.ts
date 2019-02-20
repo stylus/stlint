@@ -10,12 +10,15 @@ const StylusLinter = (path: string, content?: string): void => {
 	const reporter = new Reporter(path);
 	const parser = new StylusParser();
 	const checker = new Checker(reporter);
-	writeFileSync(__dirname + '/test.txt', content, 'utf-8');
+
 	// writeFileSync('test.json', JSON.stringify(ast, null, 2), 'utf-8')
 	try {
+		writeFileSync(resolve('./test.txt'), content, 'utf-8');
+
 		if (!existsSync(path)) {
 			throw new Error('File not exists');
 		}
+
 
 		const ast = parser.parse(path, content);
 
