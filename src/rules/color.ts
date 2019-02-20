@@ -8,7 +8,6 @@ export class Color extends Rule {
 	}
 
 	process(node) {
-		console.log(node);
 		if (node.raw && this.isHasLowerCase(node.raw)) {
 			this.msg('Only lowercase HEX format', node.lineno);
 		}

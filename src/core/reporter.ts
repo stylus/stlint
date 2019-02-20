@@ -1,9 +1,12 @@
 import { IReporter } from "./types/reporter";
 import { IMessage } from "./types/message";
+import { IResponse } from "./types/response";
+import {writeFileSync} from "fs";
 
 export class Reporter implements IReporter {
-	messages: IMessage[] = [];
+	errors: IMessage[] = [];
 	constructor(readonly path: string) {}
+
 	/**
 	 *
 	 * @param message
@@ -12,7 +15,7 @@ export class Reporter implements IReporter {
 	 * @param end
 	 */
 	add(message: string, line: number = 0, start: number = 0, end: number = 0) {
-		this.messages.push({
+		this.errors.push({
 			descr: message,
 			path: this.path,
 			line,
@@ -23,10 +26,18 @@ export class Reporter implements IReporter {
 	}
 
 	display() {
-		console.log(JSON.stringify({
-			errors: [{
-				message: this.messages
-			}]
-		}));
+		const response: IResponse = {
+			passed: true
+		};
+
+		if (this.errors.length) {
+			response.passed = false;
+			response.errors = [{
+				message: this.errors
+			}];
+		}
+
+		console.log(JSON.stringify(response));
+		writeFileSync(__dirname + '/../../response.txt', JSON.stringify(response), 'utf-8');
 	}
 }

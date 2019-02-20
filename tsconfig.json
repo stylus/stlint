@@ -4,7 +4,6 @@
     "lib": [
       "dom", "es6"
     ],
-    "moduleResolution": "node",
     "types": [
       "node"
     ],
@@ -12,7 +11,9 @@
       "./node_modules/@types"
     ]
   },
+  "moduleResolution": "umd",
   "exclude": [
-    "node_modules"
-  ]
+    "./node_modules"
+  ],
+  "skipLibCheck": true
 }

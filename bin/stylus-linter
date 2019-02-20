@@ -17,4 +17,4 @@ const options = yargs
 	.epilogue( 'MIT' )
 	.argv;
 
-stylusLinter(options._[0]);
+stylusLinter(options._[0], options.content);

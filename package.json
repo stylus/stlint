@@ -7,7 +7,7 @@
     "stylus-linter": "./bin/stylus-linter"
   },
   "scripts": {
-    "build": "tsc --lib es2016,dom index.ts",
+    "build": "webpack",
     "test": "npm run build && ./bin/stylus-linter ./test.styl"
   },
   "keywords": [
@@ -26,11 +26,20 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "awesome-typescript-loader": "^5.2.1",
     "stylus": "^0.54.5",
     "yargs": "^13.2.1"
   },
   "devDependencies": {
+    "@babel/core": "^7.3.3",
+    "@babel/preset-env": "^7.3.1",
     "@types/node": "^11.9.4",
-    "typescript": "^3.3.3"
+    "babel-loader": "^8.0.5",
+    "babel-plugin-syntax-dynamic-import": "^6.18.0",
+    "typescript": "^3.3.3",
+    "uglifyjs-webpack-plugin": "^2.1.1",
+    "webpack": "^4.29.5",
+    "webpack-cli": "^3.2.3",
+    "webpack-node-externals": "^1.7.2"
   }
 }
