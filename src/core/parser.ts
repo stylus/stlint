@@ -1,15 +1,19 @@
 import { readFileSync } from 'fs';
 import Parser = require('stylus/lib/parser');
+import Evaluator = require('stylus/lib/visitor/evaluator');
+import Normalizer = require('stylus/lib/visitor/normalizer');
 import utils = require('stylus/lib/utils');
+import { Tree } from "./ast";
+import {Translator} from "./translator";
 
 export class StylusParser {
 	options = {};
 	/**
 	 * @param {string} filename
 	 * @param {string} [content]
-	 * @returns {*|Node}
+	 * @returns {Tree}
 	 */
-	parse(filename: string, content?: string) {
+	parse(filename: string, content?: string): Tree {
 		if (!content || !content.length) {
 			content = readFileSync(filename, 'utf8');
 		}
@@ -17,7 +21,19 @@ export class StylusParser {
 		const parser = new Parser(content, this.options);
 
 		try {
-			return parser.parse();
+			let stylusAST = parser.parse();
+			// evaluate
+			const evaluator = new Evaluator(stylusAST, this.options);
+
+			stylusAST = evaluator.evaluate();
+
+			// normalize
+			const normalizer = new Normalizer(stylusAST, this.options);
+			stylusAST = normalizer.normalize();
+
+			const translitor = new Translator(stylusAST);
+			return translitor.transpile();
+
 		} catch (err) {
 			let options = {
 				input: '',

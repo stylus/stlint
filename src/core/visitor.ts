@@ -1,30 +1,20 @@
-export class Visitor {
-	run(root, parent = root, callback: (node) => void): void {
-		if (root.__visited) {
-			return;
+export class Visitor<T> {
+	root: T;
+
+	constructor(root: T) {
+		this.root = root;
+	}
+
+	visit(node: T): T {
+		const method = 'visit' + node.constructor.name;
+		console.log(method);
+
+		const fn: undefined | ((node: T) => T) = (<any>this)[method];
+
+		if (fn && typeof fn === 'function') {
+			return fn.call(this, node);
 		}
 
-		root.parent = parent;
-		root.__visited = true;
-
-		['nodes', 'segments'].forEach(key => {
-			if (root[key]) {
-				root[key].forEach((node) => this.run(node, root, callback));
-			}
-		});
-
-		['path', 'val', 'expr', 'block'].forEach(key => {
-			if (root[key] && typeof root[key] === 'object') {
-				this.run(root[key], root, callback);
-			}
-		});
-
-		if (root.vals) {
-			Object.keys(root.vals).forEach((key) => {
-				this.run(root.vals[key], root, callback);
-			});
-		}
-
-		callback(root);
+		return node;
 	}
 }

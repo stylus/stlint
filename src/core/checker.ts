@@ -1,31 +1,31 @@
-import { IRule } from "./types/rule";
+import { ICheck } from "./types/check";
 import { IReporter } from "./types/reporter";
-import * as rules from "../rules";
+import * as checks from "../checks";
 import { INode } from "./types/ast/node";
 import { Visitor } from "./visitor";
 
 export class Checker {
-	readonly rulesList: IRule[];
+	readonly rulesList: ICheck[];
 
 	constructor(readonly reporter: IReporter) {
-		this.rulesList = Object.keys(rules)
-			.filter((key) => typeof rules[key] === 'function')
+		this.rulesList = Object.keys(<any>checks)
+			.filter((key) => typeof (<any>checks)[key] === 'function')
 			.map((key: string) => {
-				return new rules[key](reporter);
+				return new (<any>checks)[key](reporter);
 			});
 	}
 
-	private check = (root) => {
-		const nodeName = root.nodeName;
-		this.rulesList.forEach((rule: IRule) => {
-			if (rule.isMatchType(nodeName)) {
+	private check = (root: INode) => {
+		const type = root.nodeName;
+
+		this.rulesList.forEach((rule: ICheck) => {
+			if (rule.isMatchType(type)) {
 				rule.process(<INode>root);
 			}
 		})
 	};
 
-	checkRules(ast) {
-		const visitor = new Visitor();
-		visitor.run(ast, ast, this.check);
+	checkRules(ast: INode) {
+		// visitor.run(ast, ast, this.check);
 	}
 }

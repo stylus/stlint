@@ -1,9 +1,9 @@
 import { IReporter } from "./types/reporter";
-import { IRule, NodeType } from "./types/rule";
+import { ICheck } from "./types/check";
 import { INode } from "./types/ast/node";
 
-export abstract class Rule implements IRule {
-	nodesFilter: NodeType[] | null = null;
+export abstract class Check implements ICheck {
+	nodesFilter: string[] | null = null;
 	reporter: IReporter;
 	constructor(reporter: IReporter) {
 		this.reporter = reporter;
@@ -16,6 +16,6 @@ export abstract class Rule implements IRule {
 	}
 
 	isMatchType(type: string): boolean {
-		return !this.nodesFilter || this.nodesFilter.indexOf(<NodeType>type) !== -1;
+		return !this.nodesFilter || this.nodesFilter.includes(type);
 	}
 }

@@ -1,11 +1,9 @@
 import { IReporter } from "./reporter";
 import { INode } from "./ast/node";
 
-export type NodeType  = 'property' | 'import' | 'rgba' | string;
-
-export interface IRule {
+export interface ICheck {
 	reporter: IReporter;
-	nodesFilter: NodeType[] | null;
+	nodesFilter: string[] | null;
 
 	process(node: INode): void;
 	msg(message: string, line: number, start: number, end: number): void;

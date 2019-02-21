@@ -34,3 +34,5 @@ const StylusLinter = (path: string, content?: string): void => {
 };
 
 module.exports = StylusLinter;
+
+StylusLinter('./test.styl');

@@ -131,6 +131,386 @@ var StylusLinter = function (path, content) {
     reporter.display();
 };
 module.exports = StylusLinter;
+StylusLinter('./test.styl');
+
+
+/***/ }),
+
+/***/ "./src/checks/color.ts":
+/*!*****************************!*\
+  !*** ./src/checks/color.ts ***!
+  \*****************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var check_1 = __webpack_require__(/*! ../core/check */ "./src/core/check.ts");
+var Color = /** @class */ (function (_super) {
+    __extends(Color, _super);
+    function Color() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.nodesFilter = ['rgba'];
+        return _this;
+    }
+    Color.prototype.isHasLowerCase = function (value) {
+        return /[a-z]/.test(value);
+    };
+    Color.prototype.process = function (node) {
+        if (node.raw && this.isHasLowerCase(node.nodeName)) {
+            this.msg('Only lowercase HEX format', node.lineno);
+        }
+    };
+    return Color;
+}(check_1.Check));
+exports.Color = Color;
+
+
+/***/ }),
+
+/***/ "./src/checks/index.ts":
+/*!*****************************!*\
+  !*** ./src/checks/index.ts ***!
+  \*****************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
+Object.defineProperty(exports, "__esModule", { value: true });
+__export(__webpack_require__(/*! ./color */ "./src/checks/color.ts"));
+
+
+/***/ }),
+
+/***/ "./src/core/ast/block.ts":
+/*!*******************************!*\
+  !*** ./src/core/ast/block.ts ***!
+  \*******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
+var Block = /** @class */ (function (_super) {
+    __extends(Block, _super);
+    function Block() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return Block;
+}(node_1.Node));
+exports.Block = Block;
+
+
+/***/ }),
+
+/***/ "./src/core/ast/group.ts":
+/*!*******************************!*\
+  !*** ./src/core/ast/group.ts ***!
+  \*******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
+var Group = /** @class */ (function (_super) {
+    __extends(Group, _super);
+    function Group() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return Group;
+}(node_1.Node));
+exports.Group = Group;
+
+
+/***/ }),
+
+/***/ "./src/core/ast/index.ts":
+/*!*******************************!*\
+  !*** ./src/core/ast/index.ts ***!
+  \*******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
+Object.defineProperty(exports, "__esModule", { value: true });
+__export(__webpack_require__(/*! ./node */ "./src/core/ast/node.ts"));
+__export(__webpack_require__(/*! ./selector */ "./src/core/ast/selector.ts"));
+__export(__webpack_require__(/*! ./tree */ "./src/core/ast/tree.ts"));
+__export(__webpack_require__(/*! ./group */ "./src/core/ast/group.ts"));
+__export(__webpack_require__(/*! ./block */ "./src/core/ast/block.ts"));
+__export(__webpack_require__(/*! ./property */ "./src/core/ast/property.ts"));
+__export(__webpack_require__(/*! ./literal */ "./src/core/ast/literal.ts"));
+
+
+/***/ }),
+
+/***/ "./src/core/ast/literal.ts":
+/*!*********************************!*\
+  !*** ./src/core/ast/literal.ts ***!
+  \*********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
+var Literal = /** @class */ (function (_super) {
+    __extends(Literal, _super);
+    function Literal() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return Literal;
+}(node_1.Node));
+exports.Literal = Literal;
+
+
+/***/ }),
+
+/***/ "./src/core/ast/node.ts":
+/*!******************************!*\
+  !*** ./src/core/ast/node.ts ***!
+  \******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var Node = /** @class */ (function () {
+    function Node(lineno, column) {
+        this.parent = null;
+        this.lineno = 0;
+        this.column = 0;
+        this.nodes = [];
+        this.lineno = lineno;
+        this.column = column;
+    }
+    Object.defineProperty(Node.prototype, "nodeName", {
+        get: function () {
+            return this.constructor.name.toLowerCase();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Node.prototype.append = function (node, listField) {
+        if (listField === void 0) { listField = 'nodes'; }
+        var list = this[listField];
+        if (list && Array.isArray(list)) {
+            list.push(node);
+        }
+        node.parent = this;
+    };
+    return Node;
+}());
+exports.Node = Node;
+
+
+/***/ }),
+
+/***/ "./src/core/ast/property.ts":
+/*!**********************************!*\
+  !*** ./src/core/ast/property.ts ***!
+  \**********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
+var Property = /** @class */ (function (_super) {
+    __extends(Property, _super);
+    function Property() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return Property;
+}(node_1.Node));
+exports.Property = Property;
+
+
+/***/ }),
+
+/***/ "./src/core/ast/selector.ts":
+/*!**********************************!*\
+  !*** ./src/core/ast/selector.ts ***!
+  \**********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
+var Selector = /** @class */ (function (_super) {
+    __extends(Selector, _super);
+    function Selector() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.segments = [];
+        return _this;
+    }
+    return Selector;
+}(node_1.Node));
+exports.Selector = Selector;
+
+
+/***/ }),
+
+/***/ "./src/core/ast/tree.ts":
+/*!******************************!*\
+  !*** ./src/core/ast/tree.ts ***!
+  \******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
+var Tree = /** @class */ (function (_super) {
+    __extends(Tree, _super);
+    function Tree() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.parent = null;
+        return _this;
+    }
+    return Tree;
+}(node_1.Node));
+exports.Tree = Tree;
+
+
+/***/ }),
+
+/***/ "./src/core/check.ts":
+/*!***************************!*\
+  !*** ./src/core/check.ts ***!
+  \***************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var Check = /** @class */ (function () {
+    function Check(reporter) {
+        this.nodesFilter = null;
+        this.reporter = reporter;
+    }
+    Check.prototype.msg = function (message, line, start, end) {
+        if (start === void 0) { start = 0; }
+        if (end === void 0) { end = 0; }
+        this.reporter.add(message, line, start, end);
+    };
+    Check.prototype.isMatchType = function (type) {
+        return !this.nodesFilter || this.nodesFilter.includes(type);
+    };
+    return Check;
+}());
+exports.Check = Check;
 
 
 /***/ }),
@@ -145,29 +525,27 @@ module.exports = StylusLinter;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var rules = __webpack_require__(/*! ../rules */ "./src/rules/index.ts");
-var visitor_1 = __webpack_require__(/*! ./visitor */ "./src/core/visitor.ts");
+var checks = __webpack_require__(/*! ../checks */ "./src/checks/index.ts");
 var Checker = /** @class */ (function () {
     function Checker(reporter) {
         var _this = this;
         this.reporter = reporter;
         this.check = function (root) {
-            var nodeName = root.nodeName;
+            var type = root.nodeName;
             _this.rulesList.forEach(function (rule) {
-                if (rule.isMatchType(nodeName)) {
+                if (rule.isMatchType(type)) {
                     rule.process(root);
                 }
             });
         };
-        this.rulesList = Object.keys(rules)
-            .filter(function (key) { return typeof rules[key] === 'function'; })
+        this.rulesList = Object.keys(checks)
+            .filter(function (key) { return typeof checks[key] === 'function'; })
             .map(function (key) {
-            return new rules[key](reporter);
+            return new checks[key](reporter);
         });
     }
     Checker.prototype.checkRules = function (ast) {
-        var visitor = new visitor_1.Visitor();
-        visitor.run(ast, ast, this.check);
+        // visitor.run(ast, ast, this.check);
     };
     return Checker;
 }());
@@ -188,7 +566,10 @@ exports.Checker = Checker;
 Object.defineProperty(exports, "__esModule", { value: true });
 var fs_1 = __webpack_require__(/*! fs */ "fs");
 var Parser = __webpack_require__(/*! stylus/lib/parser */ "stylus/lib/parser");
+var Evaluator = __webpack_require__(/*! stylus/lib/visitor/evaluator */ "stylus/lib/visitor/evaluator");
+var Normalizer = __webpack_require__(/*! stylus/lib/visitor/normalizer */ "stylus/lib/visitor/normalizer");
 var utils = __webpack_require__(/*! stylus/lib/utils */ "stylus/lib/utils");
+var translator_1 = __webpack_require__(/*! ./translator */ "./src/core/translator.ts");
 var StylusParser = /** @class */ (function () {
     function StylusParser() {
         this.options = {};
@@ -196,7 +577,7 @@ var StylusParser = /** @class */ (function () {
     /**
      * @param {string} filename
      * @param {string} [content]
-     * @returns {*|Node}
+     * @returns {Tree}
      */
     StylusParser.prototype.parse = function (filename, content) {
         if (!content || !content.length) {
@@ -204,7 +585,15 @@ var StylusParser = /** @class */ (function () {
         }
         var parser = new Parser(content, this.options);
         try {
-            return parser.parse();
+            var stylusAST = parser.parse();
+            // evaluate
+            var evaluator = new Evaluator(stylusAST, this.options);
+            stylusAST = evaluator.evaluate();
+            // normalize
+            var normalizer = new Normalizer(stylusAST, this.options);
+            stylusAST = normalizer.normalize();
+            var translitor = new translator_1.Translator(stylusAST);
+            return translitor.transpile();
         }
         catch (err) {
             var options = {
@@ -283,85 +672,10 @@ exports.Reporter = Reporter;
 
 /***/ }),
 
-/***/ "./src/core/rule.ts":
-/*!**************************!*\
-  !*** ./src/core/rule.ts ***!
-  \**************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var Rule = /** @class */ (function () {
-    function Rule(reporter) {
-        this.nodesFilter = null;
-        this.reporter = reporter;
-    }
-    Rule.prototype.msg = function (message, line, start, end) {
-        if (start === void 0) { start = 0; }
-        if (end === void 0) { end = 0; }
-        this.reporter.add(message, line, start, end);
-    };
-    Rule.prototype.isMatchType = function (type) {
-        return !this.nodesFilter || this.nodesFilter.indexOf(type) !== -1;
-    };
-    return Rule;
-}());
-exports.Rule = Rule;
-
-
-/***/ }),
-
-/***/ "./src/core/visitor.ts":
-/*!*****************************!*\
-  !*** ./src/core/visitor.ts ***!
-  \*****************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var Visitor = /** @class */ (function () {
-    function Visitor() {
-    }
-    Visitor.prototype.run = function (root, parent, callback) {
-        var _this = this;
-        if (parent === void 0) { parent = root; }
-        if (root.__visited) {
-            return;
-        }
-        root.parent = parent;
-        root.__visited = true;
-        ['nodes', 'segments'].forEach(function (key) {
-            if (root[key]) {
-                root[key].forEach(function (node) { return _this.run(node, root, callback); });
-            }
-        });
-        ['path', 'val', 'expr', 'block'].forEach(function (key) {
-            if (root[key] && typeof root[key] === 'object') {
-                _this.run(root[key], root, callback);
-            }
-        });
-        if (root.vals) {
-            Object.keys(root.vals).forEach(function (key) {
-                _this.run(root.vals[key], root, callback);
-            });
-        }
-        callback(root);
-    };
-    return Visitor;
-}());
-exports.Visitor = Visitor;
-
-
-/***/ }),
-
-/***/ "./src/rules/color.ts":
-/*!****************************!*\
-  !*** ./src/rules/color.ts ***!
-  \****************************/
+/***/ "./src/core/translator.ts":
+/*!********************************!*\
+  !*** ./src/core/translator.ts ***!
+  \********************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -381,43 +695,109 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
-var Color = /** @class */ (function (_super) {
-    __extends(Color, _super);
-    function Color() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.nodesFilter = ['rgba'];
-        return _this;
+var visitor_1 = __webpack_require__(/*! ./visitor */ "./src/core/visitor.ts");
+var ast_1 = __webpack_require__(/*! ./ast */ "./src/core/ast/index.ts");
+var Translator = /** @class */ (function (_super) {
+    __extends(Translator, _super);
+    function Translator(stylusAST) {
+        return _super.call(this, stylusAST) || this;
     }
-    Color.prototype.isHasLowerCase = function (value) {
-        return /[a-z]/.test(value);
+    Translator.prototype.transpile = function () {
+        return this.visit(this.root);
     };
-    Color.prototype.process = function (node) {
-        if (node.raw && this.isHasLowerCase(node.raw)) {
-            this.msg('Only lowercase HEX format', node.lineno);
+    Translator.prototype.each = function (block, fn, key) {
+        if (key === void 0) { key = 'nodes'; }
+        var list = block[key];
+        if (Array.isArray(list)) {
+            for (var i = 0, len = list.length; i < len; ++i) {
+                var node = list[i];
+                var ret = this.visit(node);
+                if (ret) {
+                    fn(ret);
+                }
+            }
         }
     };
-    return Color;
-}(rule_1.Rule));
-exports.Color = Color;
+    /**
+     * Объодим элементы корневого элемента
+     * @param block
+     */
+    Translator.prototype.visitRoot = function (block) {
+        var tree = new ast_1.Tree(block.lineno, block.column);
+        this.each(block, function (ret) {
+            tree.append(ret);
+        });
+        return tree;
+    };
+    Translator.prototype.visitBlock = function (block) {
+        var node = new ast_1.Block(block.lineno, block.column);
+        this.each(block, function (ret) {
+            node.append(ret);
+        });
+        return node;
+    };
+    Translator.prototype.visitGroup = function (block) {
+        var node = new ast_1.Group(block.lineno, block.column);
+        this.each(block, function (ret) {
+            node.append(ret);
+        });
+        return node;
+    };
+    Translator.prototype.visitSelector = function (block) {
+        var node = new ast_1.Selector(block.lineno, block.column);
+        this.each(block, function (ret) {
+            node.append(ret, 'segments');
+        }, 'segments');
+        if (block.block) {
+            node.append(this.visit(block.block));
+        }
+        return node;
+    };
+    Translator.prototype.visitProperty = function (block) {
+        var node = new ast_1.Property(block.lineno, block.column);
+        this.each(block, function (ret) {
+            node.append(ret);
+        });
+        return node;
+    };
+    Translator.prototype.visitLiteral = function (block) {
+        var node = new ast_1.Literal(block.lineno, block.column);
+        console.log(block);
+        return node;
+    };
+    return Translator;
+}(visitor_1.Visitor));
+exports.Translator = Translator;
 
 
 /***/ }),
 
-/***/ "./src/rules/index.ts":
-/*!****************************!*\
-  !*** ./src/rules/index.ts ***!
-  \****************************/
+/***/ "./src/core/visitor.ts":
+/*!*****************************!*\
+  !*** ./src/core/visitor.ts ***!
+  \*****************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-function __export(m) {
-    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-}
 Object.defineProperty(exports, "__esModule", { value: true });
-__export(__webpack_require__(/*! ./color */ "./src/rules/color.ts"));
+var Visitor = /** @class */ (function () {
+    function Visitor(root) {
+        this.root = root;
+    }
+    Visitor.prototype.visit = function (node) {
+        var method = 'visit' + node.constructor.name;
+        console.log(method);
+        var fn = this[method];
+        if (fn && typeof fn === 'function') {
+            return fn.call(this, node);
+        }
+        return node;
+    };
+    return Visitor;
+}());
+exports.Visitor = Visitor;
 
 
 /***/ }),
@@ -463,6 +843,28 @@ module.exports = require("stylus/lib/parser");
 /***/ (function(module, exports) {
 
 module.exports = require("stylus/lib/utils");
+
+/***/ }),
+
+/***/ "stylus/lib/visitor/evaluator":
+/*!***********************************************!*\
+  !*** external "stylus/lib/visitor/evaluator" ***!
+  \***********************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("stylus/lib/visitor/evaluator");
+
+/***/ }),
+
+/***/ "stylus/lib/visitor/normalizer":
+/*!************************************************!*\
+  !*** external "stylus/lib/visitor/normalizer" ***!
+  \************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("stylus/lib/visitor/normalizer");
 
 /***/ })
 

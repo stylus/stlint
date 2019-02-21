@@ -1,1 +1,1 @@
-{"passed":false,"errors":[{"message":[{"descr":"Only lowercase HEX format","path":"/Users/v-chupurnov/WebstormProjects/stylus-linter/test.styl","line":2,"endline":2,"start":0,"end":0}]}]}
+{"passed":true}
