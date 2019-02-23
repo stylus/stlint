@@ -1,7 +1,8 @@
 import { IReporter } from "./types/reporter";
 import { IMessage } from "./types/message";
 import { IResponse } from "./types/response";
-import {writeFileSync} from "fs";
+import { writeFileSync } from "fs";
+import { inspect } from 'util'
 
 export class Reporter implements IReporter {
 	errors: IMessage[] = [];
@@ -21,7 +22,7 @@ export class Reporter implements IReporter {
 			line,
 			endline: line,
 			start,
-			end
+			end: end >= start ? end : start + 1
 		});
 	}
 
@@ -41,3 +42,7 @@ export class Reporter implements IReporter {
 		writeFileSync( './response.txt', JSON.stringify(response), 'utf-8');
 	}
 }
+
+export const log = (val: any) => console.log(inspect(val, {
+	depth: 10
+}));

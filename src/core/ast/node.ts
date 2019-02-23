@@ -1,27 +1,35 @@
 import { INode } from "../types/ast/node";
+import { ISNode } from "../types/ast/snode";
 
 export class Node implements INode {
 	parent: INode | null = null;
 	lineno = 0;
 	column = 0;
 	nodes: INode[] = [];
+	source: ISNode | null = null;
 
-	constructor(lineno: number, column: number) {
-		this.lineno = lineno;
-		this.column = column;
+	constructor(block: ISNode) {
+		this.lineno = block.lineno;
+		this.column = block.column;
+		this.source = block;
 	}
 
 	get nodeName(): string {
 		return this.constructor.name.toLowerCase();
 	}
 
-	append<T extends Node>(node: INode, listField: keyof T = 'nodes') {
+	append<T extends INode>(node: T, listField: keyof T = 'nodes') {
 		const list = (<any>this)[listField];
 
-		if (list && Array.isArray(list)) {
+		if (list && Array.isArray(list) && node instanceof Node) {
 			list.push(node);
 		}
 
 		node.parent = this;
+	}
+
+	value: string | INode | null = '';
+	toString() {
+		return this.value ? this.value.toString() : '';
 	}
 }

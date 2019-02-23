@@ -1,19 +1,18 @@
 import { Visitor } from "./visitor";
-import {Tree, Group, Selector, Block, Property, Node, Literal} from "./ast";
+import { Tree, Group, Selector, Block, Property, Node, Literal, Value, RGB, Ident, Import, Obj, Unit } from "./ast";
 import { INode } from "./types/ast/node";
+import { ISNode } from "./types/ast/snode";
 
-export class Translator extends  Visitor<INode> {
-	constructor(stylusAST: any) {
-		super(stylusAST);
+export class Translator extends  Visitor<ISNode, INode> {
+	methodNotExists(method: string) {
+		throw new Error(`No method ${method}`);
 	}
 
 	transpile(): Tree {
 		return this.visit(this.root);
 	}
 
-	each<T extends Node>(block: T, fn: Function, key: keyof T = 'nodes') {
-		const list = block[key];
-
+	private eachVisit<T extends ISNode>(list: T[] | unknown, fn: Function) {
 		if (Array.isArray(list)) {
 			for (let i = 0, len = list.length; i < len; ++i) {
 				const node = list[i];
@@ -28,45 +27,49 @@ export class Translator extends  Visitor<INode> {
 	}
 
 	/**
-	 * Объодим элементы корневого элемента
+	 * Обходим элементы корневого элемента
 	 * @param block
 	 */
-	visitRoot(block: INode) {
-		const tree = new Tree(block.lineno, block.column);
+	visitRoot(block: ISNode) {
+		const tree = new Tree(block);
 
-		this.each(block, (ret: INode) => {
+		this.eachVisit(block.nodes, (ret: INode) => {
 			tree.append(ret);
 		});
 
 		return tree;
 	}
 
-	visitBlock(block: INode) {
-		const node = new Block(block.lineno, block.column);
+	visitNode(block: ISNode): INode {
+		return new Node(block);
+	}
 
-		this.each(block, (ret: INode) => {
+	visitBlock(block: ISNode) {
+		const node = new Block(block);
+
+		this.eachVisit(block.nodes, (ret: INode) => {
 			node.append(ret);
 		});
 
 		return node;
 	}
 
-	visitGroup(block: INode) {
-		const node = new Group(block.lineno, block.column);
+	visitGroup(block: ISNode) {
+		const node = new Group(block);
 
-		this.each(block, (ret: INode) => {
+		this.eachVisit(block.nodes, (ret: INode) => {
 			node.append(ret);
 		});
 
 		return node;
 	}
 
-	visitSelector(block: INode) {
-		const node = new Selector(block.lineno, block.column);
+	visitSelector(block: ISNode) {
+		const node = new Selector(block);
 
-		this.each(block, (ret: INode) => {
+		this.eachVisit(block.segments, (ret: Selector) => {
 			node.append<Selector>(ret, 'segments');
-		}, 'segments');
+		});
 
 		if (block.block) {
 			node.append(this.visit(block.block));
@@ -75,21 +78,107 @@ export class Translator extends  Visitor<INode> {
 		return node;
 	}
 
-	visitProperty(block: INode) {
-		const node = new Property(block.lineno, block.column);
+	visitProperty(block: ISNode) {
+		const node = new Property(block);
 
-		this.each(block, (ret: INode) => {
+		node.key = block.name || (Array.isArray(block.segments) ? block.segments.join('') : '');
+
+		if (block.expr) {
+			node.value = this.visit(block.expr);
+		}
+
+		return node;
+	}
+
+	visitLiteral(block: ISNode) {
+		return new Literal(block, typeof block.val === 'string' ? block.val : '');
+	}
+
+	visitExpression(block: ISNode) {
+		const node = new Value(block);
+
+		this.eachVisit(block.nodes, (ret: INode) => {
 			node.append(ret);
 		});
 
 		return node;
 	}
 
-	visitLiteral(block: INode) {
-		const node = new Literal(block.lineno, block.column);
+	visitRGBA(block: ISNode) {
+		const node = new RGB(block);
 
-		console.log(block);
+		node.value = block.name || (typeof block.raw === 'string' ? block.raw : '') || '';
 
+		return node;
+	}
+
+	visitIdent(block: ISNode) {
+		const node = new Ident(block);
+
+		node.key = block.string || block.name || '';
+
+		if (block.val) {
+			node.value = this.visit(block.val);
+		}
+
+		return node;
+	}
+
+	/**
+	 * Если импорт то только такой
+	 * @param block
+	 */
+	visitImport(block: ISNode) {
+		const node = new Import(block);
+
+		node.value = (block.path || '').toString().replace(/[()]/g, '');
+
+		return node;
+	}
+
+	/**
+	 * Обработка $p хеша
+	 * @param block
+	 */
+	visitObject(block: ISNode) {
+		const node = new Obj(block);
+
+		const vals = block.vals;
+		if (vals && typeof vals === 'object' && vals !== null) {
+			Object.keys(vals).forEach((key: string) => {
+				const elm: ISNode = (<Dictionary>vals)[key];
+
+				if (elm) {
+					const
+						property = new Property(vals[key]),
+						ret = this.visit(vals[key]);
+
+					property.key = key;
+
+					property.value = ret;
+					node.append(property);
+				}
+			})
+		}
+
+		return node;
+	}
+
+	/**
+	 * Пустые значения
+	 * @param block
+	 */
+	visitNull(block: ISNode) {
+		// console.log(block);
+	}
+
+	/**
+	 * Нода значений типа px или em
+	 * @param block
+	 */
+	visitUnit(block: ISNode) {
+		const node = new Unit(block);
+		node.value = typeof block.raw === 'string' ? block.raw : '';
 		return node;
 	}
 }

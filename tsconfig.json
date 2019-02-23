@@ -16,5 +16,6 @@
   "exclude": [
     "./node_modules"
   ],
-  "skipLibCheck": true
+  "skipLibCheck": true,
+  "sourceMap": true
 }

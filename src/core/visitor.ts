@@ -1,20 +1,28 @@
-export class Visitor<T> {
-	root: T;
+import { ISNode } from "./types/ast/snode";
+import { INode } from "./types/ast/node";
 
-	constructor(root: T) {
+export abstract class Visitor<In = ISNode, Out = INode> {
+	root: In;
+
+	constructor(root: In) {
 		this.root = root;
 	}
 
-	visit(node: T): T {
-		const method = 'visit' + node.constructor.name;
-		console.log(method);
+	abstract visitNode(node: In): Out;
 
-		const fn: undefined | ((node: T) => T) = (<any>this)[method];
+	methodNotExists(method: string) {}
+
+	visit(node: In): Out {
+		const method = 'visit' + node.constructor.name;
+
+		const fn: undefined | ((node: In) => Out) = (<any>this)[method];
 
 		if (fn && typeof fn === 'function') {
 			return fn.call(this, node);
 		}
 
-		return node;
+		this.methodNotExists(method);
+
+		return this.visitNode(node);
 	}
 }
