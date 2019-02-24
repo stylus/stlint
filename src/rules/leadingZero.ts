@@ -1,5 +1,5 @@
 import { Rule } from "../core/rule";
-import { ILine } from "../core/types/line";
+import { Line } from "../core/line";
 
 const decimalRe = /[^\d+](0+\.\d+)|[\s,(](\.\d+)/i;
 const leadZeroRe = /[^\d+](0+\.\d+)/;
@@ -10,8 +10,8 @@ const nonZeroRe = /[\s,(](\.\d+)/;
  * @param {string} [line] curr line being linted
  * @returns {boolean|undefined} true if mixed, false if not
  */
-export class leadingZero extends Rule {
-	checkLine(line: ILine) {
+export class LeadingZero extends Rule {
+	checkLine(line: Line) {
 		if (!decimalRe.test(line.line)) {
 			return
 		}

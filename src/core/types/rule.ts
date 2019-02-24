@@ -1,11 +1,9 @@
 import { INode } from "./ast/node";
-import { Linter } from "../../linter";
 import { ILine } from "./line";
-import { IState } from "../types/state";
+import { IState } from "./state";
 
 export interface IRule {
 	state: IState;
-	linter: Linter;
 	nodesFilter: string[] | null;
 
 	checkNode?(node: INode): void;
@@ -14,4 +12,6 @@ export interface IRule {
 	msg(message: string, line: number, start: number, end: number): void;
 
 	isMatchType(type: string): boolean;
+
+	errors: [string, number, number, number][];
 }

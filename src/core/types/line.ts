@@ -1,5 +1,5 @@
 export interface ILine {
 	line: string;
-	lineno: number;
-	lines: ILine[];
+	lineno?: number;
+	lines?: ILine[];
 }

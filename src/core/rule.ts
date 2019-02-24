@@ -1,6 +1,5 @@
 import { IRule } from "./types/rule";
-import { Linter } from "../linter";
-import { IState } from "./types/state";
+import { IState, modes } from "./types/state";
 import { lcfirst } from "./helpers/lcfirst";
 
 export abstract class Rule implements IRule {
@@ -15,8 +14,7 @@ export abstract class Rule implements IRule {
 
 	nodesFilter: string[] | null = null;
 
-	constructor(readonly linter: Linter) {
-		const conf = linter.config.defaultConfig[this.name];
+	constructor(readonly conf: IState | [ modes, boolean | void ]) {
 		if (conf) {
 			if (Array.isArray(conf)) {
 				this.state.conf = conf[0];
@@ -29,8 +27,9 @@ export abstract class Rule implements IRule {
 		}
 	}
 
+	errors: [string, number, number, number][] = [];
 	msg(message: string, line: number, start: number = 0, end: number = 0) {
-		this.linter.reporter.add(message, line, start, end);
+		this.errors.push([message, line, start, end]);
 	}
 
 	isMatchType(type: string): boolean {

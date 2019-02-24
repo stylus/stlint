@@ -5,7 +5,7 @@
     "lib": [
       "dom", "es6"
     ],
-    "types": ["@types/chai", "@types/mocha", "@types/node"],
+    "types": ["@types/chai", "@types/mocha", "@types/node", "./src/typings"],
     "typeRoots": [
       "./node_modules/@types"
     ]

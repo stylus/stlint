@@ -9,21 +9,23 @@ import { IReporter } from "./core/types/reporter";
 export class Linter {
 	path: string;
 	content?: string;
-	config: Config;
+
+	options: Dictionary = {};
+	get config(): Config {
+		return Config.getInstance(this.options)
+	};
+
 	reporter: IReporter;
 	parser: StylusParser;
 	checker: Checker;
-
-	getReporter(path: string): IReporter {
-		return new Reporter(path);
-	}
 
 	constructor(path: string, content?: string, options: Dictionary = {}) {
 		this.path = resolve(path);
 		this.content = content;
 
-		this.config = new Config(options);
-		this.reporter = this.getReporter(path);
+		this.options = options;
+
+		this.reporter = Reporter.getInstance(path, this.config.reporter);
 
 		this.parser = new StylusParser();
 		this.checker = new Checker(this);

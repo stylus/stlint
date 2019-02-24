@@ -1,19 +1,35 @@
 import { isPlainObject } from "./core/helpers/isPlainObject";
 
 export class Config {
-	constructor(options: Dictionary) {
-		Object.keys(options).forEach(key => {
-			if (isPlainObject(options[key]) && this[key]) {
-				this[key] = {...this[key], ...options[key]};
-			} else if (Array.isArray(options[key]) && this[key]) {
-				this[key] = [...this[key], ...options[key]];
+	private static __instance: Config | null = null;
+
+	static getInstance(options: Dictionary): Config {
+		if (!Config.__instance) {
+			Config.__instance = new Config(options);
+		}
+
+		return Config.__instance;
+	}
+
+	protected constructor(options: Dictionary) {
+		this.extendsOption(options, this);
+	}
+
+	extendsOption(from: Dictionary, to: Dictionary) {
+		Object.keys(from).forEach(key => {
+			if (isPlainObject(from[key]) && isPlainObject(to[key])) {
+				this.extendsOption(from[key], to[key]);
+			} else if (Array.isArray(from[key]) && Array.isArray(to[key])) {
+				to[key] = to[key].map((val: any, index: number) =>
+					(from[key][index] !== undefined) ? from[key][index] : to[key][index]);
 			} else {
-				this[key] = options[key];
+				to[key] = from[key];
 			}
 		});
 	}
 
 	debug: boolean = false;
+	reporter: string = 'default';
 
 	defaultConfig: Dictionary = {
 		colons: ['never'],
