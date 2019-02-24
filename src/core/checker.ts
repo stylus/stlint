@@ -7,7 +7,7 @@ import { Linter } from "../linter";
 import { Line } from "./line";
 import { Rule } from "./rule";
 import { IReporter } from "./types/reporter";
-import {lcfirst} from "./helpers/lcfirst";
+import { lcfirst } from "./helpers/lcfirst";
 
 export class Checker {
 	readonly rulesListForNodes: IRule[];
@@ -28,6 +28,25 @@ export class Checker {
 		this.rulesListForNodes = this.rulesList.filter(rule => rule.checkNode);
 	}
 
+	/**
+	 * Check whole AST
+	 *
+	 * @param ast
+	 * @param content
+	 */
+	checkASTRules(ast: Tree, content: string) {
+		try {
+			const runner = new Runner(ast, this.check);
+			runner.visit(ast);
+
+		} catch (e) {
+			this.linter.reporter.add(e.message, e.lineno || 1, 0);
+
+		} finally {
+			this.afterCheck();
+		}
+	}
+
 	private check = (root: INode) => {
 		const type = root.nodeName;
 
@@ -38,11 +57,12 @@ export class Checker {
 		})
 	};
 
-	checkRules(ast: Tree, content: string) {
+	/**
+	 * Check line by line
+	 * @param content
+	 */
+	checkLineRules(content: string) {
 		try {
-			const runner = new Runner(ast, this.check);
-			runner.visit(ast);
-
 			const
 				lines: Line[] = [];
 
@@ -59,12 +79,19 @@ export class Checker {
 			this.linter.reporter.add(e.message, e.lineno || 1, 0);
 
 		} finally {
-			const rep: IReporter = this.linter.reporter;
-
-			this.rulesList.forEach(rule => {
-				rule.errors.forEach(msg => rep.add.apply(rep, msg));
-				rule.errors.length = 0;
-			});
+			this.afterCheck();
 		}
+	}
+
+	/**
+	 * After checking put errors in reporter
+	 */
+	private afterCheck() {
+		const rep: IReporter = this.linter.reporter;
+
+		this.rulesList.forEach(rule => {
+			rule.errors.forEach(msg => rep.add.apply(rep, msg));
+			rule.errors.length = 0;
+		});
 	}
 }

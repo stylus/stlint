@@ -15,7 +15,7 @@ export class Config {
 		this.extendsOption(options, this);
 	}
 
-	extendsOption(from: Dictionary, to: Dictionary) {
+	private extendsOption(from: Dictionary, to: Dictionary) {
 		Object.keys(from).forEach(key => {
 			if (isPlainObject(from[key]) && isPlainObject(to[key])) {
 				this.extendsOption(from[key], to[key]);

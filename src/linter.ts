@@ -11,6 +11,7 @@ export class Linter {
 	content?: string;
 
 	options: Dictionary = {};
+
 	get config(): Config {
 		return Config.getInstance(this.options)
 	};
@@ -19,6 +20,11 @@ export class Linter {
 	parser: StylusParser;
 	checker: Checker;
 
+	/**
+	 * @param path
+	 * @param content
+	 * @param options
+	 */
 	constructor(path: string, content?: string, options: Dictionary = {}) {
 		this.path = resolve(path);
 		this.content = content;
@@ -31,6 +37,9 @@ export class Linter {
 		this.checker = new Checker(this);
 	}
 
+	/**
+	 * Parse styl file and check rules
+	 */
 	lint() {
 		try {
 			if (!existsSync(this.path)) {
@@ -43,7 +52,9 @@ export class Linter {
 
 			const ast = this.parser.parse(this.content);
 
-			this.checker.checkRules(ast, this.content);
+			this.checker.checkASTRules(ast, this.content);
+			this.checker.checkLineRules(this.content);
+
 		} catch (e) {
 			this.reporter.add(e.message, e.lineno, e.startOffset);
 

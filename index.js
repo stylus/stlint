@@ -734,11 +734,31 @@ var Checker = /** @class */ (function () {
         this.rulesListForLines = this.rulesList.filter(function (rule) { return rule.checkLine; });
         this.rulesListForNodes = this.rulesList.filter(function (rule) { return rule.checkNode; });
     }
-    Checker.prototype.checkRules = function (ast, content) {
-        var _this = this;
+    /**
+     * Check whole AST
+     *
+     * @param ast
+     * @param content
+     */
+    Checker.prototype.checkASTRules = function (ast, content) {
         try {
             var runner = new runner_1.Runner(ast, this.check);
             runner.visit(ast);
+        }
+        catch (e) {
+            this.linter.reporter.add(e.message, e.lineno || 1, 0);
+        }
+        finally {
+            this.afterCheck();
+        }
+    };
+    /**
+     * Check line by line
+     * @param content
+     */
+    Checker.prototype.checkLineRules = function (content) {
+        var _this = this;
+        try {
             var lines_1 = [];
             content.split(/\n/)
                 .forEach(function (ln, index) {
@@ -753,12 +773,18 @@ var Checker = /** @class */ (function () {
             this.linter.reporter.add(e.message, e.lineno || 1, 0);
         }
         finally {
-            var rep_1 = this.linter.reporter;
-            this.rulesList.forEach(function (rule) {
-                rule.errors.forEach(function (msg) { return rep_1.add.apply(rep_1, msg); });
-                rule.errors.length = 0;
-            });
+            this.afterCheck();
         }
+    };
+    /**
+     * After checking put errors in reporter
+     */
+    Checker.prototype.afterCheck = function () {
+        var rep = this.linter.reporter;
+        this.rulesList.forEach(function (rule) {
+            rule.errors.forEach(function (msg) { return rep.add.apply(rep, msg); });
+            rule.errors.length = 0;
+        });
     };
     return Checker;
 }());
@@ -1340,6 +1366,11 @@ var checker_1 = __webpack_require__(/*! ./core/checker */ "./src/core/checker.ts
 var fs_1 = __webpack_require__(/*! fs */ "fs");
 var path_1 = __webpack_require__(/*! path */ "path");
 var Linter = /** @class */ (function () {
+    /**
+     * @param path
+     * @param content
+     * @param options
+     */
     function Linter(path, content, options) {
         if (options === void 0) { options = {}; }
         this.options = {};
@@ -1358,6 +1389,9 @@ var Linter = /** @class */ (function () {
         configurable: true
     });
     ;
+    /**
+     * Parse styl file and check rules
+     */
     Linter.prototype.lint = function () {
         try {
             if (!fs_1.existsSync(this.path)) {
@@ -1367,7 +1401,8 @@ var Linter = /** @class */ (function () {
                 this.content = fs_1.readFileSync(this.path, 'utf8');
             }
             var ast = this.parser.parse(this.content);
-            this.checker.checkRules(ast, this.content);
+            this.checker.checkASTRules(ast, this.content);
+            this.checker.checkLineRules(this.content);
         }
         catch (e) {
             this.reporter.add(e.message, e.lineno, e.startOffset);
