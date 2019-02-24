@@ -1,1 +1,0 @@
-{"passed":false,"errors":[{"message":[{"descr":"Only lowercase HEX format","path":"/Users/v-chupurnov/WebstormProjects/stylus-linter/test.styl","line":8,"endline":8,"start":19,"end":23},{"descr":"unnecessary colon found","path":"/Users/v-chupurnov/WebstormProjects/stylus-linter/test.styl","line":9,"endline":9,"start":10,"end":11}]}]}

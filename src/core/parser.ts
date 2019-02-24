@@ -24,9 +24,10 @@ export class StylusParser {
 				input: '',
 				lineno: '',
 				column: '',
+				filename: ''
 			};
 
-			options.input = err.input;
+			options.input = err.input || err.message;
 			err.lineno = options.lineno = err.lineno || parser.lexer.lineno || 0;
 			options.column = err.column || parser.lexer.column;
 

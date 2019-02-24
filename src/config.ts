@@ -13,11 +13,12 @@ export class Config {
 		});
 	}
 
-	debug: boolean = true;
+	debug: boolean = false;
 
 	defaultConfig: Dictionary = {
 		colons: ['never'],
 		color: 	['uppercase'],
+		leadingZero: ['always'],
 	};
 
 	[key: string]: any;

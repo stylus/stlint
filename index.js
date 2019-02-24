@@ -143,10 +143,11 @@ var isPlainObject_1 = __webpack_require__(/*! ./core/helpers/isPlainObject */ ".
 var Config = /** @class */ (function () {
     function Config(options) {
         var _this = this;
-        this.debug = true;
+        this.debug = false;
         this.defaultConfig = {
             colons: ['never'],
             color: ['uppercase'],
+            leadingZero: ['always'],
         };
         Object.keys(options).forEach(function (key) {
             if (isPlainObject_1.isPlainObject(options[key]) && _this[key]) {
@@ -777,6 +778,23 @@ exports.isPlainObject = function (obj) {
 
 /***/ }),
 
+/***/ "./src/core/helpers/lcfirst.ts":
+/*!*************************************!*\
+  !*** ./src/core/helpers/lcfirst.ts ***!
+  \*************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.lcfirst = function (str) {
+    return str[0].toLowerCase() + str.substr(1);
+};
+
+
+/***/ }),
+
 /***/ "./src/core/line.ts":
 /*!**************************!*\
   !*** ./src/core/line.ts ***!
@@ -833,8 +851,9 @@ var StylusParser = /** @class */ (function () {
                 input: '',
                 lineno: '',
                 column: '',
+                filename: ''
             };
-            options.input = err.input;
+            options.input = err.input || err.message;
             err.lineno = options.lineno = err.lineno || parser.lexer.lineno || 0;
             options.column = err.column || parser.lexer.column;
             throw utils.formatException(err, options);
@@ -857,7 +876,6 @@ exports.StylusParser = StylusParser;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var fs_1 = __webpack_require__(/*! fs */ "fs");
 var util_1 = __webpack_require__(/*! util */ "util");
 var Reporter = /** @class */ (function () {
     function Reporter(path) {
@@ -876,12 +894,14 @@ var Reporter = /** @class */ (function () {
         if (start === void 0) { start = 0; }
         if (end === void 0) { end = 0; }
         this.errors.push({
-            descr: message,
-            path: this.path,
-            line: line,
-            endline: line,
-            start: start,
-            end: end >= start ? end : start + 1
+            message: [{
+                    descr: message,
+                    path: this.path,
+                    line: line,
+                    endline: line,
+                    start: start,
+                    end: end >= start ? end : start + 1
+                }]
         });
     };
     Reporter.prototype.display = function () {
@@ -890,12 +910,9 @@ var Reporter = /** @class */ (function () {
         };
         if (this.errors.length) {
             response.passed = false;
-            response.errors = [{
-                    message: this.errors
-                }];
+            response.errors = this.errors;
         }
         console.log(JSON.stringify(response));
-        fs_1.writeFileSync('./response.txt', JSON.stringify(response), 'utf-8');
     };
     return Reporter;
 }());
@@ -928,6 +945,7 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var lcfirst_1 = __webpack_require__(/*! ./helpers/lcfirst */ "./src/core/helpers/lcfirst.ts");
 var Rule = /** @class */ (function () {
     function Rule(linter) {
         this.linter = linter;
@@ -952,7 +970,7 @@ var Rule = /** @class */ (function () {
     }
     Object.defineProperty(Rule.prototype, "name", {
         get: function () {
-            return this.constructor.name.toLowerCase();
+            return lcfirst_1.lcfirst(this.constructor.name);
         },
         enumerable: true,
         configurable: true
@@ -1424,6 +1442,65 @@ function __export(m) {
 Object.defineProperty(exports, "__esModule", { value: true });
 __export(__webpack_require__(/*! ./color */ "./src/rules/color.ts"));
 __export(__webpack_require__(/*! ./colons */ "./src/rules/colons.ts"));
+__export(__webpack_require__(/*! ./leadingZero */ "./src/rules/leadingZero.ts"));
+
+
+/***/ }),
+
+/***/ "./src/rules/leadingZero.ts":
+/*!**********************************!*\
+  !*** ./src/rules/leadingZero.ts ***!
+  \**********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
+var decimalRe = /[^\d+](0+\.\d+)|[\s,(](\.\d+)/i;
+var leadZeroRe = /[^\d+](0+\.\d+)/;
+var nonZeroRe = /[\s,(](\.\d+)/;
+/**
+ * @description check for leading 0 on numbers ( 0.5 )
+ * @param {string} [line] curr line being linted
+ * @returns {boolean|undefined} true if mixed, false if not
+ */
+var leadingZero = /** @class */ (function (_super) {
+    __extends(leadingZero, _super);
+    function leadingZero() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    leadingZero.prototype.checkLine = function (line) {
+        if (!decimalRe.test(line.line)) {
+            return;
+        }
+        var leadZeroFound = leadZeroRe.exec(line.line);
+        var leadZeroMissing = nonZeroRe.exec(line.line);
+        if (this.state.conf === 'always' && leadZeroMissing) {
+            this.msg('leading zeros for decimal points are required', line.lineno, leadZeroMissing.index);
+        }
+        else if (this.state.conf === 'never' && leadZeroFound) {
+            this.msg('leading zeros for decimal points are unnecessary', line.lineno, leadZeroFound.index);
+        }
+        return leadZeroFound;
+    };
+    return leadingZero;
+}(rule_1.Rule));
+exports.leadingZero = leadingZero;
 
 
 /***/ }),

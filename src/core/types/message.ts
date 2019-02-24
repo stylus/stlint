@@ -6,3 +6,7 @@ export interface IMessage {
 	start: number;
 	end: number;
 }
+
+export interface IMessagePack {
+	message: IMessage[]
+}

@@ -9,7 +9,7 @@
   "scripts": {
     "start": "webpack --watch",
     "build": "webpack",
-    "test": "./bin/stylus-linter ./test.styl"
+    "test": "mocha -r ts-node/register tests/**.ts"
   },
   "keywords": [
     "cli",
@@ -27,16 +27,21 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "awesome-typescript-loader": "^5.2.1",
     "stylus": "^0.54.5",
     "yargs": "^13.2.1"
   },
   "devDependencies": {
     "@babel/core": "^7.3.3",
     "@babel/preset-env": "^7.3.1",
-    "@types/node": "^11.9.4",
+    "@types/chai": "^4.1.7",
+    "@types/mocha": "^5.2.6",
+    "@types/node": "^11.9.5",
+    "awesome-typescript-loader": "^5.2.1",
     "babel-loader": "^8.0.5",
     "babel-plugin-syntax-dynamic-import": "^6.18.0",
+    "chai": "^4.2.0",
+    "mocha": "^6.0.1",
+    "ts-node": "^8.0.2",
     "typescript": "^3.3.3",
     "uglifyjs-webpack-plugin": "^2.1.1",
     "webpack": "^4.29.5",

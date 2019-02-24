@@ -5,7 +5,7 @@ import { Tree } from "./ast";
 import { Runner } from "./runner";
 import { Linter } from "../linter";
 import { Line } from "./line";
-import {Rule} from "./rule";
+import { Rule } from "./rule";
 
 export class Checker {
 	readonly rulesListForNodes: IRule[];

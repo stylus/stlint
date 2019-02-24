@@ -2,9 +2,9 @@ import { Config } from "./config";
 import { Reporter } from "./core/reporter";
 import { StylusParser } from "./core/parser";
 import { Checker } from "./core/checker";
-import { existsSync, readFileSync, writeFileSync } from "fs";
+import { existsSync, readFileSync } from "fs";
 import { resolve } from "path";
-import {IReporter} from "./core/types/reporter";
+import { IReporter } from "./core/types/reporter";
 
 export class Linter {
 	path: string;

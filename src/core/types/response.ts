@@ -1,8 +1,6 @@
-import { IMessage } from "./message";
+import { IMessagePack } from "./message";
 
 export interface IResponse {
 	passed: boolean;
-	errors?: Array<{
-		message: IMessage[]
-	}>;
+	errors?: Array<IMessagePack>;
 }

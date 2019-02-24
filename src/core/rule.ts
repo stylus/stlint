@@ -1,6 +1,7 @@
 import { IRule } from "./types/rule";
 import { Linter } from "../linter";
 import { IState } from "./types/state";
+import { lcfirst } from "./helpers/lcfirst";
 
 export abstract class Rule implements IRule {
 	state: IState = {
@@ -9,10 +10,11 @@ export abstract class Rule implements IRule {
 	};
 
 	get name(): string {
-		return this.constructor.name.toLowerCase();
+		return lcfirst(this.constructor.name);
 	}
 
 	nodesFilter: string[] | null = null;
+
 	constructor(readonly linter: Linter) {
 		const conf = linter.config.defaultConfig[this.name];
 		if (conf) {
