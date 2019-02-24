@@ -1,8 +1,7 @@
-import { Colons } from "../src/rules";
+import { Colons } from "../../src/rules";
 import { expect } from "chai";
 
-describe('Rules test', () => {
-	describe('Colons test', () => {
+describe('Colons test', () => {
 		it('Should check the line has colons and they are needed', () => {
 			const rule = new Colons({
 				conf: "always"
@@ -63,4 +62,3 @@ describe('Rules test', () => {
 			});
 		});
 	});
-});
