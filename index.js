@@ -1052,7 +1052,7 @@ var Rule = /** @class */ (function () {
     Rule.prototype.msg = function (message, line, start, end) {
         if (start === void 0) { start = 0; }
         if (end === void 0) { end = 0; }
-        this.errors.push([message, line, start, end]);
+        this.errors.push([this.name + ': ' + message, line, start, end]);
     };
     Rule.prototype.isMatchType = function (type) {
         return !this.nodesFilter || this.nodesFilter.includes(type);
@@ -1492,11 +1492,8 @@ var Color = /** @class */ (function (_super) {
         _this.nodesFilter = ['rgb'];
         return _this;
     }
-    Color.prototype.isHasLowerCase = function (value) {
-        return /[a-z]/.test(value);
-    };
     Color.prototype.checkNode = function (node) {
-        if (node.value && typeof node.value === 'string' && this.isHasLowerCase(node.value)) {
+        if (node.value && typeof node.value === 'string' && /[a-z]/.test(node.value)) {
             this.msg('Only lowercase HEX format', node.lineno, node.column, node.column + node.value.length - 1);
         }
     };

@@ -9,7 +9,7 @@
   "scripts": {
     "start": "webpack --watch",
     "build": "webpack",
-    "test": "mocha -r ts-node/register -r tests/staff/bootstrap.ts tests/**.ts"
+    "test": "mocha -r ts-node/register -r tests/staff/bootstrap.ts tests/**/**.ts tests/**.ts"
   },
   "keywords": [
     "cli",

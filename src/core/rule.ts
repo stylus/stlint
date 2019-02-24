@@ -29,7 +29,7 @@ export abstract class Rule implements IRule {
 
 	errors: [string, number, number, number][] = [];
 	msg(message: string, line: number, start: number = 0, end: number = 0) {
-		this.errors.push([message, line, start, end]);
+		this.errors.push([this.name + ': ' + message, line, start, end]);
 	}
 
 	isMatchType(type: string): boolean {
