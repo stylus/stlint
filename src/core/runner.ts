@@ -3,7 +3,7 @@ import { Node } from "./ast/";
 import { INode } from "./types/ast/node";
 
 export class Runner extends  Visitor<INode, INode> {
-	constructor(ast: INode, readonly fn: Function) {
+	constructor(ast: INode, readonly fn: (node: INode) => void) {
 		super(ast);
 	}
 
