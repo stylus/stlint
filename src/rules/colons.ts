@@ -42,11 +42,11 @@ export class Colons extends Rule {
 		}
 
 		if (this.state.conf === 'always' && colon === false) {
-			this.msg( 'missing colon between property and value', line.lineno || 1, arr[0].length);
+			this.msg( 'missing colon between property and value', line.lineno, arr[0].length);
 		}
 		else if (this.state.conf === 'never' && colon === true) {
 			const index = line.line.indexOf( ':' );
-			this.msg( 'unnecessary colon found', line.lineno || 1, index);
+			this.msg( 'unnecessary colon found', line.lineno, index);
 		}
 
 		return colon

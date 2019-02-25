@@ -1076,6 +1076,7 @@ var Rule = /** @class */ (function () {
         configurable: true
     });
     Rule.prototype.msg = function (message, line, start, end) {
+        if (line === void 0) { line = 1; }
         if (start === void 0) { start = 0; }
         if (end === void 0) { end = 0; }
         this.errors.push([this.name + ': ' + message, line, start, end]);
@@ -1481,11 +1482,11 @@ var Colons = /** @class */ (function (_super) {
             }
         }
         if (this.state.conf === 'always' && colon === false) {
-            this.msg('missing colon between property and value', line.lineno || 1, arr[0].length);
+            this.msg('missing colon between property and value', line.lineno, arr[0].length);
         }
         else if (this.state.conf === 'never' && colon === true) {
             var index = line.line.indexOf(':');
-            this.msg('unnecessary colon found', line.lineno || 1, index);
+            this.msg('unnecessary colon found', line.lineno, index);
         }
         return colon;
     };
@@ -1583,9 +1584,9 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
-var decimalRe = /[^\d+](0+\.\d+)|[\s,(](\.\d+)/i;
+var decimalRe = /[^\d+](0+\.\d+)|[\s,(:](\.\d+)/i;
 var leadZeroRe = /[^\d+](0+\.\d+)/;
-var nonZeroRe = /[\s,(](\.\d+)/;
+var nonZeroRe = /[\s,(:](\.\d+)/;
 /**
  * @description check for leading 0 on numbers ( 0.5 )
  * @param {string} [line] curr line being linted
@@ -1608,7 +1609,7 @@ var LeadingZero = /** @class */ (function (_super) {
         else if (this.state.conf === 'never' && leadZeroFound) {
             this.msg('leading zeros for decimal points are unnecessary', line.lineno, leadZeroFound.index);
         }
-        return leadZeroFound;
+        return Boolean(leadZeroFound);
     };
     return LeadingZero;
 }(rule_1.Rule));

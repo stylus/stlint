@@ -28,7 +28,8 @@ export abstract class Rule implements IRule {
 	}
 
 	errors: [string, number, number, number][] = [];
-	msg(message: string, line: number, start: number = 0, end: number = 0) {
+
+	msg(message: string, line: number = 1, start: number = 0, end: number = 0) {
 		this.errors.push([this.name + ': ' + message, line, start, end]);
 	}
 

@@ -1,9 +1,9 @@
 import { Rule } from "../core/rule";
-import { Line } from "../core/line";
+import { ILine } from "../core/types/line";
 
-const decimalRe = /[^\d+](0+\.\d+)|[\s,(](\.\d+)/i;
+const decimalRe = /[^\d+](0+\.\d+)|[\s,(:](\.\d+)/i;
 const leadZeroRe = /[^\d+](0+\.\d+)/;
-const nonZeroRe = /[\s,(](\.\d+)/;
+const nonZeroRe = /[\s,(:](\.\d+)/;
 
 /**
  * @description check for leading 0 on numbers ( 0.5 )
@@ -11,7 +11,7 @@ const nonZeroRe = /[\s,(](\.\d+)/;
  * @returns {boolean|undefined} true if mixed, false if not
  */
 export class LeadingZero extends Rule {
-	checkLine(line: Line) {
+	checkLine(line: ILine) {
 		if (!decimalRe.test(line.line)) {
 			return
 		}
@@ -25,6 +25,6 @@ export class LeadingZero extends Rule {
 			this.msg('leading zeros for decimal points are unnecessary', line.lineno, leadZeroFound.index);
 		}
 
-		return leadZeroFound
+		return Boolean(leadZeroFound)
 	}
 }
