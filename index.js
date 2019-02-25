@@ -143,13 +143,16 @@ var Config = /** @class */ (function () {
         this.config = '';
         this.extendsOption(options, this);
         if (!this.config) {
-            this.config = process.cwd() + '/.stylintrc';
+            this.config = process.cwd() + '/' + Config.FILE_CONFIG_NAME;
         }
         if (fs_1.existsSync(this.config)) {
-            var customConfig = JSON.parse(stripJsonComments(fs_1.readFileSync(this.config, 'utf8')));
-            if (customConfig) {
-                this.extendsOption(customConfig, this.defaultConfig);
+            try {
+                var customConfig = JSON.parse(stripJsonComments(fs_1.readFileSync(this.config, 'utf8')));
+                if (customConfig) {
+                    this.extendsOption(customConfig, this.defaultConfig);
+                }
             }
+            catch (_a) { }
         }
     }
     Config.getInstance = function (options) {
@@ -174,6 +177,7 @@ var Config = /** @class */ (function () {
             }
         });
     };
+    Config.FILE_CONFIG_NAME = '.stylusrc';
     Config.__instance = null;
     return Config;
 }());

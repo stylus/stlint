@@ -3,6 +3,8 @@ import { existsSync, readFileSync } from "fs";
 import stripJsonComments = require("strip-json-comments");
 
 export class Config {
+	static FILE_CONFIG_NAME = '.stylusrc';
+
 	private static __instance: Config | null = null;
 
 	static getInstance(options: Dictionary): Config {
@@ -17,14 +19,16 @@ export class Config {
 		this.extendsOption(options, this);
 
 		if (!this.config) {
-			this.config = process.cwd() + '/.stylintrc';
+			this.config = process.cwd() + '/' + Config.FILE_CONFIG_NAME;
 		}
 
 		if (existsSync(this.config)) {
-			const customConfig = JSON.parse(stripJsonComments(readFileSync(this.config, 'utf8')));
-			if (customConfig) {
-				this.extendsOption(customConfig, this.defaultConfig);
-			}
+			try {
+				const customConfig = JSON.parse(stripJsonComments(readFileSync(this.config, 'utf8')));
+				if (customConfig) {
+					this.extendsOption(customConfig, this.defaultConfig);
+				}
+			} catch {}
 		}
 	}
 
