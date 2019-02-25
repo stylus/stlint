@@ -30,6 +30,7 @@ export class Linter {
 		this.content = content;
 
 		this.options = options;
+		Config.getInstance(this.options);
 
 		this.reporter = Reporter.getInstance(path, this.config.reporter);
 

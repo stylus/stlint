@@ -2,12 +2,27 @@
 
 'use strict'
 
-const yargs = require( 'yargs' )
-const stylusLinter = require( '../' )
+const yargs = require( 'yargs' );
+const stylusLinter = require( '../' );
 
 
 const options = yargs
 	.usage( 'Usage: $0 file' )
+	.option( 'config', {
+		alias: 'c',
+		describe: 'Location of custom config file',
+		type: 'string'
+	})
+	.option( 'reporter', {
+		alias: 'r',
+		describe: 'Reporter name',
+		type: 'string'
+	})
+	.option( 'fix', {
+		alias: 'f',
+		describe: 'Try fix some rules',
+		type: 'boolean'
+	})
 	.version(require( '../package' ).version)
 	.alias( 'version', 'v' )
 	.help( 'help' )
@@ -17,4 +32,4 @@ const options = yargs
 	.epilogue( 'MIT' )
 	.argv;
 
-stylusLinter(options._[0], options.content);
+stylusLinter(options._[0], options.content, options);

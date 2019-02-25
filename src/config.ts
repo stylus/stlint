@@ -1,4 +1,6 @@
 import { isPlainObject } from "./core/helpers/isPlainObject";
+import { existsSync, readFileSync } from "fs";
+import stripJsonComments = require("strip-json-comments");
 
 export class Config {
 	private static __instance: Config | null = null;
@@ -13,6 +15,17 @@ export class Config {
 
 	protected constructor(options: Dictionary) {
 		this.extendsOption(options, this);
+
+		if (!this.config) {
+			this.config = process.cwd() + '/.stylintrc';
+		}
+
+		if (existsSync(this.config)) {
+			const customConfig = JSON.parse(stripJsonComments(readFileSync(this.config, 'utf8')));
+			if (customConfig) {
+				this.extendsOption(customConfig, this.defaultConfig);
+			}
+		}
 	}
 
 	private extendsOption(from: Dictionary, to: Dictionary) {
@@ -36,6 +49,8 @@ export class Config {
 		color: 	['uppercase'],
 		leadingZero: ['always'],
 	};
+
+	config: string = '';
 
 	[key: string]: any;
 }

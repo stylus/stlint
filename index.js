@@ -129,6 +129,8 @@ module.exports = StylusLinter;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var isPlainObject_1 = __webpack_require__(/*! ./core/helpers/isPlainObject */ "./src/core/helpers/isPlainObject.ts");
+var fs_1 = __webpack_require__(/*! fs */ "fs");
+var stripJsonComments = __webpack_require__(/*! strip-json-comments */ "strip-json-comments");
 var Config = /** @class */ (function () {
     function Config(options) {
         this.debug = false;
@@ -138,7 +140,17 @@ var Config = /** @class */ (function () {
             color: ['uppercase'],
             leadingZero: ['always'],
         };
+        this.config = '';
         this.extendsOption(options, this);
+        if (!this.config) {
+            this.config = process.cwd() + '/.stylintrc';
+        }
+        if (fs_1.existsSync(this.config)) {
+            var customConfig = JSON.parse(stripJsonComments(fs_1.readFileSync(this.config, 'utf8')));
+            if (customConfig) {
+                this.extendsOption(customConfig, this.defaultConfig);
+            }
+        }
     }
     Config.getInstance = function (options) {
         if (!Config.__instance) {
@@ -1378,6 +1390,7 @@ var Linter = /** @class */ (function () {
         this.path = path_1.resolve(path);
         this.content = content;
         this.options = options;
+        config_1.Config.getInstance(this.options);
         this.reporter = reporter_1.Reporter.getInstance(path, this.config.reporter);
         this.parser = new parser_1.StylusParser();
         this.checker = new checker_1.Checker(this);
@@ -1640,6 +1653,17 @@ module.exports = require("fs");
 /***/ (function(module, exports) {
 
 module.exports = require("path");
+
+/***/ }),
+
+/***/ "strip-json-comments":
+/*!**************************************!*\
+  !*** external "strip-json-comments" ***!
+  \**************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("strip-json-comments");
 
 /***/ }),
 
