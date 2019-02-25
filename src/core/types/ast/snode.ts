@@ -11,6 +11,7 @@ export interface ISNode {
 	val?: ISNode;
 
 	nodes: ISNode[];
+	args?: ISNode;
 	vals?: Dictionary<ISNode>;
 
 	[key: string]: unknown;

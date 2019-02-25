@@ -52,6 +52,7 @@ export class Config {
 		colons: ['never'],
 		color: 	['uppercase'],
 		leadingZero: ['always'],
+		useBasis: ['always'],
 	};
 
 	config: string = '';

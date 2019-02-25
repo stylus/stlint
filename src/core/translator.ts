@@ -1,5 +1,5 @@
 import { Visitor } from "./visitor";
-import { Tree, Group, Selector, Block, Property, Node, Literal, Value, RGB, Ident, Import, Obj, Unit } from "./ast";
+import {Tree, Group, Selector, Block, Property, Node, Literal, Value, RGB, Ident, Import, Obj, Unit, Call} from "./ast";
 import { INode } from "./types/ast/node";
 import { ISNode } from "./types/ast/snode";
 
@@ -179,6 +179,24 @@ export class Translator extends  Visitor<ISNode, INode> {
 	visitUnit(block: ISNode) {
 		const node = new Unit(block);
 		node.value = typeof block.raw === 'string' ? block.raw : '';
+		return node;
+	}
+
+	/**
+	 * Вызов миксина
+	 * @param block
+	 */
+	visitCall(block: ISNode) {
+		const node = new Call(block);
+
+		node.key = block.name || '';
+
+		if (block.args) {
+			this.eachVisit(block.args.nodes, (ret: INode) => {
+				node.append(ret);
+			});
+		}
+
 		return node;
 	}
 }

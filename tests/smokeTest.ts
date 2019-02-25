@@ -14,6 +14,7 @@ describe('Smoke test', () => {
 		expect(response.passed).to.be.false;
 		expect(response.errors && response.errors.length).to.be.equal(2)
 	});
+
 	describe('Empty file test', () => {
 		it('should work fine', () => {
 			const linter = new Linter('./test.styl', '');
@@ -25,6 +26,7 @@ describe('Smoke test', () => {
 			expect(response.errors).to.be.equal(void(0))
 		});
 	});
+
 	describe('Break content file test', () => {
 		it('should work fine', () => {
 			const linter = new Linter('./test.styl', '.');

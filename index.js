@@ -139,6 +139,7 @@ var Config = /** @class */ (function () {
             colons: ['never'],
             color: ['uppercase'],
             leadingZero: ['always'],
+            useBasis: ['always'],
         };
         this.config = '';
         this.extendsOption(options, this);
@@ -218,6 +219,44 @@ var Block = /** @class */ (function (_super) {
     return Block;
 }(node_1.Node));
 exports.Block = Block;
+
+
+/***/ }),
+
+/***/ "./src/core/ast/call.ts":
+/*!******************************!*\
+  !*** ./src/core/ast/call.ts ***!
+  \******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
+var Call = /** @class */ (function (_super) {
+    __extends(Call, _super);
+    function Call() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.key = '';
+        return _this;
+    }
+    return Call;
+}(node_1.Node));
+exports.Call = Call;
 
 
 /***/ }),
@@ -358,6 +397,7 @@ __export(__webpack_require__(/*! ./ident */ "./src/core/ast/ident.ts"));
 __export(__webpack_require__(/*! ./import */ "./src/core/ast/import.ts"));
 __export(__webpack_require__(/*! ./obj */ "./src/core/ast/obj.ts"));
 __export(__webpack_require__(/*! ./unit */ "./src/core/ast/unit.ts"));
+__export(__webpack_require__(/*! ./call */ "./src/core/ast/call.ts"));
 
 
 /***/ }),
@@ -1323,6 +1363,20 @@ var Translator = /** @class */ (function (_super) {
         node.value = typeof block.raw === 'string' ? block.raw : '';
         return node;
     };
+    /**
+     * Вызов миксина
+     * @param block
+     */
+    Translator.prototype.visitCall = function (block) {
+        var node = new ast_1.Call(block);
+        node.key = block.name || '';
+        if (block.args) {
+            this.eachVisit(block.args.nodes, function (ret) {
+                node.append(ret);
+            });
+        }
+        return node;
+    };
     return Translator;
 }(visitor_1.Visitor));
 exports.Translator = Translator;
@@ -1585,6 +1639,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __export(__webpack_require__(/*! ./color */ "./src/rules/color.ts"));
 __export(__webpack_require__(/*! ./colons */ "./src/rules/colons.ts"));
 __export(__webpack_require__(/*! ./leadingZero */ "./src/rules/leadingZero.ts"));
+__export(__webpack_require__(/*! ./useBasis */ "./src/rules/useBasis.ts"));
 
 
 /***/ }),
@@ -1643,6 +1698,62 @@ var LeadingZero = /** @class */ (function (_super) {
     return LeadingZero;
 }(rule_1.Rule));
 exports.LeadingZero = LeadingZero;
+
+
+/***/ }),
+
+/***/ "./src/rules/useBasis.ts":
+/*!*******************************!*\
+  !*** ./src/rules/useBasis.ts ***!
+  \*******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
+var useBasis = /** @class */ (function (_super) {
+    __extends(useBasis, _super);
+    function useBasis() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.nodesFilter = ['unit', 'call'];
+        return _this;
+    }
+    useBasis.prototype.checkNode = function (node) {
+        if (this.state.conf === 'always') {
+            if (node.value && typeof node.value === 'string') {
+                var unit = /([\d]+)px/.exec(node.value);
+                if (unit) {
+                    var unitSize = Number(unit[1]), basis = (unitSize / 8);
+                    this.msg("Use basis mixin instead \"px\" (basis(" + basis + "))", node.lineno, node.column, node.column + node.value.length - 1);
+                    return true;
+                }
+            }
+        }
+        else {
+            if (node.nodeName === 'call' && typeof node.key === 'string' && node.key === 'basis') {
+                this.msg("Do not use Basis mixin", node.lineno, node.column, node.column + node.key.length - 1);
+            }
+        }
+        return false;
+    };
+    return useBasis;
+}(rule_1.Rule));
+exports.useBasis = useBasis;
 
 
 /***/ }),
