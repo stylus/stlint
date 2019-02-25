@@ -59,6 +59,12 @@ export class Reporter implements IReporter {
 
 		this.log(this.response);
 	}
+
+	reset() {
+		this.response = {
+			passed: true
+		};
+	}
 }
 
 export const log = (val: any) => console.log(inspect(val, {

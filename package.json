@@ -9,7 +9,7 @@
   "scripts": {
     "start": "webpack --watch",
     "build": "webpack",
-    "test": "mocha -r ts-node/register -r tests/staff/bootstrap.ts tests/**/**.ts tests/**.ts"
+    "test": "mocha tests/**/**.ts tests/**.ts"
   },
   "keywords": [
     "cli",
@@ -44,5 +44,8 @@
     "webpack": "^4.29.5",
     "webpack-cli": "^3.2.3",
     "webpack-node-externals": "^1.7.2"
+  },
+  "mocha": {
+    "require": ["ts-node/register", "tests/staff/bootstrap.ts"]
   }
 }

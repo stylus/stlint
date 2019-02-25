@@ -991,6 +991,11 @@ var Reporter = /** @class */ (function () {
         }
         this.log(this.response);
     };
+    Reporter.prototype.reset = function () {
+        this.response = {
+            passed: true
+        };
+    };
     Reporter.__instance = null;
     return Reporter;
 }());
@@ -1389,13 +1394,16 @@ var Linter = /** @class */ (function () {
      * @param options
      */
     function Linter(path, content, options) {
+        if (content === void 0) { content = null; }
         if (options === void 0) { options = {}; }
+        this.content = null;
         this.options = {};
         this.path = path_1.resolve(path);
         this.content = content;
         this.options = options;
         config_1.Config.getInstance(this.options);
         this.reporter = reporter_1.Reporter.getInstance(path, this.config.reporter);
+        this.reporter.reset();
         this.parser = new parser_1.StylusParser();
         this.checker = new checker_1.Checker(this);
     }
@@ -1415,7 +1423,7 @@ var Linter = /** @class */ (function () {
             if (!fs_1.existsSync(this.path)) {
                 throw new Error('File not exists');
             }
-            if (!this.content || !this.content.length) {
+            if (typeof this.content !== 'string') {
                 this.content = fs_1.readFileSync(this.path, 'utf8');
             }
             var ast = this.parser.parse(this.content);

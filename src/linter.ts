@@ -8,7 +8,7 @@ import { IReporter } from "./core/types/reporter";
 
 export class Linter {
 	path: string;
-	content?: string;
+	content: string | null = null;
 
 	options: Dictionary = {};
 
@@ -25,7 +25,7 @@ export class Linter {
 	 * @param content
 	 * @param options
 	 */
-	constructor(path: string, content?: string, options: Dictionary = {}) {
+	constructor(path: string, content: string | null = null, options: Dictionary = {}) {
 		this.path = resolve(path);
 		this.content = content;
 
@@ -33,6 +33,7 @@ export class Linter {
 		Config.getInstance(this.options);
 
 		this.reporter = Reporter.getInstance(path, this.config.reporter);
+		this.reporter.reset();
 
 		this.parser = new StylusParser();
 		this.checker = new Checker(this);
@@ -47,7 +48,7 @@ export class Linter {
 				throw new Error('File not exists');
 			}
 
-			if (!this.content || !this.content.length) {
+			if (typeof this.content !== 'string') {
 				this.content = readFileSync(this.path, 'utf8');
 			}
 

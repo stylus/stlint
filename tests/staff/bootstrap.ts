@@ -1,5 +1,6 @@
 import { Config } from "../../src/config";
 
 Config.getInstance({
-	reporter: 'emptyout'
+	reporter: 'emptyout',
+	config: './.notexistsfile'
 });
