@@ -25,15 +25,15 @@ describe('Smoke test', () => {
 			expect(response.errors).to.be.equal(void(0))
 		});
 	});
-	describe('Wrong content file test', () => {
+	describe('Break content file test', () => {
 		it('should work fine', () => {
 			const linter = new Linter('./test.styl', '.');
 			linter.lint();
 
 			const response = linter.reporter.response;
 
-			expect(response.passed).to.be.true;
-			expect(response.errors).to.be.equal(void(0))
+			expect(response.passed).to.be.false;
+			expect(response.errors && response.errors.length).to.be.equal(1)
 		});
 	});
 });

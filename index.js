@@ -977,7 +977,7 @@ var Reporter = /** @class */ (function () {
                     line: line,
                     endline: line,
                     start: start,
-                    end: end >= start ? end : start + 1
+                    end: end > start ? end : start + 1
                 }]
         });
     };
@@ -992,6 +992,7 @@ var Reporter = /** @class */ (function () {
         this.log(this.response);
     };
     Reporter.prototype.reset = function () {
+        this.errors.length = 0;
         this.response = {
             passed: true
         };
@@ -1403,7 +1404,6 @@ var Linter = /** @class */ (function () {
         this.options = options;
         config_1.Config.getInstance(this.options);
         this.reporter = reporter_1.Reporter.getInstance(path, this.config.reporter);
-        this.reporter.reset();
         this.parser = new parser_1.StylusParser();
         this.checker = new checker_1.Checker(this);
     }
@@ -1420,6 +1420,7 @@ var Linter = /** @class */ (function () {
      */
     Linter.prototype.lint = function () {
         try {
+            this.reporter.reset();
             if (!fs_1.existsSync(this.path)) {
                 throw new Error('File not exists');
             }

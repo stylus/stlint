@@ -33,7 +33,6 @@ export class Linter {
 		Config.getInstance(this.options);
 
 		this.reporter = Reporter.getInstance(path, this.config.reporter);
-		this.reporter.reset();
 
 		this.parser = new StylusParser();
 		this.checker = new Checker(this);
@@ -44,6 +43,8 @@ export class Linter {
 	 */
 	lint() {
 		try {
+			this.reporter.reset();
+
 			if (!existsSync(this.path)) {
 				throw new Error('File not exists');
 			}
