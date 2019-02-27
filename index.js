@@ -1481,12 +1481,16 @@ var Linter = /** @class */ (function () {
             if (typeof this.content !== 'string') {
                 this.content = fs_1.readFileSync(this.path, 'utf8');
             }
-            var ast = this.parser.parse(this.content);
-            this.checker.checkASTRules(ast, this.content);
+            try {
+                var ast = this.parser.parse(this.content);
+                this.checker.checkASTRules(ast, this.content);
+            }
+            catch (e) {
+                this.reporter.add(e.message, e.lineno, e.startOffset);
+            }
             this.checker.checkLineRules(this.content);
         }
         catch (e) {
-            this.reporter.add(e.message, e.lineno, e.startOffset);
             if (this.config.debug) {
                 throw e;
             }

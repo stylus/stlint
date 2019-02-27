@@ -1,5 +1,6 @@
 import { Colons } from "../../src/rules";
 import { expect } from "chai";
+import {splitAndRun} from "../staff/bootstrap";
 
 describe('Colons test', () => {
 		it('Should check the line has colons and they are needed', () => {
@@ -12,6 +13,18 @@ describe('Colons test', () => {
 			})).to.be.true;
 
 			expect(rule.errors.length).to.be.equal(0)
+		});
+
+		describe('In hash object', () => {
+			it('Should not find errors', () => {
+				const rule = new Colons({
+					conf: "never"
+				});
+
+				splitAndRun('$p = {\n\tcolor: #ccc;\n}', rule);
+
+				expect(rule.errors.length).to.be.equal(0)
+			});
 		});
 
 		it('Should check the line does not have colons but they are needed', () => {

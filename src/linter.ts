@@ -53,13 +53,16 @@ export class Linter {
 				this.content = readFileSync(this.path, 'utf8');
 			}
 
-			const ast = this.parser.parse(this.content);
+			try {
+				const ast = this.parser.parse(this.content);
+				this.checker.checkASTRules(ast, this.content);
+			} catch (e) {
+				this.reporter.add(e.message, e.lineno, e.startOffset);
+			}
 
-			this.checker.checkASTRules(ast, this.content);
 			this.checker.checkLineRules(this.content);
-
 		} catch (e) {
-			this.reporter.add(e.message, e.lineno, e.startOffset);
+
 
 			if (this.config.debug) {
 				throw e;
