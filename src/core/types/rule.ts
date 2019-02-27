@@ -14,4 +14,7 @@ export interface IRule {
 	isMatchType(type: string): boolean;
 
 	errors: [string, number, number, number][];
+
+	context: Dictionary;
+	clearContext: () => void;
 }

@@ -2,11 +2,26 @@ import { IRule } from "./types/rule";
 import { IState, modes } from "./types/state";
 import { lcfirst } from "./helpers/lcfirst";
 
+const initContext = {
+	hashDeep: 0
+};
+
 export abstract class Rule implements IRule {
 	state: IState = {
 		conf: 'always',
 		enabled: true
 	};
+
+	private static context: Dictionary = {...initContext};;
+	get context(): Dictionary {
+		return Rule.context;
+	}
+	clearContext() {
+		Rule.context = {...initContext};
+	}
+	static clearContext() {
+		Rule.context = {...initContext};
+	}
 
 	get name(): string {
 		return lcfirst(this.constructor.name);

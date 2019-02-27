@@ -5,6 +5,7 @@ import { Checker } from "./core/checker";
 import { existsSync, readFileSync } from "fs";
 import { resolve } from "path";
 import { IReporter } from "./core/types/reporter";
+import {Rule} from "./core/rule";
 
 export class Linter {
 	path: string;
@@ -52,6 +53,8 @@ export class Linter {
 			if (typeof this.content !== 'string') {
 				this.content = readFileSync(this.path, 'utf8');
 			}
+
+			Rule.clearContext();
 
 			try {
 				const ast = this.parser.parse(this.content);

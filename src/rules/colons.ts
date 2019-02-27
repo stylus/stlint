@@ -6,6 +6,9 @@ const validJSON = require( '../data/valid.json' );
 // we only want to check colons on properties/values
 const ignoreRe = /( ^[&$=#>.]|\.[a-zA-Z]|^#[a-zA-Z]| \+ | , | = | ~ | > | &| {|}|\(|if|for(?!\w)|else|return|@block|@media|@import|@extend|@require|,$)/m
 
+const hashStartRe = /\$?[\w]+\s*=\s*\{/;
+const hashEndRe = /}/;
+
 /**
  * @description check for colons
  * @param {string} [line] curr line being linted
@@ -13,7 +16,16 @@ const ignoreRe = /( ^[&$=#>.]|\.[a-zA-Z]|^#[a-zA-Z]| \+ | , | = | ~ | > | &| {|}
  */
 export class Colons extends Rule {
 	checkLine(line: ILine) {
-		if (ignoreRe.test(line.line)) {
+		if (this.context.inHash && hashEndRe.test(line.line)) {
+			this.context.hashDeep -= 1;
+			return;
+		}
+		if (hashStartRe.test(line.line)) {
+			this.context.hashDeep +=1;
+			return;
+		}
+
+		if (ignoreRe.test(line.line) || this.context.hashDeep > 0) {
 			return
 		}
 

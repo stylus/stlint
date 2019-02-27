@@ -1108,6 +1108,9 @@ var __assign = (this && this.__assign) || function () {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var lcfirst_1 = __webpack_require__(/*! ./helpers/lcfirst */ "./src/core/helpers/lcfirst.ts");
+var initContext = {
+    hashDeep: 0
+};
 var Rule = /** @class */ (function () {
     function Rule(conf) {
         this.conf = conf;
@@ -1130,6 +1133,20 @@ var Rule = /** @class */ (function () {
             this.state.enabled = false;
         }
     }
+    ;
+    Object.defineProperty(Rule.prototype, "context", {
+        get: function () {
+            return Rule.context;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Rule.prototype.clearContext = function () {
+        Rule.context = __assign({}, initContext);
+    };
+    Rule.clearContext = function () {
+        Rule.context = __assign({}, initContext);
+    };
     Object.defineProperty(Rule.prototype, "name", {
         get: function () {
             return lcfirst_1.lcfirst(this.constructor.name);
@@ -1146,6 +1163,7 @@ var Rule = /** @class */ (function () {
     Rule.prototype.isMatchType = function (type) {
         return !this.nodesFilter || this.nodesFilter.includes(type);
     };
+    Rule.context = __assign({}, initContext);
     return Rule;
 }());
 exports.Rule = Rule;
@@ -1442,6 +1460,7 @@ var parser_1 = __webpack_require__(/*! ./core/parser */ "./src/core/parser.ts");
 var checker_1 = __webpack_require__(/*! ./core/checker */ "./src/core/checker.ts");
 var fs_1 = __webpack_require__(/*! fs */ "fs");
 var path_1 = __webpack_require__(/*! path */ "path");
+var rule_1 = __webpack_require__(/*! ./core/rule */ "./src/core/rule.ts");
 var Linter = /** @class */ (function () {
     /**
      * @param path
@@ -1481,6 +1500,7 @@ var Linter = /** @class */ (function () {
             if (typeof this.content !== 'string') {
                 this.content = fs_1.readFileSync(this.path, 'utf8');
             }
+            rule_1.Rule.clearContext();
             try {
                 var ast = this.parser.parse(this.content);
                 this.checker.checkASTRules(ast, this.content);
@@ -1531,6 +1551,8 @@ var rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
 var validJSON = __webpack_require__(/*! ../data/valid.json */ "./src/data/valid.json");
 // we only want to check colons on properties/values
 var ignoreRe = /( ^[&$=#>.]|\.[a-zA-Z]|^#[a-zA-Z]| \+ | , | = | ~ | > | &| {|}|\(|if|for(?!\w)|else|return|@block|@media|@import|@extend|@require|,$)/m;
+var hashStartRe = /\$?[\w]+\s*=\s*\{/;
+var hashEndRe = /}/;
 /**
  * @description check for colons
  * @param {string} [line] curr line being linted
@@ -1542,7 +1564,15 @@ var Colons = /** @class */ (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     Colons.prototype.checkLine = function (line) {
-        if (ignoreRe.test(line.line)) {
+        if (this.context.inHash && hashEndRe.test(line.line)) {
+            this.context.hashDeep -= 1;
+            return;
+        }
+        if (hashStartRe.test(line.line)) {
+            this.context.hashDeep += 1;
+            return;
+        }
+        if (ignoreRe.test(line.line) || this.context.hashDeep > 0) {
             return;
         }
         var colon = this.state.conf === 'always';

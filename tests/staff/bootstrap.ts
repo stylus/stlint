@@ -48,6 +48,8 @@ export const splitAndRun = (content: string, rule: IRule) => {
 				});
 			});
 
+		rule.clearContext();
+
 		lines
 			.forEach((line) => rule.checkLine && rule.checkLine(line))
 	}
