@@ -4,7 +4,7 @@ import { ILine } from "../core/types/line";
 const validJSON = require( '../data/valid.json' );
 
 // we only want to check colons on properties/values
-const ignoreRe = /( ^[&$=#>.]|\.[a-zA-Z]|^#[a-zA-Z]| \+ | , | = | ~ | > | &| {|}|\(|if|for(?!\w)|else|return|@block|@media|@import|@extend|@require|,$)/m
+const ignoreRe = /hznuznoli/m
 
 const hashStartRe = /\$?[\w]+\s*=\s*\{/;
 const hashEndRe = /}/;
@@ -16,7 +16,7 @@ const hashEndRe = /}/;
  */
 export class Colons extends Rule {
 	checkLine(line: ILine) {
-		if (this.context.inHash && hashEndRe.test(line.line)) {
+		if (this.context.hashDeep && hashEndRe.test(line.line)) {
 			this.context.hashDeep -= 1;
 			return;
 		}

@@ -9,6 +9,7 @@
   "scripts": {
     "start": "webpack --watch",
     "build": "webpack",
+    "test2": "./bin/stylus-linter ./test.styl",
     "test": "mocha tests/**/**.ts tests/**.ts"
   },
   "keywords": [

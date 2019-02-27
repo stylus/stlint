@@ -1550,7 +1550,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
 var validJSON = __webpack_require__(/*! ../data/valid.json */ "./src/data/valid.json");
 // we only want to check colons on properties/values
-var ignoreRe = /( ^[&$=#>.]|\.[a-zA-Z]|^#[a-zA-Z]| \+ | , | = | ~ | > | &| {|}|\(|if|for(?!\w)|else|return|@block|@media|@import|@extend|@require|,$)/m;
+var ignoreRe = /hznuznoli/m;
 var hashStartRe = /\$?[\w]+\s*=\s*\{/;
 var hashEndRe = /}/;
 /**
@@ -1564,7 +1564,7 @@ var Colons = /** @class */ (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     Colons.prototype.checkLine = function (line) {
-        if (this.context.inHash && hashEndRe.test(line.line)) {
+        if (this.context.hashDeep && hashEndRe.test(line.line)) {
             this.context.hashDeep -= 1;
             return;
         }

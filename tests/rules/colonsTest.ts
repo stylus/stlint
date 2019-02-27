@@ -27,6 +27,26 @@ describe('Colons test', () => {
 			});
 		});
 
+		describe('For variable', () => {
+			it('Should work some way like for usual value', () => {
+				const rule = new Colons({
+					conf: "never"
+				});
+
+				splitAndRun(
+					'$p = {\n' +
+					'\tb: 1px solid #ccc\n' +
+					'}\n' +
+					'.test\n' +
+					'\tmax-height: $headerHeight\n' +
+					'\tborder: $p.border',
+					rule
+				);
+
+				expect(rule.errors.length).to.be.equal(2)
+			});
+		});
+
 		it('Should check the line does not have colons but they are needed', () => {
 			const rule = new Colons({
 				conf: "always"
