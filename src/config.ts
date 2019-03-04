@@ -49,6 +49,7 @@ export class Config {
 	reporter: string = 'default';
 
 	defaultConfig: Dictionary = {
+		semicolons: ['never'],
 		colons: ['never'],
 		color: 	['uppercase'],
 		leadingZero: ['always'],

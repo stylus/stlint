@@ -12,6 +12,7 @@ npx stylus-linter ./src/file.styl
 ## Default
 ```js
 {
+	semicolons: ['never'],
 	colons: ['never'],
 	color: 	['uppercase'],
 	leadingZero: ['always'],
@@ -31,7 +32,7 @@ Use colons always
 "colons": ["always"] 
 ```
 
-Check off rule
+Switch off rule
 ```
 "colons": false 
 ```
@@ -41,6 +42,28 @@ Show only warning
 "colons": ["always", "warning"] 
 ```
 
+#### semicolons
+Allow/Deny use semicolons after `rule: value`
+
+Deny semicolons
+```
+"semicolons": ["never"] 
+```
+
+Use semicolons always
+```
+"semicolons": ["always"] 
+```
+
+Switch off rule
+```
+"semicolons": false 
+```
+
+Show only warning
+```
+"semicolons": ["always", "warning"] 
+```
 
 ### License
 MIT

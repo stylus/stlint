@@ -136,6 +136,7 @@ var Config = /** @class */ (function () {
         this.debug = false;
         this.reporter = 'default';
         this.defaultConfig = {
+            semicolons: ['never'],
             colons: ['never'],
             color: ['uppercase'],
             leadingZero: ['always'],
@@ -1776,6 +1777,7 @@ __export(__webpack_require__(/*! ./color */ "./src/rules/color.ts"));
 __export(__webpack_require__(/*! ./colons */ "./src/rules/colons.ts"));
 __export(__webpack_require__(/*! ./leadingZero */ "./src/rules/leadingZero.ts"));
 __export(__webpack_require__(/*! ./useBasis */ "./src/rules/useBasis.ts"));
+__export(__webpack_require__(/*! ./semicolons */ "./src/rules/semicolons.ts"));
 
 
 /***/ }),
@@ -1834,6 +1836,76 @@ var LeadingZero = /** @class */ (function (_super) {
     return LeadingZero;
 }(rule_1.Rule));
 exports.LeadingZero = LeadingZero;
+
+
+/***/ }),
+
+/***/ "./src/rules/semicolons.ts":
+/*!*********************************!*\
+  !*** ./src/rules/semicolons.ts ***!
+  \*********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
+// we only want to check semicolons on properties/values
+var ignoreRe = /(^[*#.])|[&>/]|{|}|if|for(?!\w)|else|@block|@media|(}|{|=|,)$/igm;
+/**
+ * @description check that selector properties are sorted accordingly
+ * @param  {string} [line] curr line being linted
+ * @return {boolean} true if in order, false if not
+ */
+var Semicolons = /** @class */ (function (_super) {
+    __extends(Semicolons, _super);
+    function Semicolons() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    Semicolons.prototype.checkLine = function (line) {
+        if (ignoreRe.test(line.line.trim())) {
+            return;
+        }
+        // if (this.state.) return TODO check in hash
+        var semicolon, index = line.line.indexOf(';');
+        if (this.state.conf === 'never' && index !== -1) {
+            semicolon = true;
+        }
+        // for reasons that perplex me, even when the first use
+        // of this at the top returns true, sometimes the method
+        // still runs, so we add this second ignoreCheck here to catch it
+        if (this.state.conf === 'always' && !ignoreRe.test(line.line.trim())) {
+            if (index === -1 &&
+                line.line.indexOf('}') === -1 &&
+                line.line.indexOf('{') === -1) {
+                semicolon = false;
+            }
+        }
+        if (this.state.conf === 'never' && semicolon === true) {
+            this.msg('unnecessary semicolon found', line.lineno, index);
+        }
+        else if (this.state.conf === 'always' && semicolon === false) {
+            this.msg('missing semicolon', line.lineno, line.line.length);
+        }
+        return semicolon;
+    };
+    return Semicolons;
+}(rule_1.Rule));
+exports.Semicolons = Semicolons;
 
 
 /***/ }),
