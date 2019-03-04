@@ -1,12 +1,14 @@
 {
   "name": "stylus-linter",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "index.js",
   "bin": {
     "stylus-linter": "./bin/stylus-linter"
   },
   "scripts": {
+    "newversion": "npm test && npm version patch --no-git-tag-version && npm run build && npm run newversiongit && npm publish ./",
+    "newversiongit": "git add --all  && git commit -m \"New version $npm_package_version. Read more https://github.com/stylus-plus/stylus-plus/releases/tag/$npm_package_version \" && git tag $npm_package_version && git push --tags origin HEAD:master",
     "start": "webpack --watch",
     "build": "webpack",
     "test2": "./bin/stylus-linter ./test.styl",

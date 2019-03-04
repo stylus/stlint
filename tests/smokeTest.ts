@@ -55,22 +55,22 @@ describe('Smoke test', () => {
 				expect(response.passed).to.be.true;
 			});
 		});
-		describe('Hash field with index', () => {
-			it('should not return error', () => {
-				const
-					linter = new Linter('./test.styl','$p = {\n' +
-						'\toptionColor: $colors.grey[0]\n' +
-						'}\n' +
-						'.b-checkbox-list\n' +
-						'\tcolor #FFF'
-					);
-
-				linter.lint();
-
-				const response = linter.reporter.response;
-
-				expect(response.passed).to.be.true;
-			});
-		});
+		// describe('Hash field with index', () => {
+		// 	it('should not return error', () => {
+		// 		const
+		// 			linter = new Linter('./test.styl','$p = {\n' +
+		// 				'\toptionColor: $colors.grey[0]\n' +
+		// 				'}\n' +
+		// 				'.b-checkbox-list\n' +
+		// 				'\tcolor #FFF'
+		// 			);
+		//
+		// 		linter.lint();
+		//
+		// 		const response = linter.reporter.response;
+		//
+		// 		expect(response.passed).to.be.true;
+		// 	});
+		// });
 	});
 });
