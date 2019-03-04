@@ -14,7 +14,7 @@ import {
 	Obj,
 	Unit,
 	Call,
-	Member
+	Member, BinOp
 } from "./ast";
 import { INode } from "./types/ast/node";
 import { ISNode } from "./types/ast/snode";
@@ -221,6 +221,20 @@ export class Translator extends  Visitor<ISNode, INode> {
 	 */
 	visitMember(block: ISNode) {
 		const node = new Member(block);
+
+		if (block.left) {
+			node.left = new Ident(block.left);
+		}
+
+		if (block.right) {
+			node.right = new Ident(block.right);
+		}
+
+		return node;
+	}
+
+	visitBinOp(block: ISNode) {
+		const node = new BinOp(block);
 
 		if (block.left) {
 			node.left = new Ident(block.left);

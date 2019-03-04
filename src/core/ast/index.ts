@@ -13,3 +13,4 @@ export * from './obj';
 export * from './unit';
 export * from './call';
 export * from './member';
+export * from './binop';

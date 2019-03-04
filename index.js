@@ -187,6 +187,45 @@ exports.Config = Config;
 
 /***/ }),
 
+/***/ "./src/core/ast/binop.ts":
+/*!*******************************!*\
+  !*** ./src/core/ast/binop.ts ***!
+  \*******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
+var BinOp = /** @class */ (function (_super) {
+    __extends(BinOp, _super);
+    function BinOp() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.left = null;
+        _this.right = null;
+        return _this;
+    }
+    return BinOp;
+}(node_1.Node));
+exports.BinOp = BinOp;
+
+
+/***/ }),
+
 /***/ "./src/core/ast/block.ts":
 /*!*******************************!*\
   !*** ./src/core/ast/block.ts ***!
@@ -399,6 +438,7 @@ __export(__webpack_require__(/*! ./obj */ "./src/core/ast/obj.ts"));
 __export(__webpack_require__(/*! ./unit */ "./src/core/ast/unit.ts"));
 __export(__webpack_require__(/*! ./call */ "./src/core/ast/call.ts"));
 __export(__webpack_require__(/*! ./member */ "./src/core/ast/member.ts"));
+__export(__webpack_require__(/*! ./binop */ "./src/core/ast/binop.ts"));
 
 
 /***/ }),
@@ -1433,6 +1473,16 @@ var Translator = /** @class */ (function (_super) {
      */
     Translator.prototype.visitMember = function (block) {
         var node = new ast_1.Member(block);
+        if (block.left) {
+            node.left = new ast_1.Ident(block.left);
+        }
+        if (block.right) {
+            node.right = new ast_1.Ident(block.right);
+        }
+        return node;
+    };
+    Translator.prototype.visitBinOp = function (block) {
+        var node = new ast_1.BinOp(block);
         if (block.left) {
             node.left = new ast_1.Ident(block.left);
         }
