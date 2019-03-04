@@ -1,7 +1,7 @@
-declare module 'stylus/lib/parser';
-declare module 'stylus/lib/utils';
-declare module 'stylus/lib/visitor/evaluator';
-declare module 'stylus/lib/visitor/normalizer';
+declare module 'stylus-pro/lib/parser';
+declare module 'stylus-pro/lib/utils';
+declare module 'stylus-pro/lib/visitor/evaluator';
+declare module 'stylus-pro/lib/visitor/normalizer';
 declare module 'strip-json-comments';
 
 

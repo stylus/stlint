@@ -398,6 +398,7 @@ __export(__webpack_require__(/*! ./import */ "./src/core/ast/import.ts"));
 __export(__webpack_require__(/*! ./obj */ "./src/core/ast/obj.ts"));
 __export(__webpack_require__(/*! ./unit */ "./src/core/ast/unit.ts"));
 __export(__webpack_require__(/*! ./call */ "./src/core/ast/call.ts"));
+__export(__webpack_require__(/*! ./member */ "./src/core/ast/member.ts"));
 
 
 /***/ }),
@@ -440,6 +441,45 @@ var Literal = /** @class */ (function (_super) {
     return Literal;
 }(node_1.Node));
 exports.Literal = Literal;
+
+
+/***/ }),
+
+/***/ "./src/core/ast/member.ts":
+/*!********************************!*\
+  !*** ./src/core/ast/member.ts ***!
+  \********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
+var Member = /** @class */ (function (_super) {
+    __extends(Member, _super);
+    function Member() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.left = null;
+        _this.right = null;
+        return _this;
+    }
+    return Member;
+}(node_1.Node));
+exports.Member = Member;
 
 
 /***/ }),
@@ -930,8 +970,7 @@ exports.Line = Line;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var Parser = __webpack_require__(/*! stylus/lib/parser */ "stylus/lib/parser");
-var utils = __webpack_require__(/*! stylus/lib/utils */ "stylus/lib/utils");
+var Parser = __webpack_require__(/*! stylus-pro/lib/parser */ "stylus-pro/lib/parser");
 var translator_1 = __webpack_require__(/*! ./translator */ "./src/core/translator.ts");
 var StylusParser = /** @class */ (function () {
     function StylusParser() {
@@ -949,16 +988,10 @@ var StylusParser = /** @class */ (function () {
             return translitor.transpile();
         }
         catch (err) {
-            var options = {
-                input: '',
-                lineno: '',
-                column: '',
-                filename: ''
-            };
-            options.input = err.input || err.message;
-            err.lineno = options.lineno = err.lineno || parser.lexer.lineno || 0;
-            options.column = err.column || parser.lexer.column;
-            throw utils.formatException(err, options);
+            err.lineno = err.lineno || parser.lexer.lineno || 0;
+            err.message = 'Syntax error: ' + err.message;
+            err.column = parser.lexer.column;
+            throw err;
         }
     };
     return StylusParser;
@@ -1133,7 +1166,6 @@ var Rule = /** @class */ (function () {
             this.state.enabled = false;
         }
     }
-    ;
     Object.defineProperty(Rule.prototype, "context", {
         get: function () {
             return Rule.context;
@@ -1395,6 +1427,20 @@ var Translator = /** @class */ (function (_super) {
         }
         return node;
     };
+    /**
+     * Получение элемента хеша
+     * @param block
+     */
+    Translator.prototype.visitMember = function (block) {
+        var node = new ast_1.Member(block);
+        if (block.left) {
+            node.left = new ast_1.Ident(block.left);
+        }
+        if (block.right) {
+            node.right = new ast_1.Ident(block.right);
+        }
+        return node;
+    };
     return Translator;
 }(visitor_1.Visitor));
 exports.Translator = Translator;
@@ -1551,7 +1597,7 @@ var rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
 var validJSON = __webpack_require__(/*! ../data/valid.json */ "./src/data/valid.json");
 // we only want to check colons on properties/values
 var ignoreRe = /hznuznoli/m;
-var hashStartRe = /\$?[\w]+\s*=\s*\{/;
+var hashStartRe = /\$?[\w]+\s*[=:]\s*\{/;
 var hashEndRe = /}/;
 /**
  * @description check for colons
@@ -1563,13 +1609,19 @@ var Colons = /** @class */ (function (_super) {
     function Colons() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    Colons.prototype.checkLine = function (line) {
-        if (this.context.hashDeep && hashEndRe.test(line.line)) {
+    Colons.prototype.checkEndRule = function (ln) {
+        if (this.context.hashDeep && hashEndRe.test(ln)) {
             this.context.hashDeep -= 1;
-            return;
+            return true;
         }
+    };
+    Colons.prototype.checkLine = function (line) {
         if (hashStartRe.test(line.line)) {
             this.context.hashDeep += 1;
+            this.checkEndRule(line.line);
+            return;
+        }
+        if (this.checkEndRule(line.line)) {
             return;
         }
         if (ignoreRe.test(line.line) || this.context.hashDeep > 0) {
@@ -1825,25 +1877,14 @@ module.exports = require("strip-json-comments");
 
 /***/ }),
 
-/***/ "stylus/lib/parser":
-/*!************************************!*\
-  !*** external "stylus/lib/parser" ***!
-  \************************************/
+/***/ "stylus-pro/lib/parser":
+/*!****************************************!*\
+  !*** external "stylus-pro/lib/parser" ***!
+  \****************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = require("stylus/lib/parser");
-
-/***/ }),
-
-/***/ "stylus/lib/utils":
-/*!***********************************!*\
-  !*** external "stylus/lib/utils" ***!
-  \***********************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = require("stylus/lib/utils");
+module.exports = require("stylus-pro/lib/parser");
 
 /***/ }),
 

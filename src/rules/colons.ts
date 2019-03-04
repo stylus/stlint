@@ -6,7 +6,7 @@ const validJSON = require( '../data/valid.json' );
 // we only want to check colons on properties/values
 const ignoreRe = /hznuznoli/m
 
-const hashStartRe = /\$?[\w]+\s*=\s*\{/;
+const hashStartRe = /\$?[\w]+\s*[=:]\s*\{/;
 const hashEndRe = /}/;
 
 /**
@@ -15,13 +15,20 @@ const hashEndRe = /}/;
  * @returns {boolean} true if colon found, false if not
  */
 export class Colons extends Rule {
-	checkLine(line: ILine) {
-		if (this.context.hashDeep && hashEndRe.test(line.line)) {
+	private checkEndRule(ln: string): true | void {
+		if (this.context.hashDeep && hashEndRe.test(ln)) {
 			this.context.hashDeep -= 1;
-			return;
+			return true;
 		}
+	}
+	checkLine(line: ILine) {
 		if (hashStartRe.test(line.line)) {
 			this.context.hashDeep +=1;
+			this.checkEndRule(line.line);
+			return;
+		}
+
+		if (this.checkEndRule(line.line)) {
 			return;
 		}
 

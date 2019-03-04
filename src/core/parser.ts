@@ -1,5 +1,4 @@
-import Parser = require('stylus/lib/parser');
-import utils = require('stylus/lib/utils');
+import Parser = require('stylus-pro/lib/parser');
 import { Tree } from "./ast";
 import { Translator } from "./translator";
 import { ISNode } from "./types/ast/snode";
@@ -20,18 +19,12 @@ export class StylusParser {
 
 			return translitor.transpile();
 		} catch (err) {
-			let options = {
-				input: '',
-				lineno: '',
-				column: '',
-				filename: ''
-			};
 
-			options.input = err.input || err.message;
-			err.lineno = options.lineno = err.lineno || parser.lexer.lineno || 0;
-			options.column = err.column || parser.lexer.column;
+			err.lineno = err.lineno || parser.lexer.lineno || 0;
+			err.message = 'Syntax error: ' + err.message;
+			err.column = parser.lexer.column;
 
-			throw utils.formatException(err, options);
+			throw err;
 		}
 	}
 }

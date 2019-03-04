@@ -9,6 +9,8 @@ export interface ISNode {
 	string?: string;
 	expr?: ISNode;
 	val?: ISNode;
+	left?: ISNode;
+	right?: ISNode;
 
 	nodes: ISNode[];
 	args?: ISNode;

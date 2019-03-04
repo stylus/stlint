@@ -1,5 +1,21 @@
 import { Visitor } from "./visitor";
-import {Tree, Group, Selector, Block, Property, Node, Literal, Value, RGB, Ident, Import, Obj, Unit, Call} from "./ast";
+import {
+	Tree,
+	Group,
+	Selector,
+	Block,
+	Property,
+	Node,
+	Literal,
+	Value,
+	RGB,
+	Ident,
+	Import,
+	Obj,
+	Unit,
+	Call,
+	Member
+} from "./ast";
 import { INode } from "./types/ast/node";
 import { ISNode } from "./types/ast/snode";
 
@@ -195,6 +211,23 @@ export class Translator extends  Visitor<ISNode, INode> {
 			this.eachVisit(block.args.nodes, (ret: INode) => {
 				node.append(ret);
 			});
+		}
+
+		return node;
+	}
+	/**
+	 * Получение элемента хеша
+	 * @param block
+	 */
+	visitMember(block: ISNode) {
+		const node = new Member(block);
+
+		if (block.left) {
+			node.left = new Ident(block.left);
+		}
+
+		if (block.right) {
+			node.right = new Ident(block.right);
 		}
 
 		return node;

@@ -12,7 +12,7 @@ export abstract class Rule implements IRule {
 		enabled: true
 	};
 
-	private static context: Dictionary = {...initContext};;
+	private static context: Dictionary = {...initContext};
 	get context(): Dictionary {
 		return Rule.context;
 	}

@@ -1,29 +1,5 @@
-@import "blocks/i-block/i-block.interface.styl"
-
 $p = {
-	background: $colors.white[0],
-	optionHeight: 20px,
-	optionGap: 12px,
-	optionsN: 10,
-	checkboxSize: 18px,
-	checkboxMargin: 14px,
-	transitionDuration: 0.2s,
-	headerIconColor: $colors.grey[2],
-	disabledColor: $colors.grey[3],
-	placeholderColor: $colors.grey[2],
-	optionColor: $colors.grey[0],
-	checkedIconColor: $colors.base.second
+	optionColor: $colors.grey[0]
 }
-
-.b-checkbox-list extends i-block
-
-	$sidePad = $p.gap - $p.border[0]
-	$quickSearchHeight = $headerHeight = basis(7)
-	$optionsMaxHeight = ($p.optionHeight + $p.optionGap) * $p.optionsN
-
-	border: $p.border
-	transition max-height $p.transitionDuration, height $p.transitionDuration
-	overflow-y hidden
-
-	&_overflow_false
-		max-height: $headerHeight + $optionsMaxHeight + $p.gap
+.b-checkbox-list
+	color #fff

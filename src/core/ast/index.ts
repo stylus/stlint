@@ -12,3 +12,4 @@ export * from './import';
 export * from './obj';
 export * from './unit';
 export * from './call';
+export * from './member';

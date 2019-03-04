@@ -28,7 +28,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "stylus": "^0.54.5",
+    "stylus-pro": "^0.54.7",
     "yargs": "^13.2.1"
   },
   "devDependencies": {
@@ -47,6 +47,9 @@
     "webpack-node-externals": "^1.7.2"
   },
   "mocha": {
-    "require": ["ts-node/register", "tests/staff/bootstrap.ts"]
+    "require": [
+      "ts-node/register",
+      "tests/staff/bootstrap.ts"
+    ]
   }
 }
