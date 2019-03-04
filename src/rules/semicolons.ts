@@ -15,8 +15,6 @@ export class Semicolons extends Rule {
 			return;
 		}
 
-		// if (this.state.) return TODO check in hash
-
 		let
 			semicolon,
 			index = line.line.indexOf(';');

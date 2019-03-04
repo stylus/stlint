@@ -73,6 +73,7 @@ export class Checker {
 
 			lines
 				.forEach(line => {
+					Rule.beforeCheckLine(line);
 					this.rulesListForLines.forEach(rule => rule.checkLine && rule.checkLine(line));
 				});
 		} catch (e) {

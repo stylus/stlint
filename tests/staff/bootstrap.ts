@@ -3,6 +3,7 @@ import { IRule } from "../../src/core/types/rule";
 import { Runner } from "../../src/core/runner";
 import { StylusParser } from "../../src/core/parser";
 import { ILine } from "../../src/core/types/line";
+import { Rule } from "../../src/core/rule";
 
 Config.getInstance({
 	reporter: 'emptyout',
@@ -48,9 +49,12 @@ export const splitAndRun = (content: string, rule: IRule) => {
 				});
 			});
 
-		rule.clearContext();
+		Rule.clearContext();
 
 		lines
-			.forEach((line) => rule.checkLine && rule.checkLine(line))
+			.forEach((line) => {
+				Rule.beforeCheckLine(line);
+				rule.checkLine && rule.checkLine(line);
+			})
 	}
 };

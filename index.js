@@ -903,6 +903,7 @@ var Checker = /** @class */ (function () {
             });
             lines_1
                 .forEach(function (line) {
+                rule_1.Rule.beforeCheckLine(line);
                 _this.rulesListForLines.forEach(function (rule) { return rule.checkLine && rule.checkLine(line); });
             });
         }
@@ -1183,8 +1184,11 @@ var __assign = (this && this.__assign) || function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var lcfirst_1 = __webpack_require__(/*! ./helpers/lcfirst */ "./src/core/helpers/lcfirst.ts");
 var initContext = {
-    hashDeep: 0
+    hashDeep: 0,
+    inHash: false,
 };
+var hashStartRe = /\$?[\w]+\s*[=:]\s*\{/;
+var hashEndRe = /}/;
 var Rule = /** @class */ (function () {
     function Rule(conf) {
         this.conf = conf;
@@ -1219,6 +1223,19 @@ var Rule = /** @class */ (function () {
     };
     Rule.clearContext = function () {
         Rule.context = __assign({}, initContext);
+    };
+    /**
+     * Check hash object etc
+     * @param line
+     */
+    Rule.beforeCheckLine = function (line) {
+        if (hashStartRe.test(line.line)) {
+            Rule.context.hashDeep += 1;
+        }
+        Rule.context.inHash = Rule.context.hashDeep > 0;
+        if (Rule.context.hashDeep && hashEndRe.test(line.line)) {
+            Rule.context.hashDeep -= 1;
+        }
     };
     Object.defineProperty(Rule.prototype, "name", {
         get: function () {
@@ -1648,8 +1665,6 @@ var rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
 var validJSON = __webpack_require__(/*! ../data/valid.json */ "./src/data/valid.json");
 // we only want to check colons on properties/values
 var ignoreRe = /hznuznoli/m;
-var hashStartRe = /\$?[\w]+\s*[=:]\s*\{/;
-var hashEndRe = /}/;
 /**
  * @description check for colons
  * @param {string} [line] curr line being linted
@@ -1660,22 +1675,8 @@ var Colons = /** @class */ (function (_super) {
     function Colons() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    Colons.prototype.checkEndRule = function (ln) {
-        if (this.context.hashDeep && hashEndRe.test(ln)) {
-            this.context.hashDeep -= 1;
-            return true;
-        }
-    };
     Colons.prototype.checkLine = function (line) {
-        if (hashStartRe.test(line.line)) {
-            this.context.hashDeep += 1;
-            this.checkEndRule(line.line);
-            return;
-        }
-        if (this.checkEndRule(line.line)) {
-            return;
-        }
-        if (ignoreRe.test(line.line) || this.context.hashDeep > 0) {
+        if (ignoreRe.test(line.line) || this.context.inHash) {
             return;
         }
         var colon = this.state.conf === 'always';
@@ -1880,7 +1881,6 @@ var Semicolons = /** @class */ (function (_super) {
         if (ignoreRe.test(line.line.trim())) {
             return;
         }
-        // if (this.state.) return TODO check in hash
         var semicolon, index = line.line.indexOf(';');
         if (this.state.conf === 'never' && index !== -1) {
             semicolon = true;

@@ -1,10 +1,15 @@
 import { IRule } from "./types/rule";
 import { IState, modes } from "./types/state";
 import { lcfirst } from "./helpers/lcfirst";
+import {ILine} from "./types/line";
 
 const initContext = {
-	hashDeep: 0
+	hashDeep: 0,
+	inHash: false,
 };
+
+const hashStartRe = /\$?[\w]+\s*[=:]\s*\{/;
+const hashEndRe = /}/;
 
 export abstract class Rule implements IRule {
 	state: IState = {
@@ -21,6 +26,22 @@ export abstract class Rule implements IRule {
 	}
 	static clearContext() {
 		Rule.context = {...initContext};
+	}
+
+	/**
+	 * Check hash object etc
+	 * @param line
+	 */
+	static beforeCheckLine(line: ILine) {
+		if (hashStartRe.test(line.line)) {
+			Rule.context.hashDeep +=1;
+		}
+
+		Rule.context.inHash = Rule.context.hashDeep > 0;
+
+		if (Rule.context.hashDeep && hashEndRe.test(line.line)) {
+			Rule.context.hashDeep -= 1;
+		}
 	}
 
 	get name(): string {
