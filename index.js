@@ -136,6 +136,7 @@ var Config = /** @class */ (function () {
         this.debug = false;
         this.reporter = 'default';
         this.defaultConfig = {
+            quotePref: ['single'],
             semicolons: ['never'],
             colons: ['never'],
             color: ['uppercase'],
@@ -1779,6 +1780,7 @@ __export(__webpack_require__(/*! ./colons */ "./src/rules/colons.ts"));
 __export(__webpack_require__(/*! ./leadingZero */ "./src/rules/leadingZero.ts"));
 __export(__webpack_require__(/*! ./useBasis */ "./src/rules/useBasis.ts"));
 __export(__webpack_require__(/*! ./semicolons */ "./src/rules/semicolons.ts"));
+__export(__webpack_require__(/*! ./quotePref */ "./src/rules/quotePref.ts"));
 
 
 /***/ }),
@@ -1837,6 +1839,83 @@ var LeadingZero = /** @class */ (function (_super) {
     return LeadingZero;
 }(rule_1.Rule));
 exports.LeadingZero = LeadingZero;
+
+
+/***/ }),
+
+/***/ "./src/rules/quotePref.ts":
+/*!********************************!*\
+  !*** ./src/rules/quotePref.ts ***!
+  \********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
+var stringRe = /(?=["'])(?:"[^"\\]*(?:\\[\s\S][^"\\]*)*"|'[^'\\]*(?:\\[\s\S][^'\\]*)*')/g;
+/**
+ * @description check that quote style is consistent with config
+ * @param  {string} [line] curr line being linted
+ * @param {string} [origLine] curr line before being stripped
+ * @return {boolean} true if in order, false if not
+ */
+var QuotePref = /** @class */ (function (_super) {
+    __extends(QuotePref, _super);
+    function QuotePref() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    QuotePref.prototype.checkLine = function (line) {
+        if (line.line.indexOf('"') === -1 && line.line.indexOf("'") === -1) {
+            return;
+        }
+        stringRe.lastIndex = 0;
+        var badQuotes = false;
+        var hasInnerQuote = true;
+        var match;
+        // for each quote match, check err
+        while ((match = stringRe.exec(line.line)) !== null) {
+            // just checks the first inner quote, most common case
+            // almost certainly not the best way to do this
+            var content = match[0].slice(1, -1);
+            // if '' quotes preferred and match starts with double "" quote
+            if (this.state.conf === 'single' && match[0].indexOf('"') === 0) {
+                // "" is allowed when it's cases like "Someone's string here"
+                hasInnerQuote = content.indexOf("'") !== -1;
+                if (!hasInnerQuote) {
+                    badQuotes = true;
+                    this.msg('preferred quote style is ' + this.state.conf + ' quotes', line.lineno, match[0].indexOf('"'));
+                }
+            }
+            // if "" quotes preferred and match start with single '' quote
+            else if (this.state.conf === 'double' && match[0].indexOf("'") === 0) {
+                // "" is allowed when it's cases like "Someone's string here"
+                hasInnerQuote = content.indexOf('"') !== -1;
+                if (!hasInnerQuote) {
+                    badQuotes = true;
+                    this.msg('preferred quote style is ' + this.state.conf + ' quotes', line.lineno, match[0].indexOf("'"));
+                }
+            }
+        }
+        return badQuotes;
+    };
+    return QuotePref;
+}(rule_1.Rule));
+exports.QuotePref = QuotePref;
 
 
 /***/ }),

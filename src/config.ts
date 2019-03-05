@@ -1,6 +1,7 @@
 import { isPlainObject } from "./core/helpers/isPlainObject";
 import { existsSync, readFileSync } from "fs";
 import stripJsonComments = require("strip-json-comments");
+import { State } from "./core/types/state";
 
 export class Config {
 	static FILE_CONFIG_NAME = '.stylusrc';
@@ -48,7 +49,8 @@ export class Config {
 	debug: boolean = false;
 	reporter: string = 'default';
 
-	defaultConfig: Dictionary = {
+	defaultConfig: Dictionary<State> = {
+		quotePref: ['single'],
 		semicolons: ['never'],
 		colons: ['never'],
 		color: 	['uppercase'],

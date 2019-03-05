@@ -1,7 +1,7 @@
 import { IRule } from "./types/rule";
-import { IState, modes } from "./types/state";
+import { IState, State } from "./types/state";
 import { lcfirst } from "./helpers/lcfirst";
-import {ILine} from "./types/line";
+import { ILine } from "./types/line";
 
 const initContext = {
 	hashDeep: 0,
@@ -50,7 +50,7 @@ export abstract class Rule implements IRule {
 
 	nodesFilter: string[] | null = null;
 
-	constructor(readonly conf: IState | [ modes, boolean | void ]) {
+	constructor(readonly conf: State) {
 		if (conf) {
 			if (Array.isArray(conf)) {
 				this.state.conf = conf[0];

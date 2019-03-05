@@ -1,6 +1,6 @@
 import { Colons } from "../../src/rules";
 import { expect } from "chai";
-import {splitAndRun} from "../staff/bootstrap";
+import { splitAndRun } from "../staff/bootstrap";
 
 describe('Colons test', () => {
 		it('Should check the line has colons and they are needed', () => {

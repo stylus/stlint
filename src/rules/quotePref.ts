@@ -1,7 +1,7 @@
 'use strict'
 
-import {Rule} from "../core/rule";
-import {ILine} from "../core/types/line";
+import { Rule } from "../core/rule";
+import { ILine } from "../core/types/line";
 
 const stringRe = /(?=["'])(?:"[^"\\]*(?:\\[\s\S][^"\\]*)*"|'[^'\\]*(?:\\[\s\S][^'\\]*)*')/g;
 
@@ -12,7 +12,7 @@ const stringRe = /(?=["'])(?:"[^"\\]*(?:\\[\s\S][^"\\]*)*"|'[^'\\]*(?:\\[\s\S][^
  * @param {string} [origLine] curr line before being stripped
  * @return {boolean} true if in order, false if not
  */
-export class quotePref extends Rule {
+export class QuotePref extends Rule {
 	checkLine(line: ILine): void | boolean {
 			if (line.line.indexOf( '"' ) === -1 && line.line.indexOf( "'" ) === -1) {
 				return;
@@ -25,15 +25,15 @@ export class quotePref extends Rule {
 			let match;
 
 			// for each quote match, check err
-			while ((match = stringRe.exec(origLine)) !== null) {
+			while ((match = stringRe.exec(line.line)) !== null) {
 				// just checks the first inner quote, most common case
 				// almost certainly not the best way to do this
-				let content = match[0].slice( 1, -1 )
+				let content = match[0].slice( 1, -1 );
 
 				// if '' quotes preferred and match starts with double "" quote
 				if (this.state.conf === 'single' && match[0].indexOf( '"' ) === 0) {
 					// "" is allowed when it's cases like "Someone's string here"
-					hasInnerQuote = content.indexOf( "'" ) !== -1
+					hasInnerQuote = content.indexOf( "'" ) !== -1;
 
 					if (!hasInnerQuote) {
 						badQuotes = true;
