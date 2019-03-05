@@ -37,7 +37,7 @@ export class Checker {
 	checkASTRules(ast: Tree, content: string) {
 		try {
 			const runner = new Runner(ast, this.check);
-			runner.visit(ast);
+			runner.visit(ast, null);
 
 		} catch (e) {
 			this.linter.reporter.add(e.message, e.lineno || 1, 0);

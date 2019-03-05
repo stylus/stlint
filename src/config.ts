@@ -53,7 +53,11 @@ export class Config {
 		quotePref: ['single'],
 		semicolons: ['never'],
 		colons: ['never'],
-		color: 	['uppercase'],
+		color: 	{
+			conf: 'uppercase',
+			enabled: true,
+			allowOnlyInvar: true
+		},
 		leadingZero: ['always'],
 		useBasis: ['always'],
 	};

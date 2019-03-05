@@ -139,7 +139,11 @@ var Config = /** @class */ (function () {
             quotePref: ['single'],
             semicolons: ['never'],
             colons: ['never'],
-            color: ['uppercase'],
+            color: {
+                conf: 'uppercase',
+                enabled: true,
+                allowOnlyInvar: true
+            },
             leadingZero: ['always'],
             useBasis: ['always'],
         };
@@ -471,10 +475,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
 var Literal = /** @class */ (function (_super) {
     __extends(Literal, _super);
-    function Literal(block, val) {
-        var _this = _super.call(this, block) || this;
+    function Literal() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.val = '';
-        _this.val = val;
         return _this;
     }
     Literal.prototype.toString = function () {
@@ -537,7 +540,7 @@ exports.Member = Member;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var Node = /** @class */ (function () {
-    function Node(block) {
+    function Node(block, parent) {
         this.parent = null;
         this.lineno = 0;
         this.column = 0;
@@ -547,6 +550,7 @@ var Node = /** @class */ (function () {
         this.lineno = block.lineno;
         this.column = block.column;
         this.source = block;
+        this.parent = parent;
     }
     Object.defineProperty(Node.prototype, "nodeName", {
         get: function () {
@@ -748,8 +752,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
 var Tree = /** @class */ (function (_super) {
     __extends(Tree, _super);
-    function Tree() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+    function Tree(block) {
+        var _this = _super.call(this, block, null) || this;
         _this.parent = null;
         return _this;
     }
@@ -881,7 +885,7 @@ var Checker = /** @class */ (function () {
     Checker.prototype.checkASTRules = function (ast, content) {
         try {
             var runner = new runner_1.Runner(ast, this.check);
-            runner.visit(ast);
+            runner.visit(ast, null);
         }
         catch (e) {
             this.linter.reporter.add(e.message, e.lineno || 1, 0);
@@ -1294,12 +1298,12 @@ var Runner = /** @class */ (function (_super) {
         _this.fn = fn;
         return _this;
     }
-    Runner.prototype.visitNode = function (node) {
+    Runner.prototype.visitNode = function (node, parent) {
         var _this = this;
         this.fn(node);
-        node.nodes.forEach(function (elm) { return _this.visit(elm); });
+        node.nodes.forEach(function (elm) { return _this.visit(elm, parent); });
         if (node.value && node.value instanceof ast_1.Node) {
-            this.visit(node.value);
+            this.visit(node.value, parent);
         }
         return node;
     };
@@ -1344,13 +1348,13 @@ var Translator = /** @class */ (function (_super) {
         throw new Error("No method " + method);
     };
     Translator.prototype.transpile = function () {
-        return this.visit(this.root);
+        return this.visit(this.root, null);
     };
-    Translator.prototype.eachVisit = function (list, fn) {
+    Translator.prototype.eachVisit = function (list, fn, parent) {
         if (Array.isArray(list)) {
             for (var i = 0, len = list.length; i < len; ++i) {
                 var node = list[i];
-                var ret = this.visit(node);
+                var ret = this.visit(node, parent);
                 if (ret) {
                     fn(ret);
                 }
@@ -1365,89 +1369,96 @@ var Translator = /** @class */ (function (_super) {
         var tree = new ast_1.Tree(block);
         this.eachVisit(block.nodes, function (ret) {
             tree.append(ret);
-        });
+        }, tree);
         return tree;
     };
-    Translator.prototype.visitNode = function (block) {
-        return new ast_1.Node(block);
+    Translator.prototype.visitNode = function (block, parent) {
+        return new ast_1.Node(block, parent);
     };
-    Translator.prototype.visitBlock = function (block) {
-        var node = new ast_1.Block(block);
+    Translator.prototype.visitBlock = function (block, parent) {
+        var node = new ast_1.Block(block, parent);
         this.eachVisit(block.nodes, function (ret) {
             node.append(ret);
-        });
+        }, node);
         return node;
     };
-    Translator.prototype.visitGroup = function (block) {
-        var node = new ast_1.Group(block);
+    Translator.prototype.visitGroup = function (block, parent) {
+        var node = new ast_1.Group(block, parent);
         this.eachVisit(block.nodes, function (ret) {
             node.append(ret);
-        });
+        }, node);
         return node;
     };
-    Translator.prototype.visitSelector = function (block) {
-        var node = new ast_1.Selector(block);
+    Translator.prototype.visitSelector = function (block, parent) {
+        var node = new ast_1.Selector(block, parent);
         this.eachVisit(block.segments, function (ret) {
             node.append(ret, 'segments');
-        });
+        }, node);
         if (block.block) {
-            node.append(this.visit(block.block));
+            node.append(this.visit(block.block, node));
         }
         return node;
     };
-    Translator.prototype.visitProperty = function (block) {
-        var node = new ast_1.Property(block);
+    Translator.prototype.visitProperty = function (block, parent) {
+        var node = new ast_1.Property(block, parent);
         node.key = block.name || (Array.isArray(block.segments) ? block.segments.join('') : '');
         if (block.expr) {
-            node.value = this.visit(block.expr);
+            node.value = this.visit(block.expr, node);
         }
         return node;
     };
-    Translator.prototype.visitLiteral = function (block) {
-        return new ast_1.Literal(block, typeof block.val === 'string' ? block.val : '');
-    };
-    Translator.prototype.visitExpression = function (block) {
-        var node = new ast_1.Value(block);
-        this.eachVisit(block.nodes, function (ret) {
-            node.append(ret);
-        });
+    Translator.prototype.visitLiteral = function (block, parent) {
+        var node = new ast_1.Literal(block, parent);
+        node.val = typeof block.val === 'string' ? block.val : '';
         return node;
     };
-    Translator.prototype.visitRGBA = function (block) {
-        var node = new ast_1.RGB(block);
+    Translator.prototype.visitString = function (block, parent) {
+        return this.visitLiteral(block, parent);
+    };
+    Translator.prototype.visitExpression = function (block, parent) {
+        var node = new ast_1.Value(block, parent);
+        this.eachVisit(block.nodes, function (ret) {
+            node.append(ret);
+        }, node);
+        return node;
+    };
+    Translator.prototype.visitRGBA = function (block, parent) {
+        var node = new ast_1.RGB(block, parent);
         node.value = block.name || (typeof block.raw === 'string' ? block.raw : '') || '';
         return node;
     };
-    Translator.prototype.visitIdent = function (block) {
-        var node = new ast_1.Ident(block);
+    Translator.prototype.visitIdent = function (block, parent) {
+        var node = new ast_1.Ident(block, parent);
         node.key = block.string || block.name || '';
         if (block.val) {
-            node.value = this.visit(block.val);
+            node.value = this.visit(block.val, node);
         }
         return node;
     };
     /**
      * Если импорт то только такой
      * @param block
+     * @param parent
      */
-    Translator.prototype.visitImport = function (block) {
-        var node = new ast_1.Import(block);
+    Translator.prototype.visitImport = function (block, parent) {
+        var node = new ast_1.Import(block, parent);
         node.value = (block.path || '').toString().replace(/[()]/g, '');
         return node;
     };
     /**
      * Обработка $p хеша
      * @param block
+     * @param parent
      */
-    Translator.prototype.visitObject = function (block) {
+    Translator.prototype.visitObject = function (block, parent) {
         var _this = this;
-        var node = new ast_1.Obj(block);
+        var node = new ast_1.Obj(block, parent);
         var vals = block.vals;
-        if (vals && typeof vals === 'object' && vals !== null) {
+        if (vals && typeof vals === 'object') {
             Object.keys(vals).forEach(function (key) {
                 var elm = vals[key];
                 if (elm) {
-                    var property = new ast_1.Property(vals[key]), ret = _this.visit(vals[key]);
+                    var property = new ast_1.Property(vals[key], node), ret = _this.visit(vals[key], property);
                     property.key = key;
                     property.value = ret;
                     node.append(property);
@@ -1459,54 +1470,63 @@ var Translator = /** @class */ (function (_super) {
     /**
      * Пустые значения
      * @param block
+     * @param parent
      */
-    Translator.prototype.visitNull = function (block) {
+    Translator.prototype.visitNull = function (block, parent) {
         // console.log(block);
     };
     /**
      * Нода значений типа px или em
      * @param block
+     * @param parent
      */
-    Translator.prototype.visitUnit = function (block) {
-        var node = new ast_1.Unit(block);
+    Translator.prototype.visitUnit = function (block, parent) {
+        var node = new ast_1.Unit(block, parent);
         node.value = typeof block.raw === 'string' ? block.raw : '';
         return node;
     };
     /**
      * Вызов миксина
      * @param block
+     * @param parent
      */
-    Translator.prototype.visitCall = function (block) {
-        var node = new ast_1.Call(block);
+    Translator.prototype.visitCall = function (block, parent) {
+        var node = new ast_1.Call(block, parent);
         node.key = block.name || '';
         if (block.args) {
             this.eachVisit(block.args.nodes, function (ret) {
                 node.append(ret);
-            });
+            }, node);
         }
         return node;
     };
     /**
      * Получение элемента хеша
      * @param block
+     * @param parent
      */
-    Translator.prototype.visitMember = function (block) {
-        var node = new ast_1.Member(block);
+    Translator.prototype.visitMember = function (block, parent) {
+        var node = new ast_1.Member(block, parent);
         if (block.left) {
-            node.left = new ast_1.Ident(block.left);
+            node.left = new ast_1.Ident(block.left, node);
         }
         if (block.right) {
-            node.right = new ast_1.Ident(block.right);
+            node.right = new ast_1.Ident(block.right, node);
         }
         return node;
     };
-    Translator.prototype.visitBinOp = function (block) {
-        var node = new ast_1.BinOp(block);
+    /**
+     * Binary operation
+     * @param block
+     * @param parent
+     */
+    Translator.prototype.visitBinOp = function (block, parent) {
+        var node = new ast_1.BinOp(block, parent);
         if (block.left) {
-            node.left = new ast_1.Ident(block.left);
+            node.left = new ast_1.Ident(block.left, node);
         }
         if (block.right) {
-            node.right = new ast_1.Ident(block.right);
+            node.right = new ast_1.Ident(block.right, node);
         }
         return node;
     };
@@ -1532,14 +1552,14 @@ var Visitor = /** @class */ (function () {
         this.root = root;
     }
     Visitor.prototype.methodNotExists = function (method) { };
-    Visitor.prototype.visit = function (node) {
+    Visitor.prototype.visit = function (node, parent) {
         var method = 'visit' + node.constructor.name;
         var fn = this[method];
         if (fn && typeof fn === 'function') {
-            return fn.call(this, node);
+            return fn.call(this, node, parent);
         }
         this.methodNotExists(method);
-        return this.visitNode(node);
+        return this.visitNode(node, parent);
     };
     return Visitor;
 }());
@@ -1740,6 +1760,7 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
+var ast_1 = __webpack_require__(/*! ../core/ast */ "./src/core/ast/index.ts");
 var Color = /** @class */ (function (_super) {
     __extends(Color, _super);
     function Color() {
@@ -1749,6 +1770,16 @@ var Color = /** @class */ (function (_super) {
     }
     Color.prototype.checkNode = function (node) {
         var checkReg = this.state.conf === 'uppercase' ? /[a-z]/ : /[A-Z]/;
+        if (this.state.allowOnlyInVar) {
+            var elm = node.parent;
+            while (elm) {
+                if (elm instanceof ast_1.Block) {
+                    this.msg("Set color only in variable", node.lineno, node.column, node.column + node.value.length - 1);
+                    break;
+                }
+                elm = elm.parent;
+            }
+        }
         if (node.value && typeof node.value === 'string' && checkReg.test(node.value)) {
             this.msg("Only " + this.state.conf + " HEX format", node.lineno, node.column, node.column + node.value.length - 1);
             return true;
@@ -1870,9 +1901,6 @@ var rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
 var stringRe = /(?=["'])(?:"[^"\\]*(?:\\[\s\S][^"\\]*)*"|'[^'\\]*(?:\\[\s\S][^'\\]*)*')/g;
 /**
  * @description check that quote style is consistent with config
- * @param  {string} [line] curr line being linted
- * @param {string} [origLine] curr line before being stripped
- * @return {boolean} true if in order, false if not
  */
 var QuotePref = /** @class */ (function (_super) {
     __extends(QuotePref, _super);
@@ -1887,27 +1915,20 @@ var QuotePref = /** @class */ (function (_super) {
         var badQuotes = false;
         var hasInnerQuote = true;
         var match;
-        // for each quote match, check err
         while ((match = stringRe.exec(line.line)) !== null) {
-            // just checks the first inner quote, most common case
-            // almost certainly not the best way to do this
             var content = match[0].slice(1, -1);
-            // if '' quotes preferred and match starts with double "" quote
             if (this.state.conf === 'single' && match[0].indexOf('"') === 0) {
-                // "" is allowed when it's cases like "Someone's string here"
                 hasInnerQuote = content.indexOf("'") !== -1;
                 if (!hasInnerQuote) {
                     badQuotes = true;
-                    this.msg('preferred quote style is ' + this.state.conf + ' quotes', line.lineno, match[0].indexOf('"'));
+                    this.msg('preferred quote style is ' + this.state.conf + ' quotes', line.lineno, match.index, match[0].length + match.index);
                 }
             }
-            // if "" quotes preferred and match start with single '' quote
             else if (this.state.conf === 'double' && match[0].indexOf("'") === 0) {
-                // "" is allowed when it's cases like "Someone's string here"
                 hasInnerQuote = content.indexOf('"') !== -1;
                 if (!hasInnerQuote) {
                     badQuotes = true;
-                    this.msg('preferred quote style is ' + this.state.conf + ' quotes', line.lineno, match[0].indexOf("'"));
+                    this.msg('preferred quote style is ' + this.state.conf + ' quotes', line.lineno, match.index, match[0].length + match.index);
                 }
             }
         }

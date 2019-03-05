@@ -26,7 +26,7 @@ export const parseAndRun = (content: string, rule: IRule) => {
 			}
 		});
 
-	runner.visit(ast);
+	runner.visit(ast, null);
 };
 
 /**

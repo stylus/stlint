@@ -2,8 +2,8 @@ import { INode } from "./ast/node";
 import { ILine } from "./line";
 import { IState } from "./state";
 
-export interface IRule {
-	state: IState;
+export interface IRule<T extends IState = IState> {
+	state: T;
 	nodesFilter: string[] | null;
 
 	checkNode?(node: INode): void;

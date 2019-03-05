@@ -8,21 +8,21 @@ export abstract class Visitor<In = ISNode, Out = INode> {
 		this.root = root;
 	}
 
-	abstract visitNode(node: In): Out;
+	abstract visitNode(node: In, parent: Out | null): Out;
 
 	methodNotExists(method: string) {}
 
-	visit(node: In): Out {
+	visit(node: In, parent: Out | null): Out {
 		const method = 'visit' + node.constructor.name;
 
-		const fn: undefined | ((node: In) => Out) = (<any>this)[method];
+		const fn: undefined | ((node: In, parent: Out | null) => Out) = (<any>this)[method];
 
 		if (fn && typeof fn === 'function') {
-			return fn.call(this, node);
+			return fn.call(this, node, parent);
 		}
 
 		this.methodNotExists(method);
 
-		return this.visitNode(node);
+		return this.visitNode(node, parent);
 	}
 }

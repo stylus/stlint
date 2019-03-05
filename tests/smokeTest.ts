@@ -58,8 +58,11 @@ describe('Smoke test', () => {
 		describe('Hash field with index', () => {
 			it('should not return error', () => {
 				const
-					linter = new Linter('./test.styl','$p = {\n' +
-						'\toptionColor: $colors.grey[0]\n' +
+					linter = new Linter('./test.styl','$colors = {\n' +
+						'\twhite: #CCC #FFF #F00\n' +
+						'}\n' +
+						'$p = {\n' +
+						'\toptionColor: $colors.white[0]\n' +
 						'}\n' +
 						'.b-checkbox-list\n' +
 						'\tcolor #FFF'

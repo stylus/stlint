@@ -7,13 +7,13 @@ export class Runner extends  Visitor<INode, INode> {
 		super(ast);
 	}
 
-	visitNode(node: INode): INode {
+	visitNode(node: INode, parent: INode): INode {
 		this.fn(node);
 
-		node.nodes.forEach(elm => this.visit(elm));
+		node.nodes.forEach(elm => this.visit(elm, parent));
 
 		if (node.value && node.value instanceof Node) {
-			this.visit(node.value);
+			this.visit(node.value, parent);
 		}
 
 		return node;

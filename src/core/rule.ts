@@ -11,11 +11,24 @@ const initContext = {
 const hashStartRe = /\$?[\w]+\s*[=:]\s*\{/;
 const hashEndRe = /}/;
 
-export abstract class Rule implements IRule {
-	state: IState = {
+export abstract class Rule<T extends IState = IState> implements IRule<T> {
+	state: T = <T>{
 		conf: 'always',
 		enabled: true
 	};
+
+	constructor(readonly conf: State) {
+		if (conf) {
+			if (Array.isArray(conf)) {
+				this.state.conf = conf[0];
+				this.state.enabled = conf[1] === undefined || Boolean(conf[1]);
+			} else {
+				this.state = {...this.state, ...conf};
+			}
+		} else {
+			this.state.enabled = false;
+		}
+	}
 
 	private static context: Dictionary = {...initContext};
 	get context(): Dictionary {
@@ -49,19 +62,6 @@ export abstract class Rule implements IRule {
 	}
 
 	nodesFilter: string[] | null = null;
-
-	constructor(readonly conf: State) {
-		if (conf) {
-			if (Array.isArray(conf)) {
-				this.state.conf = conf[0];
-				this.state.enabled = conf[1] === undefined || Boolean(conf[1]);
-			} else {
-				this.state = {...this.state, ...conf};
-			}
-		} else {
-			this.state.enabled = false;
-		}
-	}
 
 	errors: [string, number, number, number][] = [];
 

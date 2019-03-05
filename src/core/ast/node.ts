@@ -8,10 +8,11 @@ export class Node implements INode {
 	nodes: INode[] = [];
 	source: ISNode | null = null;
 
-	constructor(block: ISNode) {
+	constructor(block: ISNode, parent: INode | null) {
 		this.lineno = block.lineno;
 		this.column = block.column;
 		this.source = block;
+		this.parent = parent;
 	}
 
 	get nodeName(): string {
