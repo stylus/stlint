@@ -44,7 +44,7 @@ export class Reporter implements IReporter {
 	}
 
 	protected log(response: IResponse) {
-		console.log(JSON.stringify(response));
+		console.log(JSON.stringify(response, null, 2));
 	}
 
 	response: IResponse = {

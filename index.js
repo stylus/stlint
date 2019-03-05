@@ -1092,7 +1092,7 @@ var Reporter = /** @class */ (function () {
         });
     };
     Reporter.prototype.log = function (response) {
-        console.log(JSON.stringify(response));
+        console.log(JSON.stringify(response, null, 2));
     };
     Reporter.prototype.display = function () {
         if (this.errors.length) {

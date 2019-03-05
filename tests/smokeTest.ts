@@ -75,12 +75,12 @@ describe('Smoke test', () => {
 				expect(response.passed).to.be.true;
 			});
 		});
-		// describe('sss', () => {
-		// 	it('sss', () => {
-		// 		const
-		// 			linter = new Linter('./test.styl');
-		// 		linter.lint();
-		// 	});
-		// });
+		describe('sss', () => {
+			it('sss', () => {
+				const
+					linter = new Linter('./test.styl');
+				linter.lint();
+			});
+		});
 	});
 });
