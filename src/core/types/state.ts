@@ -1,4 +1,4 @@
-export type modes = 'always' | 'never' | 'lowercase' | 'uppercase' | 'double' | 'single';
+export type modes = 'always' | 'never' | 'lowercase' | 'uppercase' | 'double' | 'single' | 'grouped';
 
 export interface IState {
 	conf: modes;

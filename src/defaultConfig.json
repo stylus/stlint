@@ -8,5 +8,104 @@
     "allowOnlyInVar": true
   },
   "leadingZero": ["always"],
-  "useBasis": ["always"]
+  "useBasis": ["always"],
+  "sortOrder": {
+    "conf": "",
+    "order": [
+      [
+        "position",
+        "z-index",
+        "top",
+        "right",
+        "bottom",
+        "left"
+      ],
+
+      [
+        "content",
+        "width",
+        "height",
+        "display",
+        "flex",
+        "flex-direction",
+        "justify-content",
+        "vertical-align",
+        "box-sizing",
+        "overflow",
+        "overflow-x",
+        "overflow-y",
+
+        "float",
+
+        "max-width",
+        "min-width",
+        "max-height",
+        "min-height",
+
+        "margin",
+        "margin-top",
+        "margin-right",
+        "margin-bottom",
+        "margin-left",
+        "padding",
+        "padding-top",
+        "padding-right",
+        "padding-bottom",
+        "padding-left"
+      ],
+
+      [
+        "pointer-events",
+
+        "visibility",
+        "opacity",
+
+        "font",
+        "font-family",
+        "font-size",
+        "font-style",
+        "font-weight",
+        "font-stretch",
+        "line-height",
+        "letter-spacing",
+        "text-align",
+        "text-indent",
+        "text-transform",
+        "text-decoration",
+        "text-shadow",
+        "text-overflow",
+
+        "border",
+        "border-top",
+        "border-right",
+        "border-bottom",
+        "border-left",
+        "border-width",
+        "border-style",
+        "border-color",
+        "border-spacing",
+        "border-collapse",
+        "border-radius",
+
+        "color",
+        "background",
+        "background-color",
+        "background-image",
+        "background-size",
+        "background-repeat",
+        "clip",
+        "list-style",
+
+        "whitespace",
+        "outline",
+        "cursor",
+        "box-shadow",
+        "backface-visibility",
+        "will-change",
+        "transition",
+        "transform",
+        "animation"
+      ]
+    ]
+  }
 }

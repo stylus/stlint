@@ -1573,10 +1573,10 @@ module.exports = {"css":["{","}","*","&","~/","/","../",":root","::selection","*
 /*!********************************!*\
   !*** ./src/defaultConfig.json ***!
   \********************************/
-/*! exports provided: quotePref, semicolons, colons, color, leadingZero, useBasis, default */
+/*! exports provided: quotePref, semicolons, colons, color, leadingZero, useBasis, sortOrder, default */
 /***/ (function(module) {
 
-module.exports = {"quotePref":["single"],"semicolons":["never"],"colons":["never"],"color":{"conf":"uppercase","enabled":true,"allowOnlyInVar":true},"leadingZero":["always"],"useBasis":["always"]};
+module.exports = {"quotePref":["single"],"semicolons":["never"],"colons":["never"],"color":{"conf":"uppercase","enabled":true,"allowOnlyInVar":true},"leadingZero":["always"],"useBasis":["always"],"sortOrder":{"conf":"","order":[["position","z-index","top","right","bottom","left"],["content","width","height","display","flex","flex-direction","justify-content","vertical-align","box-sizing","overflow","overflow-x","overflow-y","float","max-width","min-width","max-height","min-height","margin","margin-top","margin-right","margin-bottom","margin-left","padding","padding-top","padding-right","padding-bottom","padding-left"],["pointer-events","visibility","opacity","font","font-family","font-size","font-style","font-weight","font-stretch","line-height","letter-spacing","text-align","text-indent","text-transform","text-decoration","text-shadow","text-overflow","border","border-top","border-right","border-bottom","border-left","border-width","border-style","border-color","border-spacing","border-collapse","border-radius","color","background","background-color","background-image","background-size","background-repeat","clip","list-style","whitespace","outline","cursor","box-shadow","backface-visibility","will-change","transition","transform","animation"]]}};
 
 /***/ }),
 
@@ -1813,6 +1813,7 @@ __export(__webpack_require__(/*! ./leadingZero */ "./src/rules/leadingZero.ts"))
 __export(__webpack_require__(/*! ./useBasis */ "./src/rules/useBasis.ts"));
 __export(__webpack_require__(/*! ./semicolons */ "./src/rules/semicolons.ts"));
 __export(__webpack_require__(/*! ./quotePref */ "./src/rules/quotePref.ts"));
+__export(__webpack_require__(/*! ./sortOrder */ "./src/rules/sortOrder.ts"));
 
 
 /***/ }),
@@ -2007,6 +2008,77 @@ var Semicolons = /** @class */ (function (_super) {
     return Semicolons;
 }(rule_1.Rule));
 exports.Semicolons = Semicolons;
+
+
+/***/ }),
+
+/***/ "./src/rules/sortOrder.ts":
+/*!********************************!*\
+  !*** ./src/rules/sortOrder.ts ***!
+  \********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
+var ast_1 = __webpack_require__(/*! ../core/ast */ "./src/core/ast/index.ts");
+var sortOrder = /** @class */ (function (_super) {
+    __extends(sortOrder, _super);
+    function sortOrder() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.nodesFilter = ['block'];
+        return _this;
+    }
+    sortOrder.prototype.checkNode = function (node) {
+        var _this = this;
+        var names = [];
+        node.nodes.forEach(function (node) {
+            if (node instanceof ast_1.Property) {
+                names.push(node.key.toString().toLowerCase());
+            }
+        });
+        var order = this.state.order.reduce(function (sort, key) {
+            if (typeof key === 'string') {
+                sort.push(key);
+            }
+            else {
+                sort.push.apply(sort, key);
+            }
+            return sort;
+        }, []);
+        var sortedNames = names.sort(function (keyA, keyB) {
+            var indexA = order.indexOf(keyA), indexB = order.indexOf(keyB);
+            return indexA - indexB;
+        });
+        var index = 0;
+        node.nodes.forEach(function (node) {
+            if (node instanceof ast_1.Property) {
+                if (sortedNames[index] !== node.key) {
+                    var needIndex = sortedNames.indexOf(node.key);
+                    _this.msg('Property must be ' + (needIndex < index ? 'upper' : 'lower'), node.lineno, node.column, node.column + node.key.length);
+                }
+                index += 1;
+            }
+        });
+    };
+    return sortOrder;
+}(rule_1.Rule));
+exports.sortOrder = sortOrder;
 
 
 /***/ }),

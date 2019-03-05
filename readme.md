@@ -19,6 +19,17 @@ npx stylus-linter ./src/file.styl
 	useBasis: ['always']
 }
 ```
+#### color
+Use color in lowercase/uppercase and allow/deny use raw color not only in variable
+```
+"color": 	{
+    "conf": "uppercase",
+    "enabled": true,
+    "allowOnlyInVar": true
+  }
+```
+
+
 #### colons
 Allow/Deny use colons between `rule: value`
 
