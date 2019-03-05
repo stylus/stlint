@@ -12,7 +12,7 @@ describe('Smoke test', () => {
 		const response = linter.reporter.response;
 
 		expect(response.passed).to.be.false;
-		expect(response.errors && response.errors.length).to.be.equal(2)
+		expect(response.errors && response.errors.length).to.be.equal(3)
 	});
 
 	describe('Empty file test', () => {
@@ -65,7 +65,7 @@ describe('Smoke test', () => {
 						'\toptionColor: $colors.white[0]\n' +
 						'}\n' +
 						'.b-checkbox-list\n' +
-						'\tcolor #FFF'
+						'\tcolor $colors.white[1]'
 					);
 
 				linter.lint();
@@ -75,12 +75,12 @@ describe('Smoke test', () => {
 				expect(response.passed).to.be.true;
 			});
 		});
-		describe('sss', () => {
-			it('sss', () => {
-				const
-					linter = new Linter('./test.styl');
-				linter.lint();
-			});
-		});
+		// describe('sss', () => {
+		// 	it('sss', () => {
+		// 		const
+		// 			linter = new Linter('./test.styl');
+		// 		linter.lint();
+		// 	});
+		// });
 	});
 });
