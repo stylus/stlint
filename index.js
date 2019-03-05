@@ -2046,6 +2046,9 @@ var sortOrder = /** @class */ (function (_super) {
     }
     sortOrder.prototype.checkNode = function (node) {
         var _this = this;
+        if (node.nodes.length < 2) {
+            return;
+        }
         var names = [];
         node.nodes.forEach(function (node) {
             if (node instanceof ast_1.Property) {
@@ -2070,7 +2073,7 @@ var sortOrder = /** @class */ (function (_super) {
             if (node instanceof ast_1.Property) {
                 if (sortedNames[index] !== node.key) {
                     var needIndex = sortedNames.indexOf(node.key);
-                    _this.msg('Property must be ' + (needIndex < index ? 'upper' : 'lower'), node.lineno, node.column, node.column + node.key.length);
+                    _this.msg('Property must be ' + (needIndex < index ? 'higher' : 'lower'), node.lineno, node.column, node.column + node.key.length);
                 }
                 index += 1;
             }

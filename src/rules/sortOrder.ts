@@ -10,6 +10,10 @@ export class sortOrder extends Rule<IOrderState> {
 	nodesFilter = ['block'];
 
 	checkNode(node: Block): void {
+		if (node.nodes.length < 2) {
+			return;
+		}
+
 		const names: string[] = [];
 
 		node.nodes.forEach((node) => {
@@ -41,7 +45,7 @@ export class sortOrder extends Rule<IOrderState> {
 			if (node instanceof Property) {
 				if (sortedNames[index] !== node.key) {
 					const needIndex = sortedNames.indexOf(node.key);
-					this.msg('Property must be ' + (needIndex < index ? 'upper' : 'lower'), node.lineno, node.column, node.column + node.key.length);
+					this.msg('Property must be ' + (needIndex < index ? 'higher' : 'lower'), node.lineno, node.column, node.column + node.key.length);
 				}
 
 				index += 1;
