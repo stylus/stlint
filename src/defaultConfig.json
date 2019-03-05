@@ -1,0 +1,12 @@
+{
+  "quotePref": ["single"],
+  "semicolons": ["never"],
+  "colons": ["never"],
+  "color": 	{
+    "conf": "uppercase",
+    "enabled": true,
+    "allowOnlyInVar": true
+  },
+  "leadingZero": ["always"],
+  "useBasis": ["always"]
+}

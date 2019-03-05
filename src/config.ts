@@ -2,6 +2,7 @@ import { isPlainObject } from "./core/helpers/isPlainObject";
 import { existsSync, readFileSync } from "fs";
 import stripJsonComments = require("strip-json-comments");
 import { State } from "./core/types/state";
+import * as data from "./defaultConfig.json";
 
 export class Config {
 	static FILE_CONFIG_NAME = '.stylusrc';
@@ -49,18 +50,7 @@ export class Config {
 	debug: boolean = false;
 	reporter: string = 'default';
 
-	defaultConfig: Dictionary<State> = {
-		quotePref: ['single'],
-		semicolons: ['never'],
-		colons: ['never'],
-		color: 	{
-			conf: 'uppercase',
-			enabled: true,
-			allowOnlyInvar: true
-		},
-		leadingZero: ['always'],
-		useBasis: ['always'],
-	};
+	defaultConfig: Dictionary<State> = <any>data;
 
 	config: string = '';
 

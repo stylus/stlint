@@ -2,6 +2,7 @@
   "compilerOptions": {
     "strict": true,
     "target": "es5",
+    "resolveJsonModule": true,
     "lib": [
       "dom", "es6"
     ],
