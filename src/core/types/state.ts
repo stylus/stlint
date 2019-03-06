@@ -6,4 +6,4 @@ export interface IState {
 	[key: string]: any;
 }
 
-export type State = IState | [ modes, boolean] | [ modes ] | false;
+export type State = IState | [ modes, boolean] | [ modes ] | boolean;

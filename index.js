@@ -1216,7 +1216,7 @@ var Rule = /** @class */ (function () {
         this.cache = {};
         this.nodesFilter = null;
         this.errors = [];
-        if (conf) {
+        if (typeof conf !== 'boolean') {
             if (Array.isArray(conf)) {
                 this.state.conf = conf[0];
                 this.state.enabled = conf[1] === undefined || Boolean(conf[1]);
@@ -1226,7 +1226,7 @@ var Rule = /** @class */ (function () {
             }
         }
         else {
-            this.state.enabled = false;
+            this.state.enabled = conf;
         }
     }
     Object.defineProperty(Rule.prototype, "context", {
@@ -1596,10 +1596,10 @@ module.exports = {"css":["{","}","*","&","~/","/","../",":root","::selection","*
 /*!********************************!*\
   !*** ./src/defaultConfig.json ***!
   \********************************/
-/*! exports provided: prefixVarsWithDollar, quotePref, semicolons, colons, color, leadingZero, useBasis, sortOrder, default */
+/*! exports provided: mixedSpaces, prefixVarsWithDollar, quotePref, semicolons, colons, color, leadingZero, useBasis, sortOrder, default */
 /***/ (function(module) {
 
-module.exports = {"prefixVarsWithDollar":{"conf":"always","prefix":"$"},"quotePref":["single"],"semicolons":["never"],"colons":["never"],"color":{"conf":"uppercase","enabled":true,"allowOnlyInVar":true},"leadingZero":["always"],"useBasis":["always"],"sortOrder":{"conf":"grouped","startGroupChecking":6,"order":[["position","z-index","top","right","bottom","left"],["content","width","height","display","flex","flex-direction","justify-content","vertical-align","box-sizing","overflow","overflow-x","overflow-y","float","visibility","opacity","max-width","min-width","max-height","min-height","margin","margin-top","margin-right","margin-bottom","margin-left","padding","padding-top","padding-right","padding-bottom","padding-left"],["font","font-family","font-size","font-style","font-weight","font-stretch","line-height","letter-spacing","text-align","text-indent","text-transform","text-decoration","text-shadow","text-overflow"],["pointer-events","border","border-top","border-right","border-bottom","border-left","border-width","border-style","border-color","border-spacing","border-collapse","border-radius","color","background","background-color","background-image","background-size","background-repeat","clip","list-style","whitespace","outline","cursor","box-shadow","backface-visibility","will-change","transition","transform","animation"]]}};
+module.exports = {"mixedSpaces":{"indentPref":false},"prefixVarsWithDollar":{"conf":"always","prefix":"$"},"quotePref":["single"],"semicolons":["never"],"colons":["never"],"color":{"conf":"uppercase","enabled":true,"allowOnlyInVar":true},"leadingZero":["always"],"useBasis":["always"],"sortOrder":{"conf":"grouped","startGroupChecking":6,"order":[["position","z-index","top","right","bottom","left"],["content","width","height","display","flex","flex-direction","justify-content","vertical-align","box-sizing","overflow","overflow-x","overflow-y","float","visibility","opacity","max-width","min-width","max-height","min-height","margin","margin-top","margin-right","margin-bottom","margin-left","padding","padding-top","padding-right","padding-bottom","padding-left"],["font","font-family","font-size","font-style","font-weight","font-stretch","line-height","letter-spacing","text-align","text-indent","text-transform","text-decoration","text-shadow","text-overflow"],["pointer-events","border","border-top","border-right","border-bottom","border-left","border-width","border-style","border-color","border-spacing","border-collapse","border-radius","color","background","background-color","background-image","background-size","background-repeat","clip","list-style","whitespace","outline","cursor","box-shadow","backface-visibility","will-change","transition","transform","animation"]]}};
 
 /***/ }),
 
@@ -1838,6 +1838,7 @@ __export(__webpack_require__(/*! ./semicolons */ "./src/rules/semicolons.ts"));
 __export(__webpack_require__(/*! ./quotePref */ "./src/rules/quotePref.ts"));
 __export(__webpack_require__(/*! ./sortOrder */ "./src/rules/sortOrder.ts"));
 __export(__webpack_require__(/*! ./prefixVarsWithDollar */ "./src/rules/prefixVarsWithDollar.ts"));
+__export(__webpack_require__(/*! ./mixedSpaces */ "./src/rules/mixedSpaces.ts"));
 
 
 /***/ }),
@@ -1896,6 +1897,52 @@ var LeadingZero = /** @class */ (function (_super) {
     return LeadingZero;
 }(rule_1.Rule));
 exports.LeadingZero = LeadingZero;
+
+
+/***/ }),
+
+/***/ "./src/rules/mixedSpaces.ts":
+/*!**********************************!*\
+  !*** ./src/rules/mixedSpaces.ts ***!
+  \**********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
+/**
+ * check for mixed spaces and tabs
+ */
+var MixedSpaces = /** @class */ (function (_super) {
+    __extends(MixedSpaces, _super);
+    function MixedSpaces() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    MixedSpaces.prototype.checkLine = function (line) {
+        var mixed = /( \t|\t )/.exec(line.line), isMixed = mixed !== null;
+        if (isMixed && mixed) {
+            this.msg('mixed spaces and tabs', line.lineno, mixed.index);
+        }
+        return isMixed;
+    };
+    return MixedSpaces;
+}(rule_1.Rule));
+exports.MixedSpaces = MixedSpaces;
 
 
 /***/ }),

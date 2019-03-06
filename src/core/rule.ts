@@ -20,7 +20,7 @@ export abstract class Rule<T extends IState = IState> implements IRule<T> {
 	cache: Dictionary = {};
 
 	constructor(readonly conf: State) {
-		if (conf) {
+		if (typeof conf !== 'boolean') {
 			if (Array.isArray(conf)) {
 				this.state.conf = conf[0];
 				this.state.enabled = conf[1] === undefined || Boolean(conf[1]);
@@ -28,7 +28,7 @@ export abstract class Rule<T extends IState = IState> implements IRule<T> {
 				this.state = {...this.state, ...conf};
 			}
 		} else {
-			this.state.enabled = false;
+			this.state.enabled = conf;
 		}
 	}
 

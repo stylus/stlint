@@ -1,4 +1,7 @@
 {
+  "mixedSpaces": {
+    "indentPref": false
+  },
   "prefixVarsWithDollar": {
     "conf": "always",
     "prefix": "$"
