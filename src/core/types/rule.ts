@@ -4,6 +4,8 @@ import { IState } from "./state";
 
 export interface IRule<T extends IState = IState> {
 	state: T;
+	cache: Dictionary;
+
 	nodesFilter: string[] | null;
 
 	checkNode?(node: INode): void;

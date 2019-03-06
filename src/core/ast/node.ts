@@ -33,4 +33,31 @@ export class Node implements INode {
 	toString() {
 		return this.value ? this.value.toString() : '';
 	}
+
+
+	getSibling(next: boolean = false): null | INode {
+		if (this.parent && this.parent.nodes.length) {
+			const index = this.parent.nodes.indexOf(this);
+
+			if (index !== -1 && ((!next && index > 0) || (next && index < this.parent.nodes.length - 2))) {
+				return this.parent.nodes[index + (next ? 1: -1)];
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Get previous node in parent.nodes
+	 */
+	previousSibling(): null | INode {
+		return this.getSibling();
+	}
+
+	/**
+	 * Get next node in parent.nodes
+	 */
+	nextSibling(): null | INode {
+		return this.getSibling(true);
+	}
 }

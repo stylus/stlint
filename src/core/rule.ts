@@ -17,6 +17,8 @@ export abstract class Rule<T extends IState = IState> implements IRule<T> {
 		enabled: true
 	};
 
+	cache: Dictionary = {};
+
 	constructor(readonly conf: State) {
 		if (conf) {
 			if (Array.isArray(conf)) {

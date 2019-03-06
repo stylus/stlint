@@ -560,6 +560,28 @@ var Node = /** @class */ (function () {
     Node.prototype.toString = function () {
         return this.value ? this.value.toString() : '';
     };
+    Node.prototype.getSibling = function (next) {
+        if (next === void 0) { next = false; }
+        if (this.parent && this.parent.nodes.length) {
+            var index = this.parent.nodes.indexOf(this);
+            if (index !== -1 && ((!next && index > 0) || (next && index < this.parent.nodes.length - 2))) {
+                return this.parent.nodes[index + (next ? 1 : -1)];
+            }
+        }
+        return null;
+    };
+    /**
+     * Get previous node in parent.nodes
+     */
+    Node.prototype.previousSibling = function () {
+        return this.getSibling();
+    };
+    /**
+     * Get next node in parent.nodes
+     */
+    Node.prototype.nextSibling = function () {
+        return this.getSibling(true);
+    };
     return Node;
 }());
 exports.Node = Node;
@@ -1191,6 +1213,7 @@ var Rule = /** @class */ (function () {
             conf: 'always',
             enabled: true
         };
+        this.cache = {};
         this.nodesFilter = null;
         this.errors = [];
         if (conf) {
@@ -1576,7 +1599,7 @@ module.exports = {"css":["{","}","*","&","~/","/","../",":root","::selection","*
 /*! exports provided: quotePref, semicolons, colons, color, leadingZero, useBasis, sortOrder, default */
 /***/ (function(module) {
 
-module.exports = {"quotePref":["single"],"semicolons":["never"],"colons":["never"],"color":{"conf":"uppercase","enabled":true,"allowOnlyInVar":true},"leadingZero":["always"],"useBasis":["always"],"sortOrder":{"conf":"","order":[["position","z-index","top","right","bottom","left"],["content","width","height","display","flex","flex-direction","justify-content","vertical-align","box-sizing","overflow","overflow-x","overflow-y","float","max-width","min-width","max-height","min-height","margin","margin-top","margin-right","margin-bottom","margin-left","padding","padding-top","padding-right","padding-bottom","padding-left"],["pointer-events","visibility","opacity","font","font-family","font-size","font-style","font-weight","font-stretch","line-height","letter-spacing","text-align","text-indent","text-transform","text-decoration","text-shadow","text-overflow","border","border-top","border-right","border-bottom","border-left","border-width","border-style","border-color","border-spacing","border-collapse","border-radius","color","background","background-color","background-image","background-size","background-repeat","clip","list-style","whitespace","outline","cursor","box-shadow","backface-visibility","will-change","transition","transform","animation"]]}};
+module.exports = {"quotePref":["single"],"semicolons":["never"],"colons":["never"],"color":{"conf":"uppercase","enabled":true,"allowOnlyInVar":true},"leadingZero":["always"],"useBasis":["always"],"sortOrder":{"conf":"grouped","startGroupChecking":6,"order":[["position","z-index","top","right","bottom","left"],["content","width","height","display","flex","flex-direction","justify-content","vertical-align","box-sizing","overflow","overflow-x","overflow-y","float","visibility","opacity","max-width","min-width","max-height","min-height","margin","margin-top","margin-right","margin-bottom","margin-left","padding","padding-top","padding-right","padding-bottom","padding-left"],["font","font-family","font-size","font-style","font-weight","font-stretch","line-height","letter-spacing","text-align","text-indent","text-transform","text-decoration","text-shadow","text-overflow"],["pointer-events","border","border-top","border-right","border-bottom","border-left","border-width","border-style","border-color","border-spacing","border-collapse","border-radius","color","background","background-color","background-image","background-size","background-repeat","clip","list-style","whitespace","outline","cursor","box-shadow","backface-visibility","will-change","transition","transform","animation"]]}};
 
 /***/ }),
 
@@ -2037,51 +2060,82 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
 var ast_1 = __webpack_require__(/*! ../core/ast */ "./src/core/ast/index.ts");
-var sortOrder = /** @class */ (function (_super) {
-    __extends(sortOrder, _super);
-    function sortOrder() {
+var SortOrder = /** @class */ (function (_super) {
+    __extends(SortOrder, _super);
+    function SortOrder() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.nodesFilter = ['block'];
         return _this;
     }
-    sortOrder.prototype.checkNode = function (node) {
+    SortOrder.prototype.checkNode = function (node) {
         var _this = this;
-        if (node.nodes.length < 2) {
-            return;
-        }
         var names = [];
         node.nodes.forEach(function (node) {
             if (node instanceof ast_1.Property) {
                 names.push(node.key.toString().toLowerCase());
             }
         });
-        var order = this.state.order.reduce(function (sort, key) {
-            if (typeof key === 'string') {
-                sort.push(key);
+        // sort only 2 and more properties
+        if (names.length < 2) {
+            return;
+        }
+        if (this.state.conf === 'alphabetical') {
+            names.sort();
+        }
+        else {
+            if (!this.cache.order) {
+                this.cache.ketToGroup = {};
+                var groupIndex_1 = 0;
+                this.cache.order = this.state.order.reduce(function (sort, key) {
+                    if (typeof key === 'string') {
+                        sort.push(key);
+                    }
+                    else {
+                        sort.push.apply(sort, key);
+                        key.forEach(function (subkey) { return _this.cache.ketToGroup[subkey] = groupIndex_1; });
+                        groupIndex_1 += 1;
+                    }
+                    return sort;
+                }, []);
             }
-            else {
-                sort.push.apply(sort, key);
-            }
-            return sort;
-        }, []);
-        var sortedNames = names.sort(function (keyA, keyB) {
-            var indexA = order.indexOf(keyA), indexB = order.indexOf(keyB);
-            return indexA - indexB;
-        });
+            names.sort(function (keyA, keyB) {
+                var indexA = _this.cache.order.indexOf(keyA), indexB = _this.cache.order.indexOf(keyB);
+                return indexA - indexB;
+            });
+        }
         var index = 0;
         node.nodes.forEach(function (node) {
             if (node instanceof ast_1.Property) {
-                if (sortedNames[index] !== node.key) {
-                    var needIndex = sortedNames.indexOf(node.key);
+                if (names[index] !== node.key) {
+                    var needIndex = names.indexOf(node.key);
                     _this.msg('Property must be ' + (needIndex < index ? 'higher' : 'lower'), node.lineno, node.column, node.column + node.key.length);
                 }
                 index += 1;
             }
         });
+        if (!this.errors.length &&
+            names.length >= this.state.startGroupChecking &&
+            this.state.conf === 'grouped') {
+            var i = 0, lastGroup_1 = null;
+            node.nodes.forEach(function (node) {
+                if (node instanceof ast_1.Property) {
+                    var group = _this.cache.ketToGroup[node.key];
+                    if (group !== undefined && group !== lastGroup_1) {
+                        if (lastGroup_1 !== null) {
+                            var prev = node.previousSibling();
+                            if (prev && prev.lineno === node.lineno - 1) {
+                                _this.msg('Need new line after group', prev.lineno, prev.column, prev.column);
+                            }
+                        }
+                        lastGroup_1 = group;
+                    }
+                }
+            });
+        }
     };
-    return sortOrder;
+    return SortOrder;
 }(rule_1.Rule));
-exports.sortOrder = sortOrder;
+exports.SortOrder = SortOrder;
 
 
 /***/ }),

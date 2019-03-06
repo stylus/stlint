@@ -19,4 +19,8 @@ export interface INode {
 
 	value: INode | string | null;
 	toString(): string;
+
+	getSibling(next: boolean): null | INode;
+	previousSibling(): null | INode;
+	nextSibling(): null | INode;
 }

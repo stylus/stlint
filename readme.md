@@ -76,5 +76,51 @@ Show only warning
 "semicolons": ["always", "warning"] 
 ```
 
+### sortOrder
+Check order properties
+
+In alphabetical order
+```
+"sortOrder": ["alphabetical"] 
+```
+
+In custom order
+```
+"sortOrder": {
+	"conf": "grouped",
+	"order": [
+		"absolute",
+		"position",
+		"width",
+		...
+	]
+}
+```
+
+Group order - every group should be separated with new line
+```
+"sortOrder": {
+	"conf": "grouped",
+	"startGroupChecking": 5,
+	"order": [
+		[
+			"absolute",
+			"position",
+			"top",
+			"right",
+			"bottom",
+			"left",
+		],
+		[
+			"width",
+			"height",
+			"max-height",
+			"min-height"
+		]
+		...
+	]
+}
+```
+
 ### License
 MIT
