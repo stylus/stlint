@@ -296,6 +296,82 @@ exports.Call = Call;
 
 /***/ }),
 
+/***/ "./src/core/ast/comment.ts":
+/*!*********************************!*\
+  !*** ./src/core/ast/comment.ts ***!
+  \*********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
+var Comment = /** @class */ (function (_super) {
+    __extends(Comment, _super);
+    function Comment() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.value = '';
+        return _this;
+    }
+    return Comment;
+}(node_1.Node));
+exports.Comment = Comment;
+
+
+/***/ }),
+
+/***/ "./src/core/ast/func.ts":
+/*!******************************!*\
+  !*** ./src/core/ast/func.ts ***!
+  \******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
+var Func = /** @class */ (function (_super) {
+    __extends(Func, _super);
+    function Func() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.value = '';
+        return _this;
+    }
+    return Func;
+}(node_1.Node));
+exports.Func = Func;
+
+
+/***/ }),
+
 /***/ "./src/core/ast/group.ts":
 /*!*******************************!*\
   !*** ./src/core/ast/group.ts ***!
@@ -435,6 +511,8 @@ __export(__webpack_require__(/*! ./unit */ "./src/core/ast/unit.ts"));
 __export(__webpack_require__(/*! ./call */ "./src/core/ast/call.ts"));
 __export(__webpack_require__(/*! ./member */ "./src/core/ast/member.ts"));
 __export(__webpack_require__(/*! ./binop */ "./src/core/ast/binop.ts"));
+__export(__webpack_require__(/*! ./func */ "./src/core/ast/func.ts"));
+__export(__webpack_require__(/*! ./comment */ "./src/core/ast/comment.ts"));
 
 
 /***/ }),
@@ -1543,6 +1621,24 @@ var Translator = /** @class */ (function (_super) {
         }
         return node;
     };
+    /**
+     * Declared function
+     * @param block
+     * @param parent
+     */
+    Translator.prototype.visitFunction = function (block, parent) {
+        var node = new ast_1.Func(block, parent);
+        return node;
+    };
+    /**
+     * Comment
+     * @param block
+     * @param parent
+     */
+    Translator.prototype.visitComment = function (block, parent) {
+        var node = new ast_1.Comment(block, parent);
+        return node;
+    };
     return Translator;
 }(visitor_1.Visitor));
 exports.Translator = Translator;
@@ -1599,7 +1695,7 @@ module.exports = {"css":["{","}","*","&","~/","/","../",":root","::selection","*
 /*! exports provided: mixedSpaces, prefixVarsWithDollar, quotePref, semicolons, colons, color, leadingZero, useBasis, sortOrder, default */
 /***/ (function(module) {
 
-module.exports = {"mixedSpaces":{"indentPref":false},"prefixVarsWithDollar":{"conf":"always","prefix":"$"},"quotePref":["single"],"semicolons":["never"],"colons":["never"],"color":{"conf":"uppercase","enabled":true,"allowOnlyInVar":true},"leadingZero":["always"],"useBasis":["always"],"sortOrder":{"conf":"grouped","startGroupChecking":6,"order":[["position","z-index","top","right","bottom","left"],["content","width","height","display","flex","flex-direction","justify-content","vertical-align","box-sizing","overflow","overflow-x","overflow-y","float","visibility","opacity","max-width","min-width","max-height","min-height","margin","margin-top","margin-right","margin-bottom","margin-left","padding","padding-top","padding-right","padding-bottom","padding-left"],["font","font-family","font-size","font-style","font-weight","font-stretch","line-height","letter-spacing","text-align","text-indent","text-transform","text-decoration","text-shadow","text-overflow"],["pointer-events","border","border-top","border-right","border-bottom","border-left","border-width","border-style","border-color","border-spacing","border-collapse","border-radius","color","background","background-color","background-image","background-size","background-repeat","clip","list-style","whitespace","outline","cursor","box-shadow","backface-visibility","will-change","transition","transform","animation"]]}};
+module.exports = {"mixedSpaces":{"indentPref":false},"prefixVarsWithDollar":{"conf":"always","prefix":"$"},"quotePref":["single"],"semicolons":["never"],"colons":["never"],"color":{"conf":"uppercase","enabled":true,"allowOnlyInVar":true},"leadingZero":["always"],"useBasis":["always"],"sortOrder":{"conf":"grouped","startGroupChecking":6,"order":[["position","z-index","top","right","bottom","left"],["display","flex","flex-direction","justify-content","align-items","vertical-align","content","width","height","size","box-sizing","overflow","overflow-x","overflow-y","float","visibility","opacity","max-width","min-width","max-height","min-height","margin","margin-top","margin-right","margin-bottom","margin-left","padding","padding-top","padding-right","padding-bottom","padding-left"],["font","font-family","font-size","font-style","font-weight","font-stretch","line-height","letter-spacing","text-align","text-indent","text-transform","text-decoration","text-shadow","text-overflow"],["pointer-events","border","border-top","border-right","border-bottom","border-left","border-width","border-style","border-color","border-spacing","border-collapse","border-radius","color","background","background-color","background-image","background-size","background-repeat","clip","list-style","whitespace","outline","cursor","box-shadow","backface-visibility","will-change","transition","transform","animation"]]}};
 
 /***/ }),
 
@@ -1934,9 +2030,9 @@ var MixedSpaces = /** @class */ (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     MixedSpaces.prototype.checkLine = function (line) {
-        var mixed = /( \t|\t )/.exec(line.line), isMixed = mixed !== null;
+        var mixed = /( \t|\t )[\t\s]*/.exec(line.line), isMixed = mixed !== null;
         if (isMixed && mixed) {
-            this.msg('mixed spaces and tabs', line.lineno, mixed.index);
+            this.msg('mixed spaces and tabs', line.lineno, mixed.index, mixed.index + mixed[0].length);
         }
         return isMixed;
     };
@@ -2204,6 +2300,9 @@ var SortOrder = /** @class */ (function (_super) {
             }
             names.sort(function (keyA, keyB) {
                 var indexA = _this.cache.order.indexOf(keyA), indexB = _this.cache.order.indexOf(keyB);
+                if (indexA === -1 || indexB === -1) {
+                    return keyA > keyB ? 1 : -1;
+                }
                 return indexA - indexB;
             });
         }

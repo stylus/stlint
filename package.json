@@ -30,7 +30,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "stylus-pro": "^0.54.8",
+    "stylus-pro": "^0.54.9",
     "yargs": "^13.2.2"
   },
   "devDependencies": {

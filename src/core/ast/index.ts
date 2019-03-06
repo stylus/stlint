@@ -14,3 +14,5 @@ export * from './unit';
 export * from './call';
 export * from './member';
 export * from './binop';
+export * from './func';
+export * from './comment';

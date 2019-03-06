@@ -14,7 +14,10 @@ import {
 	Obj,
 	Unit,
 	Call,
-	Member, BinOp
+	Member,
+	BinOp,
+	Func,
+	Comment
 } from "./ast";
 import { INode } from "./types/ast/node";
 import { ISNode } from "./types/ast/snode";
@@ -268,5 +271,25 @@ export class Translator extends  Visitor<ISNode, INode> {
 		}
 
 		return node;
+	}
+
+	/**
+	 * Declared function
+	 * @param block
+	 * @param parent
+	 */
+	visitFunction(block: ISNode, parent: INode): INode {
+		const node = new Func(block, parent);
+		return node
+	}
+
+	/**
+	 * Comment
+	 * @param block
+	 * @param parent
+	 */
+	visitComment(block: ISNode, parent: INode): INode {
+		const node = new Comment(block, parent);
+		return node
 	}
 }

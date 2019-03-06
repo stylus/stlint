@@ -49,6 +49,10 @@ export class SortOrder extends Rule<IOrderState> {
 					indexA = this.cache.order.indexOf(keyA),
 					indexB = this.cache.order.indexOf(keyB);
 
+				if (indexA === - 1 || indexB === -1) {
+					return keyA > keyB ? 1 : -1;
+				}
+
 				return indexA - indexB;
 			});
 		}

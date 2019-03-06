@@ -1,6 +1,7 @@
 import { SortOrder } from "../../src/rules";
 import { parseAndRun } from "../staff/bootstrap";
 import { expect } from "chai";
+import {Config} from "../../src/config";
 
 const content = '.tab\n' +
 	'\tcolor #CCC\n' +
@@ -111,6 +112,31 @@ describe('Test order rule', () => {
 					'\tfont-size 10px\n' +
 					'\tcolor #CCC\n' +
 					'\tbackground-color $p.color\n' +
+					'', rule);
+
+				expect(rule.errors.length).to.be.equal(0)
+			});
+		});
+
+		describe('Check default options rule', () => {
+			it('Should check by default options', () => {
+				const rule = new SortOrder({
+					conf: "grouped",
+					startGroupChecking: 6,
+					order: (<Dictionary>Config.getInstance({}).defaultConfig.sortOrder).order
+				});
+
+				parseAndRun('&__main\n' +
+					'\tdisplay flex\n' +
+					'\tflex-direction column\n' +
+					'\tjustify-content center\n' +
+					'\talign-items center\n' +
+					'\twidth basis(40)\n' +
+					'\tsize 12px 0\n' +
+					'\tpadding basis(4) 0\n' +
+					'\n' +
+					'\tborder-radius 7px\n' +
+					'\tbackground-color $p.dialogBackground' +
 					'', rule);
 
 				expect(rule.errors.length).to.be.equal(0)
