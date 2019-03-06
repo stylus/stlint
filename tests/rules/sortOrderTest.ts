@@ -126,7 +126,7 @@ describe('Test order rule', () => {
 					order: (<Dictionary>Config.getInstance({}).defaultConfig.sortOrder).order
 				});
 
-				parseAndRun('&__main\n' +
+				parseAndRun('&__item3-title\n' +
 					'\tabsolute top basis(3) right basis(3)\n' +
 					'\n' +
 					'\tdisplay flex\n' +
@@ -145,7 +145,24 @@ describe('Test order rule', () => {
 					'\n' +
 					'\tborder-radius 7px\n' +
 					'\tbackground-color $p.dialogBackground' +
-					'', rule);
+					'\n' +
+					'\tdiv&\n' +
+					'\t\tcursor default\n' +
+					'\n' +
+					'\ta&\n' +
+					'\t\tuser-select none\n' +
+					'\t\t&::before\n' +
+					'\t\t\tabsolute left top\n' +
+					'\n' +
+					'\t\t\tdisplay block\n' +
+					'\t\t\tcontent ""\n' +
+					'\t\t\twidth 100%\n' +
+					'\t\t\theight basis()\n' +
+					'\n' +
+					'\t\t\tbackground-image $p.shadowBgColor\n' +
+					'\t&_selected_true\n' +
+					'\t\tpadding-left $p.paddingLeft' +
+				'', rule);
 
 				expect(rule.errors.length).to.be.equal(0)
 			});

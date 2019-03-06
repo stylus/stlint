@@ -13,9 +13,9 @@ export class SortOrder extends Rule<IOrderState> {
 	checkNode(node: Block): void {
 		const names: string[] = [];
 
-		node.nodes.forEach((node) => {
-			if (node instanceof Property) {
-				names.push(node.key.toString().toLowerCase());
+		node.nodes.forEach((child) => {
+			if (child instanceof Property) {
+				names.push(child.key.toString().toLowerCase());
 			}
 		});
 
@@ -88,11 +88,17 @@ export class SortOrder extends Rule<IOrderState> {
 		}
 
 		let index = 0;
-		node.nodes.forEach((node) => {
-			if (node instanceof Property) {
-				if (names[index] !== node.key) {
-					const needIndex = names.indexOf(node.key);
-					this.msg('Property must be ' + (needIndex < index ? 'higher' : 'lower'), node.lineno, node.column, node.column + node.key.length);
+		node.nodes.forEach((child) => {
+			if (child instanceof Property) {
+				if (names[index] !== child.key) {
+					const needIndex = names.indexOf(child.key);
+
+					this.msg(
+						'Property must be ' + (needIndex < index ? 'higher' : 'lower') + ' - ' + names.join('\n'),
+						child.lineno,
+						child.column,
+						node.column + child.key.length
+					);
 				}
 
 				index += 1;

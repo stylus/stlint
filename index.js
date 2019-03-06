@@ -431,14 +431,17 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var property_1 = __webpack_require__(/*! ./property */ "./src/core/ast/property.ts");
+var node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
 var Ident = /** @class */ (function (_super) {
     __extends(Ident, _super);
     function Ident() {
-        return _super !== null && _super.apply(this, arguments) || this;
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.key = '';
+        _this.value = null;
+        return _this;
     }
     return Ident;
-}(property_1.Property));
+}(node_1.Node));
 exports.Ident = Ident;
 
 
@@ -2270,9 +2273,9 @@ var SortOrder = /** @class */ (function (_super) {
     SortOrder.prototype.checkNode = function (node) {
         var _this = this;
         var names = [];
-        node.nodes.forEach(function (node) {
-            if (node instanceof ast_1.Property) {
-                names.push(node.key.toString().toLowerCase());
+        node.nodes.forEach(function (child) {
+            if (child instanceof ast_1.Property) {
+                names.push(child.key.toString().toLowerCase());
             }
         });
         // sort only 2 and more properties
@@ -2332,11 +2335,11 @@ var SortOrder = /** @class */ (function (_super) {
             });
         }
         var index = 0;
-        node.nodes.forEach(function (node) {
-            if (node instanceof ast_1.Property) {
-                if (names[index] !== node.key) {
-                    var needIndex = names.indexOf(node.key);
-                    _this.msg('Property must be ' + (needIndex < index ? 'higher' : 'lower'), node.lineno, node.column, node.column + node.key.length);
+        node.nodes.forEach(function (child) {
+            if (child instanceof ast_1.Property) {
+                if (names[index] !== child.key) {
+                    var needIndex = names.indexOf(child.key);
+                    _this.msg('Property must be ' + (needIndex < index ? 'higher' : 'lower') + ' - ' + names.join('\n'), child.lineno, child.column, node.column + child.key.length);
                 }
                 index += 1;
             }
