@@ -30,8 +30,8 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "stylus-pro": "^0.54.7",
-    "yargs": "^13.2.1"
+    "stylus-pro": "^0.54.8",
+    "yargs": "^13.2.2"
   },
   "devDependencies": {
     "@types/chai": "^4.1.7",

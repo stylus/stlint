@@ -38,7 +38,7 @@ export class Reporter implements IReporter {
 				line,
 				endline: line,
 				start,
-				end: end > start ? end : start + 1
+				end: end > start ? end : start
 			}]
 		});
 	}

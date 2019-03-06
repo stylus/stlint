@@ -1109,7 +1109,7 @@ var Reporter = /** @class */ (function () {
                     line: line,
                     endline: line,
                     start: start,
-                    end: end > start ? end : start + 1
+                    end: end > start ? end : start
                 }]
         });
     };
@@ -1941,10 +1941,11 @@ var PrefixVarsWithDollar = /** @class */ (function (_super) {
         }
         var hasDollar = node.key.indexOf(this.state.prefix) === 0;
         if (this.state.conf === 'always' && hasDollar === false) {
-            this.msg("variables and parameters must be prefixed with the " + this.state.prefix + " sign", node.lineno, node.column, node.column + node.key.length);
+            //console.log(node.key.length);
+            this.msg("variables and parameters must be prefixed with the " + this.state.prefix + " sign", node.lineno, node.column, node.column + node.key.length - 1);
         }
         else if (this.state.conf === 'never' && hasDollar === true) {
-            this.msg(this.state.prefix + " sign is disallowed for variables and parameters", node.lineno, node.column, node.column + node.key.length);
+            this.msg(this.state.prefix + " sign is disallowed for variables and parameters", node.lineno, node.column, node.column + node.key.length - 1);
         }
         return hasDollar;
     };
