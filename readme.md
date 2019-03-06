@@ -122,5 +122,26 @@ Group order - every group should be separated with new line
 }
 ```
 
+### prefixVarsWithDollar
+Variables should/should't starting with dollar(another prefix)
+
+Should starting
+```
+"prefixVarsWithDollar": ["always"]
+```
+
+Should not starting
+```
+"prefixVarsWithDollar": ["never"]
+```
+
+Another prefix
+```
+"prefixVarsWithDollar": {
+	"conf: "always",
+	"prefix": "@"
+}
+```
+
 ### License
 MIT

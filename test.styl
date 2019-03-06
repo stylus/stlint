@@ -1,20 +1,21 @@
+test = #CCC
 $colors = {
-	grey: #CCC #fff #F00
+	grey: #CCC #FFF #F00
 }
 
-$p = {
+p = {
 	optionColor: #FFF
 }
 
 .b-checkbox-list
 	position absolute
-	right 10px
-	left 10px
+	right basis(1.5)
+	left basis(1.5)
 
-	font-size: 12px
+	font-size basis(1.5)
 
-	color $p.optionColor;
+	color $p.optionColor
 	background-image url('test.png')
 
 .w
-	color: #aaa
+	color $colors.grey[1]

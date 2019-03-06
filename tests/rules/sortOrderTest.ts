@@ -1,8 +1,6 @@
 import { SortOrder } from "../../src/rules";
 import { parseAndRun } from "../staff/bootstrap";
 import { expect } from "chai";
-import get = Reflect.get;
-import {Config} from "../../src/config";
 
 const content = '.tab\n' +
 	'\tcolor #CCC\n' +

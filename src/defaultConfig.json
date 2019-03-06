@@ -1,4 +1,8 @@
 {
+  "prefixVarsWithDollar": {
+    "conf": "always",
+    "prefix": "$"
+  },
   "quotePref": ["single"],
   "semicolons": ["never"],
   "colons": ["never"],
