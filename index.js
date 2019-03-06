@@ -1695,7 +1695,7 @@ module.exports = {"css":["{","}","*","&","~/","/","../",":root","::selection","*
 /*! exports provided: mixedSpaces, prefixVarsWithDollar, quotePref, semicolons, colons, color, leadingZero, useBasis, sortOrder, default */
 /***/ (function(module) {
 
-module.exports = {"mixedSpaces":{"indentPref":false},"prefixVarsWithDollar":{"conf":"always","prefix":"$"},"quotePref":["single"],"semicolons":["never"],"colons":["never"],"color":{"conf":"uppercase","enabled":true,"allowOnlyInVar":true},"leadingZero":["always"],"useBasis":["always"],"sortOrder":{"conf":"grouped","startGroupChecking":6,"order":[["position","z-index","top","right","bottom","left"],["display","flex","flex-direction","justify-content","align-items","vertical-align","content","width","height","size","box-sizing","overflow","overflow-x","overflow-y","float","visibility","opacity","max-width","min-width","max-height","min-height","margin","margin-top","margin-right","margin-bottom","margin-left","padding","padding-top","padding-right","padding-bottom","padding-left"],["font","font-family","font-size","font-style","font-weight","font-stretch","line-height","letter-spacing","text-align","text-indent","text-transform","text-decoration","text-shadow","text-overflow"],["pointer-events","border","border-top","border-right","border-bottom","border-left","border-width","border-style","border-color","border-spacing","border-collapse","border-radius","color","background","background-color","background-image","background-size","background-repeat","clip","list-style","whitespace","outline","cursor","box-shadow","backface-visibility","will-change","transition","transform","animation"]]}};
+module.exports = {"mixedSpaces":{"indentPref":false},"prefixVarsWithDollar":{"conf":"always","prefix":"$"},"quotePref":["single"],"semicolons":["never"],"colons":["never"],"color":{"conf":"uppercase","enabled":true,"allowOnlyInVar":true},"leadingZero":["always"],"useBasis":["always"],"sortOrder":{"conf":"grouped","startGroupChecking":6,"order":[["absolute","position","z-index","top","right","bottom","left"],["display","flex","flex-direction","justify-content","align-items","box-sizing","vertical-align","content","width","height","size","overflow","overflow-x","overflow-y","float","visibility","opacity","max-width","min-width","max-height","min-height","margin","margin-top","margin-right","margin-bottom","margin-left","padding","padding-top","padding-right","padding-bottom","padding-left"],["font","font-family","font-size","font-style","font-weight","font-stretch","line-height","letter-spacing","text-align","text-indent","text-transform","text-decoration","text-shadow","text-overflow"],["pointer-events","border","border-top","border-right","border-bottom","border-left","border-width","border-style","border-color","border-spacing","border-collapse","border-radius","color","background","background-color","background-image","background-size","background-repeat","clip","list-style","whitespace","outline","cursor","box-shadow","backface-visibility","will-change","transition","transform","animation"]]}};
 
 /***/ }),
 
@@ -2299,11 +2299,36 @@ var SortOrder = /** @class */ (function (_super) {
                 }, []);
             }
             names.sort(function (keyA, keyB) {
-                var indexA = _this.cache.order.indexOf(keyA), indexB = _this.cache.order.indexOf(keyB);
-                if (indexA === -1 || indexB === -1) {
-                    return keyA > keyB ? 1 : -1;
+                var values = {
+                    keyA: keyA,
+                    keyB: keyB
+                }, index = {
+                    keyA: _this.cache.order.indexOf(keyA),
+                    keyB: _this.cache.order.indexOf(keyB),
+                }, keys = Object.keys(index);
+                for (var _i = 0, keys_1 = keys; _i < keys_1.length; _i++) {
+                    var key = keys_1[_i];
+                    if (index[key] === -1) {
+                        var parts = values[key].split('-');
+                        if (parts.length > 1) {
+                            var l = parts.length - 1;
+                            while (l > 0 && index[key] === -1) {
+                                index[key] = _this.cache.order.indexOf(parts.slice(0, l).join('-'));
+                                if (index[key] !== -1) {
+                                    index[key] += 1;
+                                }
+                                l -= 1;
+                            }
+                        }
+                    }
+                    if (index[key] === -1) {
+                        return values.keyA > values.keyB ? 1 : -1;
+                    }
                 }
-                return indexA - indexB;
+                if (index.keyA === index.keyB) {
+                    return values.keyA > values.keyB ? 1 : -1;
+                }
+                return index.keyA - index.keyB;
             });
         }
         var index = 0;
@@ -2323,6 +2348,16 @@ var SortOrder = /** @class */ (function (_super) {
             node.nodes.forEach(function (node) {
                 if (node instanceof ast_1.Property) {
                     var group = _this.cache.ketToGroup[node.key];
+                    if (group === undefined) {
+                        var parts = node.key.split('-');
+                        if (parts.length > 1) {
+                            var l = parts.length - 1;
+                            while (l > 0 && group === undefined) {
+                                group = _this.cache.ketToGroup[parts.slice(0, l).join('-')];
+                                l -= 1;
+                            }
+                        }
+                    }
                     if (group !== undefined && group !== lastGroup_1) {
                         if (lastGroup_1 !== null) {
                             var prev = node.previousSibling();

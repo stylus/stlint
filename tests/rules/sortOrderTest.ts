@@ -127,6 +127,8 @@ describe('Test order rule', () => {
 				});
 
 				parseAndRun('&__main\n' +
+					'\tabsolute top basis(3) right basis(3)\n' +
+					'\n' +
 					'\tdisplay flex\n' +
 					'\tflex-direction column\n' +
 					'\tjustify-content center\n' +
@@ -134,6 +136,12 @@ describe('Test order rule', () => {
 					'\twidth basis(40)\n' +
 					'\tsize 12px 0\n' +
 					'\tpadding basis(4) 0\n' +
+					'\n' +
+					'\tfont Roboto\n' +
+					'\tfont-aboto Bold\n' +
+					'\tfont-roboto Bold\n' +
+					'\tfont-toboto Bold\n' +
+					'\tfont-size 12px\n' +
 					'\n' +
 					'\tborder-radius 7px\n' +
 					'\tbackground-color $p.dialogBackground' +

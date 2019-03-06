@@ -21,6 +21,7 @@
     "startGroupChecking": 6,
     "order": [
       [
+        "absolute",
         "position",
         "z-index",
         "top",
@@ -35,12 +36,12 @@
         "flex-direction",
         "justify-content",
         "align-items",
+        "box-sizing",
         "vertical-align",
         "content",
         "width",
         "height",
         "size",
-        "box-sizing",
         "overflow",
         "overflow-x",
         "overflow-y",

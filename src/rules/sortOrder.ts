@@ -45,15 +45,45 @@ export class SortOrder extends Rule<IOrderState> {
 
 
 			names.sort((keyA, keyB) => {
-				const
-					indexA = this.cache.order.indexOf(keyA),
-					indexB = this.cache.order.indexOf(keyB);
+				let
+					values = <Dictionary<string>>{
+						keyA,
+						keyB
+					},
+					index = <Dictionary<number>>{
+						keyA: this.cache.order.indexOf(keyA),
+						keyB: this.cache.order.indexOf(keyB),
+					},
+					keys = Object.keys(index);
 
-				if (indexA === - 1 || indexB === -1) {
-					return keyA > keyB ? 1 : -1;
+				for (let key of keys) {
+					if (index[key] === -1) {
+						const parts = values[key].split('-');
+
+						if (parts.length > 1) {
+							let l = parts.length - 1;
+
+							while (l > 0 && index[key] === -1) {
+								index[key] = this.cache.order.indexOf(parts.slice(0, l).join('-'));
+
+								if (index[key] !== -1) {
+									index[key] += 1;
+								}
+								l -= 1;
+							}
+						}
+					}
+
+					if (index[key] === -1) {
+						return values.keyA > values.keyB ? 1 : -1;
+					}
 				}
 
-				return indexA - indexB;
+				if (index.keyA === index.keyB) {
+					return values.keyA > values.keyB ? 1 : -1;
+				}
+
+				return index.keyA - index.keyB;
 			});
 		}
 
@@ -80,7 +110,21 @@ export class SortOrder extends Rule<IOrderState> {
 
 			node.nodes.forEach((node) => {
 				if (node instanceof Property) {
-					const group = this.cache.ketToGroup[node.key];
+					let group = this.cache.ketToGroup[node.key];
+
+					if (group === undefined) {
+						const parts = node.key.split('-');
+
+						if (parts.length > 1) {
+							let l = parts.length - 1;
+
+							while (l > 0 && group === undefined) {
+								group = this.cache.ketToGroup[parts.slice(0, l).join('-')];
+
+								l -= 1;
+							}
+						}
+					}
 
 					if (group !== undefined && group !== lastGroup) {
 						if (lastGroup !== null) {
