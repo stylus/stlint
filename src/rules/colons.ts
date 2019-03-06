@@ -46,7 +46,7 @@ export class Colons extends Rule {
 		}
 		else if (this.state.conf === 'never' && colon === true) {
 			const index = line.line.indexOf( ':' );
-			this.msg( 'unnecessary colon found', line.lineno, index);
+			this.msg( 'unnecessary colon found', line.lineno, index + 1);
 		}
 
 		return colon

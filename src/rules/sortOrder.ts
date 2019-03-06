@@ -94,10 +94,10 @@ export class SortOrder extends Rule<IOrderState> {
 					const needIndex = names.indexOf(child.key);
 
 					this.msg(
-						'Property must be ' + (needIndex < index ? 'higher' : 'lower') + ' - ' + names.join('\n'),
+						'Property must be ' + (needIndex < index ? 'higher' : 'lower') + ' - ' + names.join(', '),
 						child.lineno,
 						child.column,
-						node.column + child.key.length
+						child.column + child.key.length
 					);
 				}
 

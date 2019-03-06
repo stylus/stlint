@@ -258,6 +258,42 @@ exports.Block = Block;
 
 /***/ }),
 
+/***/ "./src/core/ast/bool.ts":
+/*!******************************!*\
+  !*** ./src/core/ast/bool.ts ***!
+  \******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
+var Bool = /** @class */ (function (_super) {
+    __extends(Bool, _super);
+    function Bool() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return Bool;
+}(node_1.Node));
+exports.Bool = Bool;
+
+
+/***/ }),
+
 /***/ "./src/core/ast/call.ts":
 /*!******************************!*\
   !*** ./src/core/ast/call.ts ***!
@@ -334,6 +370,78 @@ exports.Comment = Comment;
 
 /***/ }),
 
+/***/ "./src/core/ast/condition.ts":
+/*!***********************************!*\
+  !*** ./src/core/ast/condition.ts ***!
+  \***********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
+var Condition = /** @class */ (function (_super) {
+    __extends(Condition, _super);
+    function Condition() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return Condition;
+}(node_1.Node));
+exports.Condition = Condition;
+
+
+/***/ }),
+
+/***/ "./src/core/ast/each.ts":
+/*!******************************!*\
+  !*** ./src/core/ast/each.ts ***!
+  \******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
+var Each = /** @class */ (function (_super) {
+    __extends(Each, _super);
+    function Each() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return Each;
+}(node_1.Node));
+exports.Each = Each;
+
+
+/***/ }),
+
 /***/ "./src/core/ast/func.ts":
 /*!******************************!*\
   !*** ./src/core/ast/func.ts ***!
@@ -362,7 +470,9 @@ var Func = /** @class */ (function (_super) {
     __extends(Func, _super);
     function Func() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.key = '';
         _this.value = '';
+        _this.params = [];
         return _this;
     }
     return Func;
@@ -516,6 +626,10 @@ __export(__webpack_require__(/*! ./member */ "./src/core/ast/member.ts"));
 __export(__webpack_require__(/*! ./binop */ "./src/core/ast/binop.ts"));
 __export(__webpack_require__(/*! ./func */ "./src/core/ast/func.ts"));
 __export(__webpack_require__(/*! ./comment */ "./src/core/ast/comment.ts"));
+__export(__webpack_require__(/*! ./params */ "./src/core/ast/params.ts"));
+__export(__webpack_require__(/*! ./bool */ "./src/core/ast/bool.ts"));
+__export(__webpack_require__(/*! ./each */ "./src/core/ast/each.ts"));
+__export(__webpack_require__(/*! ./condition */ "./src/core/ast/condition.ts"));
 
 
 /***/ }),
@@ -702,6 +816,42 @@ var Obj = /** @class */ (function (_super) {
     return Obj;
 }(node_1.Node));
 exports.Obj = Obj;
+
+
+/***/ }),
+
+/***/ "./src/core/ast/params.ts":
+/*!********************************!*\
+  !*** ./src/core/ast/params.ts ***!
+  \********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
+var Params = /** @class */ (function (_super) {
+    __extends(Params, _super);
+    function Params() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return Params;
+}(node_1.Node));
+exports.Params = Params;
 
 
 /***/ }),
@@ -1438,8 +1588,10 @@ var Translator = /** @class */ (function (_super) {
     function Translator() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    Translator.prototype.methodNotExists = function (method) {
-        throw new Error("No method " + method);
+    Translator.prototype.methodNotExists = function (method, node) {
+        var e = new Error("No method " + method + " line:" + node.lineno);
+        e.lineno = node.lineno;
+        throw e;
     };
     Translator.prototype.transpile = function () {
         return this.visit(this.root, null);
@@ -1631,6 +1783,28 @@ var Translator = /** @class */ (function (_super) {
      */
     Translator.prototype.visitFunction = function (block, parent) {
         var node = new ast_1.Func(block, parent);
+        node.key = block.name || '';
+        this.eachVisit(block.params, function (ret) {
+            node.append(ret, 'params');
+        }, node);
+        if (block.block) {
+            node.append(this.visit(block.block, node));
+        }
+        if (block.params) {
+            node.append(this.visit(block.params, node));
+        }
+        return node;
+    };
+    /**
+     * Funtions params
+     * @param block
+     * @param parent
+     */
+    Translator.prototype.visitParams = function (block, parent) {
+        var node = new ast_1.Params(block, parent);
+        this.eachVisit(block.nodes, function (ret) {
+            node.append(ret);
+        }, node);
         return node;
     };
     /**
@@ -1640,6 +1814,33 @@ var Translator = /** @class */ (function (_super) {
      */
     Translator.prototype.visitComment = function (block, parent) {
         var node = new ast_1.Comment(block, parent);
+        return node;
+    };
+    /**
+     * Visit boolean value
+     * @param block
+     * @param parent
+     */
+    Translator.prototype.visitBoolean = function (block, parent) {
+        var node = new ast_1.Bool(block, parent);
+        return node;
+    };
+    /**
+     * Cycle value
+     * @param block
+     * @param parent
+     */
+    Translator.prototype.visitEach = function (block, parent) {
+        var node = new ast_1.Each(block, parent);
+        return node;
+    };
+    /**
+     * Condition nodes
+     * @param block
+     * @param parent
+     */
+    Translator.prototype.visitIf = function (block, parent) {
+        var node = new ast_1.Condition(block, parent);
         return node;
     };
     return Translator;
@@ -1663,14 +1864,14 @@ var Visitor = /** @class */ (function () {
     function Visitor(root) {
         this.root = root;
     }
-    Visitor.prototype.methodNotExists = function (method) { };
+    Visitor.prototype.methodNotExists = function (method, node) { };
     Visitor.prototype.visit = function (node, parent) {
         var method = 'visit' + node.constructor.name;
         var fn = this[method];
         if (fn && typeof fn === 'function') {
             return fn.call(this, node, parent);
         }
-        this.methodNotExists(method);
+        this.methodNotExists(method, node);
         return this.visitNode(node, parent);
     };
     return Visitor;
@@ -1848,7 +2049,7 @@ var Colons = /** @class */ (function (_super) {
         }
         else if (this.state.conf === 'never' && colon === true) {
             var index = line.line.indexOf(':');
-            this.msg('unnecessary colon found', line.lineno, index);
+            this.msg('unnecessary colon found', line.lineno, index + 1);
         }
         return colon;
     };
@@ -2339,7 +2540,7 @@ var SortOrder = /** @class */ (function (_super) {
             if (child instanceof ast_1.Property) {
                 if (names[index] !== child.key) {
                     var needIndex = names.indexOf(child.key);
-                    _this.msg('Property must be ' + (needIndex < index ? 'higher' : 'lower') + ' - ' + names.join('\n'), child.lineno, child.column, node.column + child.key.length);
+                    _this.msg('Property must be ' + (needIndex < index ? 'higher' : 'lower') + ' - ' + names.join(', '), child.lineno, child.column, child.column + child.key.length);
                 }
                 index += 1;
             }

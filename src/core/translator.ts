@@ -17,14 +17,16 @@ import {
 	Member,
 	BinOp,
 	Func,
-	Comment
+	Comment, Params, Bool, Each, Condition
 } from "./ast";
 import { INode } from "./types/ast/node";
 import { ISNode } from "./types/ast/snode";
 
 export class Translator extends  Visitor<ISNode, INode> {
-	methodNotExists(method: string) {
-		throw new Error(`No method ${method}`);
+	methodNotExists(method: string, node: ISNode) {
+		const e = new Error(`No method ${method} line:${node.lineno}`);
+		(<any>e).lineno = node.lineno;
+		throw e;
 	}
 
 	transpile(): Tree {
@@ -280,7 +282,37 @@ export class Translator extends  Visitor<ISNode, INode> {
 	 */
 	visitFunction(block: ISNode, parent: INode): INode {
 		const node = new Func(block, parent);
+
+		node.key = block.name || '';
+
+		this.eachVisit(block.params, (ret: INode) => {
+			node.append(ret, 'params');
+		}, node);
+
+		if (block.block) {
+			node.append(this.visit(block.block, node));
+		}
+
+		if (block.params) {
+			node.append(this.visit(block.params, node));
+		}
+
 		return node
+	}
+
+	/**
+	 * Funtions params
+	 * @param block
+	 * @param parent
+	 */
+	visitParams(block: ISNode, parent: INode): INode {
+		const node = new Params(block, parent);
+
+		this.eachVisit(block.nodes, (ret: INode) => {
+			node.append(ret);
+		}, node);
+
+		return node;
 	}
 
 	/**
@@ -290,6 +322,36 @@ export class Translator extends  Visitor<ISNode, INode> {
 	 */
 	visitComment(block: ISNode, parent: INode): INode {
 		const node = new Comment(block, parent);
+		return node
+	}
+
+	/**
+	 * Visit boolean value
+	 * @param block
+	 * @param parent
+	 */
+	visitBoolean(block: ISNode, parent: INode): INode {
+		const node = new Bool(block, parent);
+		return node
+	}
+
+	/**
+	 * Cycle value
+	 * @param block
+	 * @param parent
+	 */
+	visitEach(block: ISNode, parent: INode): INode {
+		const node = new Each(block, parent);
+		return node
+	}
+
+	/**
+	 * Condition nodes
+	 * @param block
+	 * @param parent
+	 */
+	visitIf(block: ISNode, parent: INode): INode {
+		const node = new Condition(block, parent);
 		return node
 	}
 }

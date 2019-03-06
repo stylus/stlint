@@ -1,8 +1,12 @@
 $colors = {
 	grey: #CCC
+	fixed: true
 }
 
 .b-checkbox-list
-	position absolute
-	a&
-		color $colors.grey
+	children-shadow()
+		display block
+		position absolute
+
+		a&
+			color $colors.grey

@@ -10,7 +10,7 @@ export abstract class Visitor<In = ISNode, Out = INode> {
 
 	abstract visitNode(node: In, parent: Out | null): Out;
 
-	methodNotExists(method: string) {}
+	methodNotExists(method: string, node: In) {}
 
 	visit(node: In, parent: Out | null): Out {
 		const method = 'visit' + node.constructor.name;
@@ -21,7 +21,7 @@ export abstract class Visitor<In = ISNode, Out = INode> {
 			return fn.call(this, node, parent);
 		}
 
-		this.methodNotExists(method);
+		this.methodNotExists(method, node);
 
 		return this.visitNode(node, parent);
 	}

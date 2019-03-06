@@ -13,6 +13,7 @@ export interface ISNode {
 	right?: ISNode;
 
 	nodes: ISNode[];
+	params?: ISNode;
 	args?: ISNode;
 	vals?: Dictionary<ISNode>;
 
