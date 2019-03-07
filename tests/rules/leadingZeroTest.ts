@@ -1,5 +1,6 @@
 import { LeadingZero } from "../../src/rules";
 import { expect } from "chai";
+import { checkLine } from "../staff/bootstrap";
 
 describe('Leading Zero test', () => {
 	it('Should check the line has wrong unit notation', () => {
@@ -7,17 +8,11 @@ describe('Leading Zero test', () => {
 			conf: "always"
 		});
 
-		expect(rule.checkLine({
-			line: 'font-size: .1em'
-		})).to.be.false;
+		expect(checkLine('font-size: .1em', rule)).to.be.false;
 
-		expect(rule.checkLine({
-			line: 'font-size:.1em'
-		})).to.be.false;
+		expect(checkLine('font-size:.1em', rule)).to.be.false;
 
-		expect(rule.checkLine({
-			line: 'font-size : .1111px'
-		})).to.be.false;
+		expect(checkLine('font-size : .1111px', rule)).to.be.false;
 
 		expect(rule.errors.length).to.be.equal(3)
 	});
@@ -26,17 +21,11 @@ describe('Leading Zero test', () => {
 			conf: "always"
 		});
 
-		expect(rule.checkLine({
-			line: 'font-size: 0.1em'
-		})).to.be.true;
+		expect(checkLine('font-size: 0.1em', rule)).to.be.true;
 
-		expect(rule.checkLine({
-			line: 'font-size:0.1em'
-		})).to.be.true;
+		expect(checkLine('font-size:0.1em', rule)).to.be.true;
 
-		expect(rule.checkLine({
-			line: 'font-size : 0.1111px'
-		})).to.be.true;
+		expect(checkLine('font-size : 0.1111px', rule)).to.be.true;
 
 		expect(rule.errors.length).to.be.equal(0)
 	});

@@ -7,3 +7,4 @@ export * from './quotePref';
 export * from './sortOrder';
 export * from './prefixVarsWithDollar';
 export * from './mixedSpaces';
+export * from './commaInObject';

@@ -9,7 +9,7 @@ export interface IRule<T extends IState = IState> {
 	nodesFilter: string[] | null;
 
 	checkNode?(node: INode): void;
-	checkLine?(line: ILine): void;
+	checkLine?(line: ILine, index?: number, lines?: ILine[]): void;
 
 	msg(message: string, line: number, start: number, end: number): void;
 

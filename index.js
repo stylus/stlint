@@ -1150,9 +1150,9 @@ var Checker = /** @class */ (function () {
                 lines_1[index] = new line_1.Line(ln, index + 1, lines_1);
             });
             lines_1
-                .forEach(function (line) {
+                .forEach(function (line, index) {
                 rule_1.Rule.beforeCheckLine(line);
-                _this.rulesListForLines.forEach(function (rule) { return rule.checkLine && rule.checkLine(line); });
+                _this.rulesListForLines.forEach(function (rule) { return rule.checkLine && rule.checkLine(line, index, lines_1); });
             });
         }
         catch (e) {
@@ -1243,6 +1243,16 @@ var Line = /** @class */ (function () {
         this.lineno = lineno;
         this.lines = lines;
     }
+    /**
+     * Get next line
+     */
+    Line.prototype.next = function () {
+        var index = this.lines.indexOf(this);
+        if (index !== -1 && this.lines[index + 1]) {
+            return this.lines[index + 1];
+        }
+        return null;
+    };
     return Line;
 }());
 exports.Line = Line;
@@ -1896,10 +1906,10 @@ module.exports = {"css":["{","}","*","&","~/","/","../",":root","::selection","*
 /*!********************************!*\
   !*** ./src/defaultConfig.json ***!
   \********************************/
-/*! exports provided: mixedSpaces, prefixVarsWithDollar, quotePref, semicolons, colons, color, leadingZero, useBasis, sortOrder, default */
+/*! exports provided: mixedSpaces, prefixVarsWithDollar, commaInObject, quotePref, semicolons, colons, color, leadingZero, useBasis, sortOrder, default */
 /***/ (function(module) {
 
-module.exports = {"mixedSpaces":{"indentPref":false},"prefixVarsWithDollar":{"conf":"always","prefix":"$"},"quotePref":["single"],"semicolons":["never"],"colons":["never"],"color":{"conf":"uppercase","enabled":true,"allowOnlyInVar":true},"leadingZero":["always"],"useBasis":["always"],"sortOrder":{"conf":"grouped","startGroupChecking":6,"order":[["absolute","position","z-index","top","right","bottom","left"],["display","flex","flex-direction","justify-content","align-items","box-sizing","vertical-align","content","width","height","size","overflow","overflow-x","overflow-y","float","visibility","opacity","max-width","min-width","max-height","min-height","margin","margin-top","margin-right","margin-bottom","margin-left","padding","padding-top","padding-right","padding-bottom","padding-left"],["font","font-family","font-size","font-style","font-weight","font-stretch","line-height","letter-spacing","text-align","text-indent","text-transform","text-decoration","text-shadow","text-overflow"],["pointer-events","border","border-top","border-right","border-bottom","border-left","border-width","border-style","border-color","border-spacing","border-collapse","border-radius","color","background","background-color","background-image","background-size","background-repeat","clip","list-style","whitespace","outline","cursor","box-shadow","backface-visibility","will-change","transition","transform","animation"]]}};
+module.exports = {"mixedSpaces":{"indentPref":false},"prefixVarsWithDollar":{"conf":"always","prefix":"$"},"commaInObject":["always"],"quotePref":["single"],"semicolons":["never"],"colons":["never"],"color":{"conf":"uppercase","enabled":true,"allowOnlyInVar":true},"leadingZero":["always"],"useBasis":["always"],"sortOrder":{"conf":"grouped","startGroupChecking":6,"order":[["absolute","position","z-index","top","right","bottom","left"],["display","flex","flex-direction","justify-content","align-items","box-sizing","vertical-align","content","width","height","size","overflow","overflow-x","overflow-y","float","visibility","opacity","max-width","min-width","max-height","min-height","margin","margin-top","margin-right","margin-bottom","margin-left","padding","padding-top","padding-right","padding-bottom","padding-left"],["font","font-family","font-size","font-style","font-weight","font-stretch","line-height","letter-spacing","text-align","text-indent","text-transform","text-decoration","text-shadow","text-overflow"],["pointer-events","border","border-top","border-right","border-bottom","border-left","border-width","border-style","border-color","border-spacing","border-collapse","border-radius","color","background","background-color","background-image","background-size","background-repeat","clip","list-style","whitespace","outline","cursor","box-shadow","backface-visibility","will-change","transition","transform","animation"]]}};
 
 /***/ }),
 
@@ -2117,6 +2127,63 @@ exports.Color = Color;
 
 /***/ }),
 
+/***/ "./src/rules/commaInObject.ts":
+/*!************************************!*\
+  !*** ./src/rules/commaInObject.ts ***!
+  \************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
+var reg = /(,)(\s)*$/, keyValue = /:/, hashEnd = /\}/;
+var CommaInObject = /** @class */ (function (_super) {
+    __extends(CommaInObject, _super);
+    function CommaInObject() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    CommaInObject.prototype.checkLine = function (line) {
+        if (!this.context.inHash) {
+            return;
+        }
+        var hasComma = false;
+        var match = reg.exec(line.line);
+        if (match) {
+            hasComma = true;
+        }
+        if (hasComma && this.state.conf === 'never') {
+            this.msg('Remove comma from object hash', line.lineno, match ? match.index + 1 : 0);
+        }
+        else if (!hasComma && this.state.conf === 'always') {
+            var next = line.next();
+            if (keyValue.test(line.line) && !hashEnd.test(line.line) && next && !hashEnd.test(next.line)) {
+                this.msg('Add comma after object key: value', line.lineno, line.line.length - 2);
+            }
+        }
+        return hasComma;
+    };
+    return CommaInObject;
+}(rule_1.Rule));
+exports.CommaInObject = CommaInObject;
+
+
+/***/ }),
+
 /***/ "./src/rules/index.ts":
 /*!****************************!*\
   !*** ./src/rules/index.ts ***!
@@ -2139,6 +2206,7 @@ __export(__webpack_require__(/*! ./quotePref */ "./src/rules/quotePref.ts"));
 __export(__webpack_require__(/*! ./sortOrder */ "./src/rules/sortOrder.ts"));
 __export(__webpack_require__(/*! ./prefixVarsWithDollar */ "./src/rules/prefixVarsWithDollar.ts"));
 __export(__webpack_require__(/*! ./mixedSpaces */ "./src/rules/mixedSpaces.ts"));
+__export(__webpack_require__(/*! ./commaInObject */ "./src/rules/commaInObject.ts"));
 
 
 /***/ }),

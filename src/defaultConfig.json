@@ -6,6 +6,7 @@
     "conf": "always",
     "prefix": "$"
   },
+  "commaInObject": ["always"],
   "quotePref": ["single"],
   "semicolons": ["never"],
   "colons": ["never"],

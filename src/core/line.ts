@@ -10,4 +10,17 @@ export class Line implements ILine {
 		this.lineno = lineno;
 		this.lines = lines;
 	}
+
+	/**
+	 * Get next line
+	 */
+	next(): ILine | null {
+		const index = this.lines.indexOf(this);
+
+		if (index !== -1 && this.lines[index + 1]) {
+			return this.lines[index + 1];
+		}
+
+		return null;
+	}
 }

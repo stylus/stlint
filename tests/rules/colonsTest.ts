@@ -1,6 +1,6 @@
 import { Colons } from "../../src/rules";
 import { expect } from "chai";
-import { splitAndRun } from "../staff/bootstrap";
+import {checkLine, splitAndRun} from "../staff/bootstrap";
 
 describe('Colons test', () => {
 		it('Should check the line has colons and they are needed', () => {
@@ -8,9 +8,7 @@ describe('Colons test', () => {
 				conf: "always"
 			});
 
-			expect(rule.checkLine({
-				line: 'color:#ccc'
-			})).to.be.true;
+			expect(checkLine('color:#ccc', rule)).to.be.true;
 
 			expect(rule.errors.length).to.be.equal(0)
 		});
@@ -72,9 +70,7 @@ describe('Colons test', () => {
 				conf: "always"
 			});
 
-			expect(rule.checkLine({
-				line: 'color #ccc'
-			})).to.be.false;
+			expect(checkLine('color #ccc', rule)).to.be.false;
 
 			expect(rule.errors.length).to.be.equal(1)
 		});
@@ -84,9 +80,7 @@ describe('Colons test', () => {
 				conf: "never"
 			});
 
-			expect(rule.checkLine({
-				line: 'color:#ccc'
-			})).to.be.true;
+			expect(checkLine('color:#ccc', rule)).to.be.true;
 
 			expect(rule.errors.length).to.be.equal(1)
 		});
@@ -96,9 +90,7 @@ describe('Colons test', () => {
 				conf: "never"
 			});
 
-			expect(rule.checkLine({
-				line: 'color #ccc'
-			})).to.be.false;
+			expect(checkLine('color #ccc', rule)).to.be.false;
 
 			expect(rule.errors.length).to.be.equal(0)
 		});
@@ -109,9 +101,7 @@ describe('Colons test', () => {
 					conf: "never"
 				});
 
-				expect(rule.checkLine({
-					line: '.tab:first-child'
-				})).to.be.not.true;
+				expect(checkLine('.tab:first-child', rule)).to.be.not.true;
 			});
 		});
 	});

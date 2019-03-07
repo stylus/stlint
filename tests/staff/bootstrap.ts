@@ -2,8 +2,8 @@ import { Config } from "../../src/config";
 import { IRule } from "../../src/core/types/rule";
 import { Runner } from "../../src/core/runner";
 import { StylusParser } from "../../src/core/parser";
-import { ILine } from "../../src/core/types/line";
 import { Rule } from "../../src/core/rule";
+import { Line } from "../../src/core/line";
 
 Config.getInstance({
 	reporter: 'emptyout',
@@ -36,25 +36,32 @@ export const parseAndRun = (content: string, rule: IRule) => {
  * @param rule
  */
 export const splitAndRun = (content: string, rule: IRule) => {
-	const lines: ILine[] = [];
+	const lines: Line[] = [];
 
 	if (rule.checkLine) {
 		content
 			.split('\n')
 			.map((ln, index) => {
-				lines.push({
-					line: ln,
-					lineno: index,
+				lines.push(new Line(
+					ln,
+					index,
 					lines
-				});
+				));
 			});
 
 		Rule.clearContext();
 
 		lines
-			.forEach((line) => {
+			.forEach((line, index) => {
 				Rule.beforeCheckLine(line);
-				rule.checkLine && rule.checkLine(line);
+				rule.checkLine && rule.checkLine(line, index, lines);
 			})
 	}
+};
+
+
+export const checkLine = (line: string, rule: IRule): void | boolean => {
+	const lines = [new Line(line)];
+
+	return rule.checkLine && rule.checkLine(lines[0], 0, lines);
 };

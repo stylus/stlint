@@ -72,9 +72,9 @@ export class Checker {
 				});
 
 			lines
-				.forEach(line => {
+				.forEach((line, index) => {
 					Rule.beforeCheckLine(line);
-					this.rulesListForLines.forEach(rule => rule.checkLine && rule.checkLine(line));
+					this.rulesListForLines.forEach(rule => rule.checkLine && rule.checkLine(line, index, lines));
 				});
 		} catch (e) {
 			this.linter.reporter.add(e.message, e.lineno || 1, 0);
