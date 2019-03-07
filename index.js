@@ -1248,8 +1248,18 @@ var Line = /** @class */ (function () {
      */
     Line.prototype.next = function () {
         var index = this.lines.indexOf(this);
-        if (index !== -1 && this.lines[index + 1]) {
-            return this.lines[index + 1];
+        if (index !== -1) {
+            return this.lines[index + 1] || null;
+        }
+        return null;
+    };
+    /**
+     * Get previous line
+     */
+    Line.prototype.prev = function () {
+        var index = this.lines.indexOf(this);
+        if (index !== -1) {
+            return this.lines[index - 1] || null;
         }
         return null;
     };
@@ -1444,9 +1454,9 @@ var lcfirst_1 = __webpack_require__(/*! ./helpers/lcfirst */ "./src/core/helpers
 var initContext = {
     hashDeep: 0,
     inHash: false,
+    inComment: false,
 };
-var hashStartRe = /\$?[\w]+\s*[=:]\s*\{/;
-var hashEndRe = /}/;
+var hashStartRe = /\$?[\w]+\s*[=:]\s*\{/, hashEndRe = /}/, startMultyComment = /\/\*/, endMultyComment = /\*\//;
 var Rule = /** @class */ (function () {
     function Rule(conf) {
         this.conf = conf;
@@ -1478,7 +1488,7 @@ var Rule = /** @class */ (function () {
         configurable: true
     });
     Rule.prototype.clearContext = function () {
-        Rule.context = __assign({}, initContext);
+        Rule.clearContext();
     };
     Rule.clearContext = function () {
         Rule.context = __assign({}, initContext);
@@ -1494,6 +1504,15 @@ var Rule = /** @class */ (function () {
         Rule.context.inHash = Rule.context.hashDeep > 0;
         if (Rule.context.hashDeep && hashEndRe.test(line.line)) {
             Rule.context.hashDeep -= 1;
+        }
+        if (startMultyComment.test(line.line)) {
+            Rule.context.inComment = true;
+        }
+        if (Rule.context.inComment) {
+            var prev = line.prev();
+            if (prev && endMultyComment.test(prev.line)) {
+                Rule.context.inComment = false;
+            }
         }
     };
     Object.defineProperty(Rule.prototype, "name", {
@@ -1906,10 +1925,10 @@ module.exports = {"css":["{","}","*","&","~/","/","../",":root","::selection","*
 /*!********************************!*\
   !*** ./src/defaultConfig.json ***!
   \********************************/
-/*! exports provided: mixedSpaces, prefixVarsWithDollar, commaInObject, quotePref, semicolons, colons, color, leadingZero, useBasis, sortOrder, default */
+/*! exports provided: mixedSpaces, prefixVarsWithDollar, commaInObject, depthControl, quotePref, semicolons, colons, color, leadingZero, useBasis, sortOrder, default */
 /***/ (function(module) {
 
-module.exports = {"mixedSpaces":{"indentPref":false},"prefixVarsWithDollar":{"conf":"always","prefix":"$"},"commaInObject":["always"],"quotePref":["single"],"semicolons":["never"],"colons":["never"],"color":{"conf":"uppercase","enabled":true,"allowOnlyInVar":true},"leadingZero":["always"],"useBasis":["always"],"sortOrder":{"conf":"grouped","startGroupChecking":6,"order":[["absolute","position","z-index","top","right","bottom","left"],["display","flex","flex-direction","justify-content","align-items","box-sizing","vertical-align","content","width","height","size","overflow","overflow-x","overflow-y","float","visibility","opacity","max-width","min-width","max-height","min-height","margin","margin-top","margin-right","margin-bottom","margin-left","padding","padding-top","padding-right","padding-bottom","padding-left"],["font","font-family","font-size","font-style","font-weight","font-stretch","line-height","letter-spacing","text-align","text-indent","text-transform","text-decoration","text-shadow","text-overflow"],["pointer-events","border","border-top","border-right","border-bottom","border-left","border-width","border-style","border-color","border-spacing","border-collapse","border-radius","color","background","background-color","background-image","background-size","background-repeat","clip","list-style","whitespace","outline","cursor","box-shadow","backface-visibility","will-change","transition","transform","animation"]]}};
+module.exports = {"mixedSpaces":{"indentPref":false},"prefixVarsWithDollar":{"conf":"always","prefix":"$"},"commaInObject":["never"],"depthControl":{"indentPref":"tab"},"quotePref":["double"],"semicolons":["never"],"colons":["never"],"color":{"conf":"uppercase","enabled":true,"allowOnlyInVar":true},"leadingZero":["always"],"useBasis":["always"],"sortOrder":{"conf":"grouped","startGroupChecking":6,"order":[["absolute","position","z-index","top","right","bottom","left"],["display","flex","flex-direction","justify-content","align-items","box-sizing","vertical-align","content","width","height","size","overflow","overflow-x","overflow-y","float","visibility","opacity","max-width","min-width","max-height","min-height","margin","margin-top","margin-right","margin-bottom","margin-left","padding","padding-top","padding-right","padding-bottom","padding-left"],["font","font-family","font-size","font-style","font-weight","font-stretch","line-height","letter-spacing","text-align","text-indent","text-transform","text-decoration","text-shadow","text-overflow"],["pointer-events","border","border-top","border-right","border-bottom","border-left","border-width","border-style","border-color","border-spacing","border-collapse","border-radius","color","background","background-color","background-image","background-size","background-repeat","clip","list-style","whitespace","outline","cursor","box-shadow","backface-visibility","will-change","transition","transform","animation"]]}};
 
 /***/ }),
 
@@ -2184,6 +2203,72 @@ exports.CommaInObject = CommaInObject;
 
 /***/ }),
 
+/***/ "./src/rules/depthControl.ts":
+/*!***********************************!*\
+  !*** ./src/rules/depthControl.ts ***!
+  \***********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
+var indentMixedRe = /^[\s]+/, indentTabRe = /^[\t]+/, indentSpaceRe = /^[ ]+/;
+var DepthControl = /** @class */ (function (_super) {
+    __extends(DepthControl, _super);
+    function DepthControl() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    DepthControl.prototype.getIndent = function (ln, indentPref) {
+        var match = this.state.indentPref === 'tab' ? indentTabRe.exec(ln) : indentSpaceRe.exec(ln);
+        return match ? match[0].replace(/\t/g, ' '.repeat(indentPref)).length : 0;
+    };
+    DepthControl.prototype.checkLine = function (line) {
+        if (!line.line.trim().length) {
+            return;
+        }
+        var indentPref = typeof this.state.indentPref === 'number' ? this.state.indentPref : 4;
+        var hasError = false, currentLength = this.getIndent(line.line, indentPref);
+        if (currentLength % indentPref) {
+            var match = indentMixedRe.exec(line.line);
+            this.msg('incorrect indent', line.lineno, 0, match ? match[0].length : 0);
+            return false;
+        }
+        var prev = line.prev();
+        while (prev && !prev.line.length) {
+            prev = prev.prev();
+        }
+        if (prev) {
+            var depthDiff = Math.abs(currentLength - this.getIndent(prev.line, indentPref));
+            if (depthDiff !== indentPref && depthDiff !== 0) {
+                var match = indentMixedRe.exec(line.line);
+                this.msg('incorrect indent', line.lineno, 0, match ? match[0].length : 0);
+                return false;
+            }
+        }
+        return hasError;
+    };
+    return DepthControl;
+}(rule_1.Rule));
+exports.DepthControl = DepthControl;
+
+
+/***/ }),
+
 /***/ "./src/rules/index.ts":
 /*!****************************!*\
   !*** ./src/rules/index.ts ***!
@@ -2207,6 +2292,7 @@ __export(__webpack_require__(/*! ./sortOrder */ "./src/rules/sortOrder.ts"));
 __export(__webpack_require__(/*! ./prefixVarsWithDollar */ "./src/rules/prefixVarsWithDollar.ts"));
 __export(__webpack_require__(/*! ./mixedSpaces */ "./src/rules/mixedSpaces.ts"));
 __export(__webpack_require__(/*! ./commaInObject */ "./src/rules/commaInObject.ts"));
+__export(__webpack_require__(/*! ./depthControl */ "./src/rules/depthControl.ts"));
 
 
 /***/ }),
@@ -2303,7 +2389,7 @@ var MixedSpaces = /** @class */ (function (_super) {
     }
     MixedSpaces.prototype.checkLine = function (line) {
         var mixed = /( \t|\t )[\t\s]*/.exec(line.line), isMixed = mixed !== null;
-        if (isMixed && mixed) {
+        if (isMixed && mixed && !this.context.inComment) {
             this.msg('mixed spaces and tabs', line.lineno, mixed.index, mixed.index + mixed[0].length);
         }
         return isMixed;

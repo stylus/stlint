@@ -3,4 +3,5 @@ export interface ILine {
 	lineno?: number;
 	lines?: ILine[];
 	next(): null | ILine;
+	prev(): null | ILine;
 }

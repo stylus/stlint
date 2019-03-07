@@ -6,8 +6,11 @@
     "conf": "always",
     "prefix": "$"
   },
-  "commaInObject": ["always"],
-  "quotePref": ["single"],
+  "commaInObject": ["never"],
+  "depthControl": {
+    "indentPref": "tab"
+  },
+  "quotePref": ["double"],
   "semicolons": ["never"],
   "colons": ["never"],
   "color": 	{

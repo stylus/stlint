@@ -2,14 +2,19 @@ import { IRule } from "./types/rule";
 import { IState, State } from "./types/state";
 import { lcfirst } from "./helpers/lcfirst";
 import { ILine } from "./types/line";
+import { IContext } from "./types/context";
 
-const initContext = {
+const initContext: IContext  = {
 	hashDeep: 0,
 	inHash: false,
+	inComment: false,
 };
 
-const hashStartRe = /\$?[\w]+\s*[=:]\s*\{/;
-const hashEndRe = /}/;
+const
+	hashStartRe = /\$?[\w]+\s*[=:]\s*\{/,
+	hashEndRe = /}/,
+	startMultyComment = /\/\*/,
+	endMultyComment = /\*\//;
 
 export abstract class Rule<T extends IState = IState> implements IRule<T> {
 	state: T = <T>{
@@ -32,12 +37,12 @@ export abstract class Rule<T extends IState = IState> implements IRule<T> {
 		}
 	}
 
-	private static context: Dictionary = {...initContext};
-	get context(): Dictionary {
+	private static context: IContext = {...initContext};
+	get context(): IContext {
 		return Rule.context;
 	}
 	clearContext() {
-		Rule.context = {...initContext};
+		Rule.clearContext();
 	}
 	static clearContext() {
 		Rule.context = {...initContext};
@@ -56,6 +61,18 @@ export abstract class Rule<T extends IState = IState> implements IRule<T> {
 
 		if (Rule.context.hashDeep && hashEndRe.test(line.line)) {
 			Rule.context.hashDeep -= 1;
+		}
+
+		if (startMultyComment.test(line.line)) {
+			Rule.context.inComment = true;
+		}
+
+		if (Rule.context.inComment) {
+			const prev = line.prev();
+
+			if (prev && endMultyComment.test(prev.line)) {
+				Rule.context.inComment = false;
+			}
 		}
 	}
 

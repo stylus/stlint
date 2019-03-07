@@ -17,8 +17,21 @@ export class Line implements ILine {
 	next(): ILine | null {
 		const index = this.lines.indexOf(this);
 
-		if (index !== -1 && this.lines[index + 1]) {
-			return this.lines[index + 1];
+		if (index !== -1) {
+			return this.lines[index + 1] || null;
+		}
+
+		return null;
+	}
+
+	/**
+	 * Get previous line
+	 */
+	prev(): ILine | null {
+		const index = this.lines.indexOf(this);
+
+		if (index !== -1) {
+			return this.lines[index - 1] || null;
 		}
 
 		return null;

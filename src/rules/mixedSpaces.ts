@@ -10,7 +10,7 @@ export class MixedSpaces extends Rule {
 			mixed = /( \t|\t )[\t\s]*/.exec(line.line),
 			isMixed = mixed !== null;
 
-		if (isMixed && mixed) {
+		if (isMixed && mixed && !this.context.inComment) {
 			this.msg( 'mixed spaces and tabs', line.lineno, mixed.index, mixed.index + mixed[0].length);
 		}
 

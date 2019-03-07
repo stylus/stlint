@@ -1,6 +1,6 @@
 import { MixedSpaces } from "../../src/rules";
 import { expect } from "chai";
-import { checkLine } from "../staff/bootstrap";
+import {checkLine, splitAndRun} from "../staff/bootstrap";
 
 describe('Mixed spaces check test', () => {
 	it('Should check the line has mixed tabs and spaces', () => {
@@ -19,5 +19,21 @@ describe('Mixed spaces check test', () => {
 		expect(checkLine('  font-size .1111px', rule)).to.be.false;
 
 		expect(rule.errors.length).to.be.equal(2)
+	});
+	describe('In cssdoc', () => {
+		it('Should not find the error', () => {
+			const rule = new MixedSpaces({
+				conf: "always"
+			});
+
+			splitAndRun('/**\n' +
+				'\t * Base rule\n' +
+				'\t */\n' +
+				'\t&__offer-info\n' +
+				'\t\tmargin-top basis(2.375)',
+				rule);
+
+			expect(rule.errors.length).to.be.equal(0)
+		});
 	});
 });
