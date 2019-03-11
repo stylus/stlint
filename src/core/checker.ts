@@ -17,15 +17,16 @@ export class Checker {
 	constructor(readonly linter: Linter) {
 		const
 			rulesConstructors: Dictionary<Function> = <any>rules,
-			rulesNames: string[] = Object.keys(rulesConstructors);
+			rulesNames: string[] = Object.keys(rulesConstructors),
+			config = linter.config;
 
 		this.rulesList = rulesNames
 				.filter(key => rulesConstructors[key].prototype instanceof Rule)
 				.map((key: string): IRule => {
-					let options = linter.config.rules[lcfirst(key)];
+					let options = config.rules[lcfirst(key)];
 
-					if (options === true) {
-						options = linter.config.defaultRules[lcfirst(key)];
+					if (options === true && config.defaultRules[lcfirst(key)]) {
+						options = config.defaultRules[lcfirst(key)];
 					}
 
 					return new (<any>rulesConstructors)[key](options)

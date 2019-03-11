@@ -17,7 +17,11 @@ import {
 	Member,
 	BinOp,
 	Func,
-	Comment, Params, Bool, Each, Condition
+	Comment,
+	Params,
+	Bool,
+	Each,
+	Condition
 } from "./ast";
 import { INode } from "./types/ast/node";
 import { ISNode } from "./types/ast/snode";

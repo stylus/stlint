@@ -1261,13 +1261,13 @@ var Checker = /** @class */ (function () {
                 }
             });
         };
-        var rulesConstructors = rules, rulesNames = Object.keys(rulesConstructors);
+        var rulesConstructors = rules, rulesNames = Object.keys(rulesConstructors), config = linter.config;
         this.rulesList = rulesNames
             .filter(function (key) { return rulesConstructors[key].prototype instanceof rule_1.Rule; })
             .map(function (key) {
-            var options = linter.config.rules[lcfirst_1.lcfirst(key)];
-            if (options === true) {
-                options = linter.config.defaultRules[lcfirst_1.lcfirst(key)];
+            var options = config.rules[lcfirst_1.lcfirst(key)];
+            if (options === true && config.defaultRules[lcfirst_1.lcfirst(key)]) {
+                options = config.defaultRules[lcfirst_1.lcfirst(key)];
             }
             return new rulesConstructors[key](options);
         })
@@ -2023,6 +2023,10 @@ var Rule = /** @class */ (function () {
         if (end === void 0) { end = 0; }
         this.errors.push([this.name, message, line, start, end]);
     };
+    /**
+     * Check type included in filter
+     * @param type
+     */
     Rule.prototype.isMatchType = function (type) {
         return !this.nodesFilter || this.nodesFilter.includes(type);
     };

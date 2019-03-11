@@ -88,6 +88,10 @@ export abstract class Rule<T extends IState = IState> implements IRule<T> {
 		this.errors.push([this.name, message, line, start, end]);
 	}
 
+	/**
+	 * Check type included in filter
+	 * @param type
+	 */
 	isMatchType(type: string): boolean {
 		return !this.nodesFilter || this.nodesFilter.includes(type);
 	}
