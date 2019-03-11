@@ -1,11 +1,13 @@
-import { watch } from "fs";
+import watch = require("node-watch");
 
 export class Watcher {
-	start(path: string) {
-		watch(path, {encoding : 'utf-8'}, (eventName: string, filename: string | Buffer) => {
-			if (filename && /\.styl$/) {
-				console.log(1);
-			}
-		})
+	start(path: string, callback: Function) {
+		watch(path, {
+			encoding : 'utf-8',
+			recursive: true,
+			filter: /\.styl$/
+		}, callback)
 	}
+
 }
+

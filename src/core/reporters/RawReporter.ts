@@ -11,7 +11,7 @@ type RawMessage = {
 }
 
 export class RawReporter extends Reporter {
-	log() {
+	log(exit: boolean = true) {
 		const
 			cwd = process.cwd(),
 			opts = {
@@ -20,6 +20,7 @@ export class RawReporter extends Reporter {
 					return chalk.yellow(heading.toUpperCase())
 				},
 				maxWidth: 200,
+				minWidth: 10,
 			},
 			warningsOrErrors = [...this.errors], // TODO add warning mode
 			messagesToFile: Dictionary<RawMessage[]> = {},
@@ -34,7 +35,7 @@ export class RawReporter extends Reporter {
 				}
 
 				messagesToFile[path].push({
-					file: chalk.magenta(path),
+					file: chalk.magenta(path.padEnd(30, ' ')),
 					line: chalk.yellow(message.line),
 					description: chalk.red(message.descr.padEnd(100, ' ')),
 					rule: chalk.cyan(message.rule)
@@ -42,11 +43,9 @@ export class RawReporter extends Reporter {
 			});
 		});
 
-		const msgGrouped = Object.keys(messagesToFile).map(file => {
-			messagesToFile[file].sort((a, b) => a.line - b.line);
-
-			return 	chalk.blue(file) + '\n' + columnify(messagesToFile[file], opts) + '\n';
-		});
+		const msgGrouped = Object.keys(messagesToFile).map(file =>
+			chalk.blue(file) + '\n' + columnify(messagesToFile[file], opts) + '\n'
+		);
 
 		msg.push(msgGrouped.join('\n'));
 
@@ -58,6 +57,8 @@ export class RawReporter extends Reporter {
 
 		this.reset();
 
-		process.exit(this.response.passed ? 0 : 1);
+		if (exit) {
+			process.exit(this.response.passed ? 0 : 1);
+		}
 	}
 }

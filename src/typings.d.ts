@@ -5,6 +5,7 @@ declare module 'stylus-pro/lib/visitor/normalizer';
 declare module 'strip-json-comments';
 declare module 'columnify';
 declare module 'chalk';
+declare module 'node-watch';
 
 declare module "*.json" {
 	const value: any;

@@ -5,19 +5,28 @@ import { Reader } from "./src/core/reader";
 
 
 const StylusLinter = async (path: string | string[], content?: string, options: Dictionary = {}) => {
-	// if (options.watch) {
-	// 	const
-	// 		watcher = new Watcher();
-	//
-	// 	watcher.start(path);
-	// } else {
+	if (!path) {
+		path = process.cwd();
+	}
+
 	const
 		linter = new Linter(options),
-		reader = new Reader(linter.config);
+		reader = new Reader(linter.config),
+		readAndDisplay = async () => {
+			await reader.read(path, linter.lint);
 
-	await reader.read(path, linter.lint);
+			linter.display(!linter.config.watch);
+		};
 
-	linter.display();
+
+	if (linter.config.watch) {
+		const
+			watcher = new Watcher();
+
+		watcher.start(Array.isArray(path) ? path[0] : path, readAndDisplay);
+	}
+
+	await readAndDisplay();
 };
 
 module.exports = StylusLinter;

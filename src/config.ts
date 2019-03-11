@@ -26,9 +26,11 @@ export class Config {
 
 		if (existsSync(this.config)) {
 			try {
-				const customConfig = JSON.parse(stripJsonComments(readFileSync(this.config, 'utf8')));
+				const
+					customConfig = JSON.parse(stripJsonComments(readFileSync(this.config, 'utf8')));
+
 				if (customConfig) {
-					this.extendsOption(customConfig, this.defaultConfig);
+					this.extendsOption(customConfig, this.rules);
 				}
 			} catch {}
 		}
@@ -50,11 +52,11 @@ export class Config {
 	debug: boolean = false;
 	reporter: string = 'default';
 
-	defaultConfig: Dictionary<State> = <any>data;
-
-	config: string = '';
+	rules: Dictionary<State> = <any>data;
 
 	excludes: string[] = [];
+
+	watch: boolean = false;
 
 	[key: string]: any;
 }

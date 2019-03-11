@@ -143,19 +143,37 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 var _this = this;
 Object.defineProperty(exports, "__esModule", { value: true });
 var linter_1 = __webpack_require__(/*! ./src/linter */ "./src/linter.ts");
+var watcher_1 = __webpack_require__(/*! ./src/watcher */ "./src/watcher.ts");
 var reader_1 = __webpack_require__(/*! ./src/core/reader */ "./src/core/reader.ts");
 var StylusLinter = function (path, content, options) {
     if (options === void 0) { options = {}; }
     return __awaiter(_this, void 0, void 0, function () {
-        var linter, reader;
+        var linter, reader, readAndDisplay, watcher;
+        var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    linter = new linter_1.Linter(options), reader = new reader_1.Reader(linter.config);
-                    return [4 /*yield*/, reader.read(path, linter.lint)];
+                    if (!path) {
+                        path = process.cwd();
+                    }
+                    linter = new linter_1.Linter(options), reader = new reader_1.Reader(linter.config), readAndDisplay = function () { return __awaiter(_this, void 0, void 0, function () {
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0: return [4 /*yield*/, reader.read(path, linter.lint)];
+                                case 1:
+                                    _a.sent();
+                                    linter.display(!linter.config.watch);
+                                    return [2 /*return*/];
+                            }
+                        });
+                    }); };
+                    if (linter.config.watch) {
+                        watcher = new watcher_1.Watcher();
+                        watcher.start(Array.isArray(path) ? path[0] : path, readAndDisplay);
+                    }
+                    return [4 /*yield*/, readAndDisplay()];
                 case 1:
                     _a.sent();
-                    linter.display();
                     return [2 /*return*/];
             }
         });
@@ -185,9 +203,9 @@ var Config = /** @class */ (function () {
     function Config(options) {
         this.debug = false;
         this.reporter = 'default';
-        this.defaultConfig = data;
-        this.config = '';
+        this.rules = data;
         this.excludes = [];
+        this.watch = false;
         this.extendsOption(options, this);
         if (!this.config) {
             this.config = process.cwd() + '/' + Config.FILE_CONFIG_NAME;
@@ -196,7 +214,7 @@ var Config = /** @class */ (function () {
             try {
                 var customConfig = JSON.parse(stripJsonComments(fs_1.readFileSync(this.config, 'utf8')));
                 if (customConfig) {
-                    this.extendsOption(customConfig, this.defaultConfig);
+                    this.extendsOption(customConfig, this.rules);
                 }
             }
             catch (_a) { }
@@ -1164,7 +1182,7 @@ var Checker = /** @class */ (function () {
         var rulesConstructors = rules, rulesNames = Object.keys(rulesConstructors);
         this.rulesList = rulesNames
             .filter(function (key) { return rulesConstructors[key].prototype instanceof rule_1.Rule; })
-            .map(function (key) { return new rulesConstructors[key](linter.config.defaultConfig[lcfirst_1.lcfirst(key)]); })
+            .map(function (key) { return new rulesConstructors[key](linter.config.rules[lcfirst_1.lcfirst(key)]); })
             .filter(function (rule) { return rule.state.enabled; });
         this.rulesListForLines = this.rulesList.filter(function (rule) { return rule.checkLine; });
         this.rulesListForNodes = this.rulesList.filter(function (rule) { return rule.checkNode; });
@@ -1416,35 +1434,76 @@ var Reader = /** @class */ (function () {
     }
     Reader.prototype.read = function (dir, callback) {
         var _this = this;
-        return new Promise(function (resolve) {
-            if (typeof dir !== 'string' && !(dir instanceof Array)) {
-                throw new TypeError('getFiles err. Expected string or array, but received: ' + typeof dir);
-            }
-            if (typeof dir === 'string') {
-                return new glob_1.Glob(dir, {}, function (err, files) { return __awaiter(_this, void 0, void 0, function () {
-                    var _this = this;
-                    return __generator(this, function (_a) {
-                        switch (_a.label) {
-                            case 0:
-                                if (err) {
-                                    throw err;
-                                }
-                                if (this.config.excludes && this.config.excludes.length) {
-                                    files = files.filter(function (file) {
-                                        var relPath = path_1.relative(dir.replace('/**/*.styl', ''), file);
-                                        return !_this.config.excludes.some(function (exclude) { return Boolean(exclude.match(relPath)); });
-                                    });
-                                }
-                                return [4 /*yield*/, this.readFiles(files, callback)];
-                            case 1:
-                                _a.sent();
-                                resolve();
-                                return [2 /*return*/];
+        return new Promise(function (resolve) { return __awaiter(_this, void 0, void 0, function () {
+            var _this = this;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (typeof dir !== 'string' && !(dir instanceof Array)) {
+                            throw new TypeError('getFiles err. Expected string or array, but received: ' + typeof dir);
                         }
-                    });
-                }); });
-            }
-            dir.forEach(function (path) { return _this.read(path, callback); });
+                        if (!(typeof dir === 'string')) return [3 /*break*/, 3];
+                        if (!(dir === process.cwd())) return [3 /*break*/, 2];
+                        dir = dir + '/**/*.styl';
+                        return [4 /*yield*/, this.readFolder(dir, callback)];
+                    case 1:
+                        _a.sent();
+                        resolve();
+                        return [2 /*return*/];
+                    case 2: return [2 /*return*/, fs_1.stat(dir, function (err, stats) { return __awaiter(_this, void 0, void 0, function () {
+                            return __generator(this, function (_a) {
+                                switch (_a.label) {
+                                    case 0:
+                                        if (!stats || err) {
+                                            throw Error('Stlint Error: No such file or dir exists!');
+                                        }
+                                        if (!stats.isFile()) return [3 /*break*/, 2];
+                                        return [4 /*yield*/, this.readFiles([dir.toString()], callback)];
+                                    case 1:
+                                        _a.sent();
+                                        return [3 /*break*/, 4];
+                                    case 2:
+                                        if (!stats.isDirectory()) return [3 /*break*/, 4];
+                                        return [4 /*yield*/, this.readFolder(dir.toString() + '/**/*.styl', callback)];
+                                    case 3:
+                                        _a.sent();
+                                        _a.label = 4;
+                                    case 4:
+                                        resolve();
+                                        return [2 /*return*/];
+                                }
+                            });
+                        }); })];
+                    case 3: return [2 /*return*/, Promise.all(dir.map(function (path) { return _this.read(path, callback); }))];
+                }
+            });
+        }); });
+    };
+    Reader.prototype.readFolder = function (dir, callback) {
+        var _this = this;
+        return new Promise(function (resolve) {
+            return new glob_1.Glob(dir, {}, function (err, files) { return __awaiter(_this, void 0, void 0, function () {
+                var _this = this;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            if (err) {
+                                throw err;
+                            }
+                            if (this.config.excludes && this.config.excludes.length) {
+                                files = files.filter(function (file) {
+                                    var relPath = path_1.relative(dir.replace('/**/*.styl', ''), file);
+                                    return !_this.config.excludes.some(function (exclude) { return Boolean(exclude.match(relPath)); });
+                                });
+                            }
+                            return [4 /*yield*/, this.readFiles(files, callback)];
+                        case 1:
+                            _a.sent();
+                            resolve();
+                            return [2 /*return*/];
+                    }
+                });
+            }); });
         });
     };
     Reader.prototype.readFiles = function (files, callback) {
@@ -1547,15 +1606,15 @@ var Reporter = /** @class */ (function () {
                 }]
         });
     };
-    Reporter.prototype.log = function (response) {
-        console.log(JSON.stringify(response, null, 2));
+    Reporter.prototype.log = function (exit) {
+        console.log(JSON.stringify(this.response, null, 2));
     };
-    Reporter.prototype.display = function () {
+    Reporter.prototype.display = function (exit) {
         if (this.errors.length) {
             this.response.passed = false;
             this.response.errors = this.errors;
         }
-        this.log(this.response);
+        this.log(exit);
     };
     Reporter.prototype.reset = function () {
         this.errors.length = 0;
@@ -1607,13 +1666,15 @@ var RawReporter = /** @class */ (function (_super) {
     function RawReporter() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    RawReporter.prototype.log = function () {
+    RawReporter.prototype.log = function (exit) {
+        if (exit === void 0) { exit = true; }
         var cwd = process.cwd(), opts = {
             columnSplitter: ' | ',
             headingTransform: function (heading) {
                 return chalk.yellow(heading.toUpperCase());
             },
             maxWidth: 200,
+            minWidth: 10,
         }, warningsOrErrors = this.errors.slice(), // TODO add warning mode
         messagesToFile = {}, msg = [];
         warningsOrErrors.forEach(function (pack) {
@@ -1623,7 +1684,7 @@ var RawReporter = /** @class */ (function (_super) {
                     messagesToFile[path] = [];
                 }
                 messagesToFile[path].push({
-                    file: chalk.magenta(path),
+                    file: chalk.magenta(path.padEnd(30, ' ')),
                     line: chalk.yellow(message.line),
                     description: chalk.red(message.descr.padEnd(100, ' ')),
                     rule: chalk.cyan(message.rule)
@@ -1631,7 +1692,6 @@ var RawReporter = /** @class */ (function (_super) {
             });
         });
         var msgGrouped = Object.keys(messagesToFile).map(function (file) {
-            messagesToFile[file].sort(function (a, b) { return a.line - b.line; });
             return chalk.blue(file) + '\n' + columnify(messagesToFile[file], opts) + '\n';
         });
         msg.push(msgGrouped.join('\n'));
@@ -1639,7 +1699,9 @@ var RawReporter = /** @class */ (function (_super) {
         msg.push('Stlint: ' + (cnt ? chalk.red(cnt) : chalk.yellow(0)) + ' Errors.');
         console.log(msg.join(''));
         this.reset();
-        process.exit(this.response.passed ? 0 : 1);
+        if (exit) {
+            process.exit(this.response.passed ? 0 : 1);
+        }
     };
     return RawReporter;
 }(reporter_1.Reporter));
@@ -2266,8 +2328,9 @@ var Linter = /** @class */ (function () {
     /**
      * Print all errors or warnings
      */
-    Linter.prototype.display = function () {
-        this.reporter.display();
+    Linter.prototype.display = function (exit) {
+        if (exit === void 0) { exit = true; }
+        this.reporter.display(exit);
     };
     return Linter;
 }());
@@ -3056,6 +3119,34 @@ exports.useBasis = useBasis;
 
 /***/ }),
 
+/***/ "./src/watcher.ts":
+/*!************************!*\
+  !*** ./src/watcher.ts ***!
+  \************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var watch = __webpack_require__(/*! node-watch */ "node-watch");
+var Watcher = /** @class */ (function () {
+    function Watcher() {
+    }
+    Watcher.prototype.start = function (path, callback) {
+        watch(path, {
+            encoding: 'utf-8',
+            recursive: true,
+            filter: /\.styl$/
+        }, callback);
+    };
+    return Watcher;
+}());
+exports.Watcher = Watcher;
+
+
+/***/ }),
+
 /***/ "async":
 /*!************************!*\
   !*** external "async" ***!
@@ -3108,6 +3199,17 @@ module.exports = require("fs");
 /***/ (function(module, exports) {
 
 module.exports = require("glob");
+
+/***/ }),
+
+/***/ "node-watch":
+/*!*****************************!*\
+  !*** external "node-watch" ***!
+  \*****************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("node-watch");
 
 /***/ }),
 

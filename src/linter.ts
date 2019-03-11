@@ -78,7 +78,7 @@ export class Linter {
 	/**
 	 * Print all errors or warnings
 	 */
-	display() {
-		this.reporter.display();
+	display(exit: boolean = true) {
+		this.reporter.display(exit);
 	}
 }

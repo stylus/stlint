@@ -55,21 +55,21 @@ export class Reporter implements IReporter {
 		});
 	}
 
-	protected log(response: IResponse) {
-		console.log(JSON.stringify(response, null, 2));
+	log(exit: boolean) {
+		console.log(JSON.stringify(this.response, null, 2));
 	}
 
 	response: IResponse = {
 		passed: true
 	};
 
-	display() {
+	display(exit: boolean) {
 		if (this.errors.length) {
 			this.response.passed = false;
 			this.response.errors = this.errors;
 		}
 
-		this.log(this.response);
+		this.log(exit);
 	}
 
 	reset() {
