@@ -5,10 +5,6 @@ import { Reader } from "./src/core/reader";
 
 
 const StylusLinter = async (path: string | string[], content?: string, options: Dictionary = {}) => {
-	if (!path) {
-		path = process.cwd();
-	}
-
 	const
 		linter = new Linter(options),
 		reader = new Reader(linter.config),
@@ -18,6 +14,9 @@ const StylusLinter = async (path: string | string[], content?: string, options: 
 			linter.display(!linter.config.watch);
 		};
 
+	if (!path) {
+		path = linter.config.path || process.cwd();
+	}
 
 	if (linter.config.watch) {
 		const

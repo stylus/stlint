@@ -153,9 +153,6 @@ var StylusLinter = function (path, content, options) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    if (!path) {
-                        path = process.cwd();
-                    }
                     linter = new linter_1.Linter(options), reader = new reader_1.Reader(linter.config), readAndDisplay = function () { return __awaiter(_this, void 0, void 0, function () {
                         return __generator(this, function (_a) {
                             switch (_a.label) {
@@ -167,6 +164,9 @@ var StylusLinter = function (path, content, options) {
                             }
                         });
                     }); };
+                    if (!path) {
+                        path = linter.config.path || process.cwd();
+                    }
                     if (linter.config.watch) {
                         watcher = new watcher_1.Watcher();
                         watcher.start(Array.isArray(path) ? path[0] : path, readAndDisplay);
@@ -194,58 +194,38 @@ module.exports = StylusLinter;
 
 "use strict";
 
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
-var isPlainObject_1 = __webpack_require__(/*! ./core/helpers/isPlainObject */ "./src/core/helpers/isPlainObject.ts");
-var fs_1 = __webpack_require__(/*! fs */ "fs");
-var stripJsonComments = __webpack_require__(/*! strip-json-comments */ "strip-json-comments");
 var data = __webpack_require__(/*! ./defaultConfig.json */ "./src/defaultConfig.json");
-var Config = /** @class */ (function () {
+var baseConfig_1 = __webpack_require__(/*! ./core/baseConfig */ "./src/core/baseConfig.ts");
+var Config = /** @class */ (function (_super) {
+    __extends(Config, _super);
     function Config(options) {
-        this.debug = false;
-        this.reporter = 'default';
-        this.rules = data;
-        this.excludes = [];
-        this.watch = false;
-        this.extendsOption(options, this);
-        if (!this.config) {
-            this.config = process.cwd() + '/' + Config.FILE_CONFIG_NAME;
-        }
-        if (fs_1.existsSync(this.config)) {
-            try {
-                var customConfig = JSON.parse(stripJsonComments(fs_1.readFileSync(this.config, 'utf8')));
-                if (customConfig) {
-                    this.extendsOption(customConfig, this.rules);
-                }
-            }
-            catch (_a) { }
-        }
+        var _this = _super.call(this) || this;
+        _this.debug = false;
+        _this.reporter = 'raw';
+        _this.rules = data;
+        _this.excludes = [];
+        _this.watch = false;
+        _this.path = '';
+        _this.extendsOption(options, _this);
+        _this.readCustomConfig();
+        return _this;
     }
-    Config.getInstance = function (options) {
-        if (!Config.__instance) {
-            Config.__instance = new Config(options);
-        }
-        return Config.__instance;
-    };
-    Config.prototype.extendsOption = function (from, to) {
-        var _this = this;
-        Object.keys(from).forEach(function (key) {
-            if (isPlainObject_1.isPlainObject(from[key]) && isPlainObject_1.isPlainObject(to[key])) {
-                _this.extendsOption(from[key], to[key]);
-            }
-            else if (Array.isArray(from[key]) && Array.isArray(to[key])) {
-                to[key] = to[key].map(function (val, index) {
-                    return (from[key][index] !== undefined) ? from[key][index] : to[key][index];
-                });
-            }
-            else {
-                to[key] = from[key];
-            }
-        });
-    };
-    Config.FILE_CONFIG_NAME = '.stylusrc';
-    Config.__instance = null;
     return Config;
-}());
+}(baseConfig_1.BaseConfig));
 exports.Config = Config;
 
 
@@ -1152,6 +1132,68 @@ exports.Value = Value;
 
 /***/ }),
 
+/***/ "./src/core/baseConfig.ts":
+/*!********************************!*\
+  !*** ./src/core/baseConfig.ts ***!
+  \********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var isPlainObject_1 = __webpack_require__(/*! ./helpers/isPlainObject */ "./src/core/helpers/isPlainObject.ts");
+var fs_1 = __webpack_require__(/*! fs */ "fs");
+var stripJsonComments = __webpack_require__(/*! strip-json-comments */ "strip-json-comments");
+var BaseConfig = /** @class */ (function () {
+    function BaseConfig() {
+        this.configName = '.stlintrc';
+        this.configFile = '';
+    }
+    BaseConfig.getInstance = function (options) {
+        if (!this.__instance) {
+            this.__instance = new this(options);
+        }
+        return this.__instance;
+    };
+    BaseConfig.prototype.readCustomConfig = function () {
+        if (!this.configFile) {
+            this.configFile = process.cwd() + '/' + this.configName;
+        }
+        if (fs_1.existsSync(this.configFile)) {
+            try {
+                var customConfig = JSON.parse(stripJsonComments(fs_1.readFileSync(this.configFile, 'utf8')));
+                if (customConfig) {
+                    this.extendsOption(customConfig, this);
+                }
+            }
+            catch (_a) { }
+        }
+    };
+    BaseConfig.prototype.extendsOption = function (from, to) {
+        var _this = this;
+        Object.keys(from).forEach(function (key) {
+            if (isPlainObject_1.isPlainObject(from[key]) && isPlainObject_1.isPlainObject(to[key])) {
+                _this.extendsOption(from[key], to[key]);
+            }
+            else if (Array.isArray(from[key]) && Array.isArray(to[key])) {
+                to[key] = to[key].map(function (val, index) {
+                    return (from[key][index] !== undefined) ? from[key][index] : to[key][index];
+                });
+            }
+            else {
+                to[key] = from[key];
+            }
+        });
+    };
+    BaseConfig.__instance = null;
+    return BaseConfig;
+}());
+exports.BaseConfig = BaseConfig;
+
+
+/***/ }),
+
 /***/ "./src/core/checker.ts":
 /*!*****************************!*\
   !*** ./src/core/checker.ts ***!
@@ -1664,18 +1706,21 @@ var chalk = __webpack_require__(/*! chalk */ "chalk");
 var RawReporter = /** @class */ (function (_super) {
     __extends(RawReporter, _super);
     function RawReporter() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    RawReporter.prototype.log = function (exit) {
-        if (exit === void 0) { exit = true; }
-        var cwd = process.cwd(), opts = {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.reportOptions = {
             columnSplitter: ' | ',
             headingTransform: function (heading) {
                 return chalk.yellow(heading.toUpperCase());
             },
             maxWidth: 200,
             minWidth: 10,
-        }, warningsOrErrors = this.errors.slice(), // TODO add warning mode
+        };
+        return _this;
+    }
+    RawReporter.prototype.log = function (exit) {
+        var _this = this;
+        if (exit === void 0) { exit = true; }
+        var cwd = process.cwd(), warningsOrErrors = this.errors.slice(), // TODO add warning mode
         messagesToFile = {}, msg = [];
         warningsOrErrors.forEach(function (pack) {
             pack.message.forEach(function (message) {
@@ -1692,7 +1737,7 @@ var RawReporter = /** @class */ (function (_super) {
             });
         });
         var msgGrouped = Object.keys(messagesToFile).map(function (file) {
-            return chalk.blue(file) + '\n' + columnify(messagesToFile[file], opts) + '\n';
+            return chalk.blue(file) + '\n' + columnify(messagesToFile[file], _this.reportOptions) + '\n';
         });
         msg.push(msgGrouped.join('\n'));
         var cnt = this.errors.length;

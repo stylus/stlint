@@ -11,17 +11,18 @@ type RawMessage = {
 }
 
 export class RawReporter extends Reporter {
+	reportOptions = {
+		columnSplitter: ' | ',
+		headingTransform: (heading: string) => {
+			return chalk.yellow(heading.toUpperCase())
+		},
+		maxWidth: 200,
+		minWidth: 10,
+	}
+
 	log(exit: boolean = true) {
 		const
 			cwd = process.cwd(),
-			opts = {
-				columnSplitter: ' | ',
-				headingTransform: (heading: string) => {
-					return chalk.yellow(heading.toUpperCase())
-				},
-				maxWidth: 200,
-				minWidth: 10,
-			},
 			warningsOrErrors = [...this.errors], // TODO add warning mode
 			messagesToFile: Dictionary<RawMessage[]> = {},
 			msg = [];
@@ -44,7 +45,7 @@ export class RawReporter extends Reporter {
 		});
 
 		const msgGrouped = Object.keys(messagesToFile).map(file =>
-			chalk.blue(file) + '\n' + columnify(messagesToFile[file], opts) + '\n'
+			chalk.blue(file) + '\n' + columnify(messagesToFile[file], this.reportOptions) + '\n'
 		);
 
 		msg.push(msgGrouped.join('\n'));
