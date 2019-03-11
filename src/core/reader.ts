@@ -2,13 +2,20 @@ import { Glob } from "glob"
 import { relative } from "path";
 import { map } from "async";
 import { readFile, stat } from "fs";
-import { Config } from "../Config";
+import { IConfig } from "./types/config";
 
 type ReaderCallback = (file: string, content: string) => void;
 
 export class Reader {
-	constructor(readonly config: Config) {}
+	constructor(readonly config: IConfig) {}
 
+	/**
+	 * Check `dir` parameter for folder or file call `readFolder` or `readFiles`
+	 *
+	 * @param dir
+	 * @param callback
+	 * @return Promise
+	 */
 	read(dir: string | string[], callback: ReaderCallback): Promise<void> {
 		return new Promise(async (resolve) => {
 			if (typeof dir !== 'string' && !(dir instanceof Array)) {
@@ -42,7 +49,14 @@ export class Reader {
 		});
 	}
 
-	readFolder(dir: string, callback: ReaderCallback) {
+	/**
+	 * Find all 'styl' files in the directory and call `readFiles`
+	 *
+	 * @param dir
+	 * @param callback
+	 * @return Promise
+	 */
+	readFolder(dir: string, callback: ReaderCallback): Promise<void> {
 		return new Promise((resolve) => {
 			return new Glob(dir, {}, async (err: Error | null, files: string[]) => {
 				if (err) {
@@ -54,7 +68,11 @@ export class Reader {
 						const
 							relPath = relative(dir.replace( '/**/*.styl', '' ), file);
 
-						return !this.config.excludes.some(exclude => Boolean(exclude.match(relPath)));
+						return !this.config.excludes.some(exclude => {
+							const reg = new RegExp(exclude);
+
+							return reg.test(relPath);
+						});
 					});
 				}
 
@@ -65,6 +83,13 @@ export class Reader {
 		})
 	}
 
+	/**
+	 * Read all files from array and call ReaderCallback
+	 *
+	 * @param files
+	 * @param callback
+	 * @return Promise
+	 */
 	readFiles(files: string[], callback: ReaderCallback): Promise<void> {
 		return new Promise((resolve) => {
 			map(files, readFile, (error: Error | null | void, buffer: (Buffer | void)[] | void) => {

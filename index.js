@@ -140,20 +140,27 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var _this = this;
 Object.defineProperty(exports, "__esModule", { value: true });
 var linter_1 = __webpack_require__(/*! ./src/linter */ "./src/linter.ts");
 var watcher_1 = __webpack_require__(/*! ./src/watcher */ "./src/watcher.ts");
 var reader_1 = __webpack_require__(/*! ./src/core/reader */ "./src/core/reader.ts");
-var StylusLinter = function (path, content, options) {
+function StylusLinter(path, content, options) {
     if (options === void 0) { options = {}; }
-    return __awaiter(_this, void 0, void 0, function () {
-        var linter, reader, readAndDisplay, watcher;
+    return __awaiter(this, void 0, void 0, function () {
+        var linter, first, reader, readAndDisplay, watcher;
         var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    linter = new linter_1.Linter(options), reader = new reader_1.Reader(linter.config), readAndDisplay = function () { return __awaiter(_this, void 0, void 0, function () {
+                    linter = new linter_1.Linter(options), first = function () { return Array.isArray(path) ? path[0] : path; };
+                    if (content) {
+                        linter.lint(first(), content);
+                        return [2 /*return*/, linter.display()];
+                    }
+                    if (!path) {
+                        path = linter.config.path || process.cwd();
+                    }
+                    reader = new reader_1.Reader(linter.config), readAndDisplay = function () { return __awaiter(_this, void 0, void 0, function () {
                         return __generator(this, function (_a) {
                             switch (_a.label) {
                                 case 0: return [4 /*yield*/, reader.read(path, linter.lint)];
@@ -164,9 +171,6 @@ var StylusLinter = function (path, content, options) {
                             }
                         });
                     }); };
-                    if (!path) {
-                        path = linter.config.path || process.cwd();
-                    }
                     if (linter.config.watch) {
                         watcher = new watcher_1.Watcher();
                         watcher.start(Array.isArray(path) ? path[0] : path, readAndDisplay);
@@ -178,9 +182,8 @@ var StylusLinter = function (path, content, options) {
             }
         });
     });
-};
+}
 module.exports = StylusLinter;
-// StylusLinter('./test.styl');
 
 
 /***/ }),
@@ -210,6 +213,7 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var data = __webpack_require__(/*! ./defaultRules.json */ "./src/defaultRules.json");
 var baseConfig_1 = __webpack_require__(/*! ./core/baseConfig */ "./src/core/baseConfig.ts");
+var chalk = __webpack_require__(/*! chalk */ "chalk");
 var Config = /** @class */ (function (_super) {
     __extends(Config, _super);
     function Config(options) {
@@ -217,10 +221,19 @@ var Config = /** @class */ (function (_super) {
         _this.debug = false;
         _this.reporter = 'raw';
         _this.rules = data;
-        _this.excludes = [];
+        _this.excludes = ['node_modules/'];
         _this.watch = false;
         _this.path = '';
         _this.stylusParserOptions = {};
+        _this.reportOptions = {
+            columnSplitter: ' | ',
+            headingTransform: function (heading) {
+                return chalk.yellow(heading.toUpperCase());
+            },
+            maxWidth: 70,
+            minWidth: 10,
+            truncate: false,
+        };
         _this.readCustomConfig();
         _this.extendsOption(options, _this);
         return _this;
@@ -1247,9 +1260,8 @@ var Checker = /** @class */ (function () {
      * Check whole AST
      *
      * @param ast
-     * @param content
      */
-    Checker.prototype.checkASTRules = function (ast, content) {
+    Checker.prototype.checkASTRules = function (ast) {
         try {
             var runner = new runner_1.Runner(ast, this.check);
             runner.visit(ast, null);
@@ -1495,6 +1507,13 @@ var Reader = /** @class */ (function () {
     function Reader(config) {
         this.config = config;
     }
+    /**
+     * Check `dir` parameter for folder or file call `readFolder` or `readFiles`
+     *
+     * @param dir
+     * @param callback
+     * @return Promise
+     */
     Reader.prototype.read = function (dir, callback) {
         var _this = this;
         return new Promise(function (resolve) { return __awaiter(_this, void 0, void 0, function () {
@@ -1542,6 +1561,13 @@ var Reader = /** @class */ (function () {
             });
         }); });
     };
+    /**
+     * Find all 'styl' files in the directory and call `readFiles`
+     *
+     * @param dir
+     * @param callback
+     * @return Promise
+     */
     Reader.prototype.readFolder = function (dir, callback) {
         var _this = this;
         return new Promise(function (resolve) {
@@ -1556,7 +1582,10 @@ var Reader = /** @class */ (function () {
                             if (this.config.excludes && this.config.excludes.length) {
                                 files = files.filter(function (file) {
                                     var relPath = path_1.relative(dir.replace('/**/*.styl', ''), file);
-                                    return !_this.config.excludes.some(function (exclude) { return Boolean(exclude.match(relPath)); });
+                                    return !_this.config.excludes.some(function (exclude) {
+                                        var reg = new RegExp(exclude);
+                                        return reg.test(relPath);
+                                    });
                                 });
                             }
                             return [4 /*yield*/, this.readFiles(files, callback)];
@@ -1569,6 +1598,13 @@ var Reader = /** @class */ (function () {
             }); });
         });
     };
+    /**
+     * Read all files from array and call ReaderCallback
+     *
+     * @param files
+     * @param callback
+     * @return Promise
+     */
     Reader.prototype.readFiles = function (files, callback) {
         var _this = this;
         return new Promise(function (resolve) {
@@ -1620,7 +1656,8 @@ exports.Reader = Reader;
 Object.defineProperty(exports, "__esModule", { value: true });
 var util_1 = __webpack_require__(/*! util */ "util");
 var Reporter = /** @class */ (function () {
-    function Reporter() {
+    function Reporter(options) {
+        this.options = options;
         this.errors = [];
         this.path = '';
         this.response = {
@@ -1634,17 +1671,17 @@ var Reporter = /** @class */ (function () {
     Reporter.prototype.setPath = function (path) {
         this.path = path;
     };
-    Reporter.getInstance = function (type) {
+    Reporter.getInstance = function (type, config) {
         if (!Reporter.__instance) {
             switch (type) {
                 case 'json':
-                    Reporter.__instance = new jsonReporter_1.JsonReporter();
+                    Reporter.__instance = new jsonReporter_1.JsonReporter(config);
                     break;
                 case 'silent':
-                    Reporter.__instance = new silentReporter_1.SilentReporter();
+                    Reporter.__instance = new silentReporter_1.SilentReporter(config);
                     break;
                 default:
-                    Reporter.__instance = new rawReporter_1.RawReporter();
+                    Reporter.__instance = new rawReporter_1.RawReporter(config);
             }
         }
         return Reporter.__instance;
@@ -1688,7 +1725,11 @@ var Reporter = /** @class */ (function () {
      */
     Reporter.prototype.display = function (exit) {
         this.fillResponse();
-        this.log(exit);
+        this.log();
+        this.reset();
+        if (exit) {
+            process.exit(this.response.passed ? 0 : 1);
+        }
     };
     /**
      * Reset all error stores
@@ -1745,7 +1786,7 @@ var JsonReporter = /** @class */ (function (_super) {
     /**
      * @override
      */
-    JsonReporter.prototype.log = function (exit) {
+    JsonReporter.prototype.log = function () {
         console.log(JSON.stringify(this.response, null, 2));
     };
     return JsonReporter;
@@ -1784,23 +1825,13 @@ var chalk = __webpack_require__(/*! chalk */ "chalk");
 var RawReporter = /** @class */ (function (_super) {
     __extends(RawReporter, _super);
     function RawReporter() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.reportOptions = {
-            columnSplitter: ' | ',
-            headingTransform: function (heading) {
-                return chalk.yellow(heading.toUpperCase());
-            },
-            maxWidth: 200,
-            minWidth: 10,
-        };
-        return _this;
+        return _super !== null && _super.apply(this, arguments) || this;
     }
     /**
      * @override
      */
-    RawReporter.prototype.log = function (exit) {
+    RawReporter.prototype.log = function () {
         var _this = this;
-        if (exit === void 0) { exit = true; }
         var cwd = process.cwd(), warningsOrErrors = this.errors.slice(), // TODO add warning mode
         messagesToFile = {}, msg = [];
         warningsOrErrors.forEach(function (pack) {
@@ -1812,22 +1843,18 @@ var RawReporter = /** @class */ (function (_super) {
                 messagesToFile[path].push({
                     file: chalk.magenta(path.padEnd(30, ' ')),
                     line: chalk.yellow(message.line),
-                    description: chalk.red(message.descr.padEnd(100, ' ')),
+                    description: chalk.red(message.descr.padEnd(_this.options.maxWidth || 100, ' ')),
                     rule: chalk.cyan(message.rule)
                 });
             });
         });
         var msgGrouped = Object.keys(messagesToFile).map(function (file) {
-            return chalk.blue(file) + '\n' + columnify(messagesToFile[file], _this.reportOptions) + '\n';
+            return chalk.blue(file) + '\n' + columnify(messagesToFile[file], _this.options) + '\n';
         });
         msg.push(msgGrouped.join('\n'));
         var cnt = this.errors.length;
         msg.push('Stlint: ' + (cnt ? chalk.red(cnt) : chalk.yellow(0)) + ' Errors.');
         console.log(msg.join(''));
-        this.reset();
-        if (exit) {
-            process.exit(this.response.passed ? 0 : 1);
-        }
     };
     return RawReporter;
 }(reporter_1.Reporter));
@@ -2395,40 +2422,35 @@ var path_1 = __webpack_require__(/*! path */ "path");
 var rule_1 = __webpack_require__(/*! ./core/rule */ "./src/core/rule.ts");
 var Linter = /** @class */ (function () {
     /**
-     * @param path
-     * @param content
      * @param options
      */
     function Linter(options) {
         if (options === void 0) { options = {}; }
         var _this = this;
-        this.path = '';
-        this.content = null;
         this.options = {};
         /**
          * Parse styl file and check rules
          */
         this.lint = function (path, content) {
             if (content === void 0) { content = null; }
-            _this.path = path_1.resolve(path);
-            _this.content = content;
+            path = path_1.resolve(path);
             try {
-                if (!fs_1.existsSync(_this.path)) {
+                if (!fs_1.existsSync(path)) {
                     throw new Error('File not exists');
                 }
-                if (typeof _this.content !== 'string') {
-                    _this.content = fs_1.readFileSync(_this.path, 'utf8');
+                if (typeof content !== 'string') {
+                    content = fs_1.readFileSync(path, 'utf8');
                 }
-                _this.reporter.setPath(_this.path);
+                _this.reporter.setPath(path);
                 rule_1.Rule.clearContext();
                 try {
-                    var ast = _this.parser.parse(_this.content);
-                    _this.checker.checkASTRules(ast, _this.content);
+                    var ast = _this.parser.parse(content);
+                    _this.checker.checkASTRules(ast);
                 }
                 catch (e) {
                     _this.reporter.add('parse', e.message, e.lineno, e.startOffset);
                 }
-                _this.checker.checkLineRules(_this.content);
+                _this.checker.checkLineRules(content);
             }
             catch (e) {
                 if (_this.config.debug) {
@@ -2437,10 +2459,10 @@ var Linter = /** @class */ (function () {
             }
         };
         this.options = options;
-        config_1.Config.getInstance(this.options);
-        this.reporter = reporter_1.Reporter.getInstance(this.config.reporter);
+        var config = config_1.Config.getInstance(this.options);
+        this.reporter = reporter_1.Reporter.getInstance(this.config.reporter, config.reportOptions);
         this.reporter.reset();
-        this.parser = new parser_1.StylusParser(this.config.stylusParserOptions);
+        this.parser = new parser_1.StylusParser(config.stylusParserOptions);
         this.checker = new checker_1.Checker(this);
     }
     Object.defineProperty(Linter.prototype, "config", {

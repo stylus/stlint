@@ -32,9 +32,8 @@ export class Checker {
 	 * Check whole AST
 	 *
 	 * @param ast
-	 * @param content
 	 */
-	checkASTRules(ast: Tree, content: string) {
+	checkASTRules(ast: Tree) {
 		try {
 			const runner = new Runner(ast, this.check);
 			runner.visit(ast, null);

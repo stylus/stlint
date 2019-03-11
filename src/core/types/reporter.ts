@@ -8,7 +8,7 @@ export interface IReporter {
 	reset(): void;
 	add(rule: string, message: string, line: number, start: number, end?: number): void;
 	display(exit: boolean): void;
-	log(exit: boolean): void;
+	log(): void;
 	setPath(path: string): void;
 	fillResponse(): void;
 	response: IResponse;

@@ -6,14 +6,12 @@ import { existsSync, readFileSync } from "fs";
 import { resolve } from "path";
 import { IReporter } from "./core/types/reporter";
 import { Rule } from "./core/rule";
+import { IConfig } from "./core/types/config";
 
 export class Linter {
-	path: string = '';
-	content: string | null = null;
-
 	options: Dictionary = {};
 
-	get config(): Config {
+	get config(): IConfig {
 		return Config.getInstance(this.options)
 	};
 
@@ -22,18 +20,16 @@ export class Linter {
 	checker: Checker;
 
 	/**
-	 * @param path
-	 * @param content
 	 * @param options
 	 */
 	constructor(options: Dictionary = {}) {
 		this.options = options;
-		Config.getInstance(this.options);
+		const config = Config.getInstance(this.options);
 
-		this.reporter = Reporter.getInstance(this.config.reporter);
+		this.reporter = Reporter.getInstance(this.config.reporter, config.reportOptions);
 		this.reporter.reset();
 
-		this.parser = new StylusParser(this.config.stylusParserOptions);
+		this.parser = new StylusParser(config.stylusParserOptions);
 		this.checker = new Checker(this);
 	}
 
@@ -41,31 +37,30 @@ export class Linter {
 	 * Parse styl file and check rules
 	 */
 	lint = (path: string, content: string | null = null) => {
-		this.path = resolve(path);
-		this.content = content;
+		path = resolve(path);
 
 		try {
-			if (!existsSync(this.path)) {
+			if (!existsSync(path)) {
 				throw new Error('File not exists');
 			}
 
-			if (typeof this.content !== 'string') {
-				this.content = readFileSync(this.path, 'utf8');
+			if (typeof content !== 'string') {
+				content = readFileSync(path, 'utf8');
 			}
 
-			this.reporter.setPath(this.path);
+			this.reporter.setPath(path);
 
 			Rule.clearContext();
 
 			try {
-				const ast = this.parser.parse(this.content);
-				this.checker.checkASTRules(ast, this.content);
+				const ast = this.parser.parse(content);
+				this.checker.checkASTRules(ast);
 
 			} catch (e) {
 				this.reporter.add('parse', e.message, e.lineno, e.startOffset);
 			}
 
-			this.checker.checkLineRules(this.content);
+			this.checker.checkLineRules(content);
 		} catch (e) {
 
 

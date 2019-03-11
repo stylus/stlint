@@ -11,19 +11,10 @@ type RawMessage = {
 }
 
 export class RawReporter extends Reporter {
-	reportOptions = {
-		columnSplitter: ' | ',
-		headingTransform: (heading: string) => {
-			return chalk.yellow(heading.toUpperCase())
-		},
-		maxWidth: 200,
-		minWidth: 10,
-	};
-
 	/**
 	 * @override
 	 */
-	log(exit: boolean = true) {
+	log() {
 		const
 			cwd = process.cwd(),
 			warningsOrErrors = [...this.errors], // TODO add warning mode
@@ -41,14 +32,14 @@ export class RawReporter extends Reporter {
 				messagesToFile[path].push({
 					file: chalk.magenta(path.padEnd(30, ' ')),
 					line: chalk.yellow(message.line),
-					description: chalk.red(message.descr.padEnd(100, ' ')),
+					description: chalk.red(message.descr.padEnd(this.options.maxWidth || 100, ' ')),
 					rule: chalk.cyan(message.rule)
 				});
 			});
 		});
 
 		const msgGrouped = Object.keys(messagesToFile).map(file =>
-			chalk.blue(file) + '\n' + columnify(messagesToFile[file], this.reportOptions) + '\n'
+			chalk.blue(file) + '\n' + columnify(messagesToFile[file], this.options) + '\n'
 		);
 
 		msg.push(msgGrouped.join('\n'));
@@ -58,11 +49,5 @@ export class RawReporter extends Reporter {
 		msg.push('Stlint: ' + (cnt ? chalk.red(cnt) : chalk.yellow(0)) + ' Errors.');
 
 		console.log(msg.join(''));
-
-		this.reset();
-
-		if (exit) {
-			process.exit(this.response.passed ? 0 : 1);
-		}
 	}
 }

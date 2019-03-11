@@ -3,6 +3,7 @@ import * as data from "./defaultRules.json";
 import { BaseConfig } from "./core/baseConfig";
 import { ReporterType } from "./core/types/reporter";
 import { IConfig } from "./core/types/config";
+import chalk = require("chalk");
 
 export class Config extends BaseConfig implements IConfig {
 	debug: boolean = false;
@@ -10,13 +11,23 @@ export class Config extends BaseConfig implements IConfig {
 
 	rules: Dictionary<State> = <any>data;
 
-	excludes: string[] = [];
+	excludes: string[] = ['node_modules/'];
 
 	watch: boolean = false;
 
 	path: string = '';
 
 	stylusParserOptions: Dictionary = {};
+
+	reportOptions = {
+		columnSplitter: ' | ',
+		headingTransform: (heading: string) => {
+			return chalk.yellow(heading.toUpperCase())
+		},
+		maxWidth: 70,
+		minWidth: 10,
+		truncate: false,
+	};
 
 	constructor(options: Dictionary) {
 		super();

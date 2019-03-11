@@ -1,5 +1,4 @@
 {
-	"watch": true,
-	"path": "./tests",
-	"reporter": "raw"
+	"reporter": "raw",
+	"debug": true
 }

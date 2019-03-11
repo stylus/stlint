@@ -16,23 +16,23 @@ export abstract class Reporter implements IReporter {
 		this.path = path;
 	}
 
-	protected constructor() {}
+	protected constructor(readonly options: Dictionary) {}
 
 	private static __instance: IReporter | null = null;
 
-	static getInstance(type: string): IReporter {
+	static getInstance(type: string, config: Dictionary): IReporter {
 		if (!Reporter.__instance) {
 			switch (type) {
 				case 'json':
-					Reporter.__instance = new JsonReporter();
+					Reporter.__instance = new JsonReporter(config);
 					break;
 
 				case 'silent':
-					Reporter.__instance = new SilentReporter();
+					Reporter.__instance = new SilentReporter(config);
 					break;
 
 				default:
-					Reporter.__instance = new RawReporter();
+					Reporter.__instance = new RawReporter(config);
 			}
 		}
 
@@ -65,7 +65,7 @@ export abstract class Reporter implements IReporter {
 	 * Output data some methods
 	 * @param exit
 	 */
-	abstract log(exit: boolean): void;
+	abstract log(): void;
 
 	response: IResponse = {
 		passed: true
@@ -87,7 +87,11 @@ export abstract class Reporter implements IReporter {
 	 */
 	display(exit: boolean) {
 		this.fillResponse();
-		this.log(exit);
+		this.log();
+		this.reset();
+		if (exit) {
+			process.exit(this.response.passed ? 0 : 1);
+		}
 	}
 
 	/**
@@ -108,3 +112,4 @@ export const log = (val: any) => console.log(inspect(val, {
 import { SilentReporter } from "./reporters/silentReporter";
 import { RawReporter } from "./reporters/rawReporter";
 import { JsonReporter } from "./reporters/jsonReporter";
+import {IConfig} from "./types/config";
