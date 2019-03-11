@@ -27,7 +27,7 @@ describe('Smoke test', () => {
 		});
 	});
 
-	describe('Break content file test', () => {
+	describe('Broken content file test', () => {
 		it('should work fine', () => {
 			const linter = new Linter();
 			linter.lint('./test.styl', '.');
@@ -36,6 +36,17 @@ describe('Smoke test', () => {
 
 			expect(response.passed).to.be.false;
 			expect(response.errors && response.errors.length).to.be.equal(1)
+		});
+		describe('Broken content 2', () => {
+			it('should work fine', () => {
+				const linter = new Linter();
+				linter.lint('./test.styl', '.t');
+
+				const response = linter.reporter.response;
+
+				expect(response.passed).to.be.false;
+				expect(response.errors && response.errors.length).to.be.equal(1)
+			});
 		});
 	});
 	describe('Try Syntax error', () => {

@@ -3,6 +3,15 @@ import { expect } from "chai";
 import { parseAndRun } from "../staff/bootstrap";
 
 describe('Color test', () => {
+	describe('Boolean enable state', () => {
+		it('Should work like default options', () => {
+			const rule = new Color(true);
+
+			parseAndRun('.tab\n\tcolor: #ccc\n\tbackground-color #fff', rule);
+
+			expect(rule.errors.length).to.be.equal(2)
+		});
+	});
 	describe('Need uppercase notation', () => {
 		it('Should check the AST has RGB node with wrong color notation', () => {
 			const rule = new Color({

@@ -210,6 +210,17 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 var data = __webpack_require__(/*! ./defaultRules.json */ "./src/defaultRules.json");
 var baseConfig_1 = __webpack_require__(/*! ./core/baseConfig */ "./src/core/baseConfig.ts");
@@ -220,7 +231,8 @@ var Config = /** @class */ (function (_super) {
         var _this = _super.call(this) || this;
         _this.debug = false;
         _this.reporter = 'raw';
-        _this.rules = data;
+        _this.rules = __assign({}, data);
+        _this.defaultRules = __assign({}, data);
         _this.excludes = ['node_modules/'];
         _this.watch = false;
         _this.path = '';
@@ -1186,6 +1198,7 @@ var BaseConfig = /** @class */ (function () {
                 var customConfig = JSON.parse(stripJsonComments(fs_1.readFileSync(this.configFile, 'utf8')));
                 if (customConfig) {
                     this.extendsOption(customConfig, this);
+                    this.extendsOption(customConfig, this.rules);
                 }
             }
             catch (_a) { }
@@ -1251,7 +1264,13 @@ var Checker = /** @class */ (function () {
         var rulesConstructors = rules, rulesNames = Object.keys(rulesConstructors);
         this.rulesList = rulesNames
             .filter(function (key) { return rulesConstructors[key].prototype instanceof rule_1.Rule; })
-            .map(function (key) { return new rulesConstructors[key](linter.config.rules[lcfirst_1.lcfirst(key)]); })
+            .map(function (key) {
+            var options = linter.config.rules[lcfirst_1.lcfirst(key)];
+            if (options === true) {
+                options = linter.config.defaultRules[lcfirst_1.lcfirst(key)];
+            }
+            return new rulesConstructors[key](options);
+        })
             .filter(function (rule) { return rule.state.enabled; });
         this.rulesListForLines = this.rulesList.filter(function (rule) { return rule.checkLine; });
         this.rulesListForNodes = this.rulesList.filter(function (rule) { return rule.checkNode; });
@@ -1787,6 +1806,11 @@ var JsonReporter = /** @class */ (function (_super) {
      * @override
      */
     JsonReporter.prototype.log = function () {
+        if (this.response.errors) {
+            this.response.errors.forEach(function (error) { return error.message.forEach(function (message) {
+                message.descr = message.rule + ': ' + message.descr;
+            }); });
+        }
         console.log(JSON.stringify(this.response, null, 2));
     };
     return JsonReporter;
@@ -2597,7 +2621,7 @@ var Color = /** @class */ (function (_super) {
         return _this;
     }
     Color.prototype.checkNode = function (node) {
-        var checkReg = this.state.conf === 'uppercase' ? /[a-z]/ : /[A-Z]/;
+        var checkReg = this.state.conf !== 'lowercase' ? /[a-z]/ : /[A-Z]/;
         if (this.state.allowOnlyInVar) {
             var elm = node.parent;
             while (elm) {

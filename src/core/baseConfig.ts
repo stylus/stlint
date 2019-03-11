@@ -36,6 +36,7 @@ export class BaseConfig {
 
 				if (customConfig) {
 					this.extendsOption(customConfig, this);
+					this.extendsOption(customConfig, (<any>this).rules);
 				}
 			} catch {}
 		}

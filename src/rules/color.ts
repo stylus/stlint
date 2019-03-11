@@ -10,7 +10,7 @@ export class Color extends Rule<IColorState> {
 	nodesFilter = ['rgb'];
 
 	checkNode(node: RGB) {
-		const checkReg = this.state.conf === 'uppercase' ? /[a-z]/ : /[A-Z]/;
+		const checkReg = this.state.conf !== 'lowercase' ? /[a-z]/ : /[A-Z]/;
 
 		if (this.state.allowOnlyInVar) {
 			let elm = node.parent;

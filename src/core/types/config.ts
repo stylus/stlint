@@ -12,6 +12,7 @@ export interface IConfig {
 	path: string
 
 	rules: Dictionary<State>;
+	defaultRules: Dictionary<State>;
 
 	excludes: string[]
 

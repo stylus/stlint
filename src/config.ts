@@ -9,7 +9,8 @@ export class Config extends BaseConfig implements IConfig {
 	debug: boolean = false;
 	reporter: ReporterType = 'raw';
 
-	rules: Dictionary<State> = <any>data;
+	rules: Dictionary<State> = {...<any>data};
+	readonly defaultRules: Dictionary<State> = {...<any>data};
 
 	excludes: string[] = ['node_modules/'];
 

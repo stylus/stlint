@@ -1,7 +1,7 @@
 {
   "name": "stlint",
   "version": "1.0.8",
-  "description": "",
+  "description": "Stylus Linter",
   "main": "index.js",
   "bin": {
     "stlint": "./bin/stlint"
@@ -27,11 +27,10 @@
     "stylus-hint",
     "stylus-lint"
   ],
-  "author": "",
+  "author": "Chupurnov Valeriy<chupurnov@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "@types/async": "^2.4.1",
-    "@types/glob": "^7.1.1",
+    "strip-json-comments": "^2.0.1",
     "async": "^2.6.2",
     "chalk": "^2.4.2",
     "columnify": "^1.5.4",
@@ -41,13 +40,14 @@
     "yargs": "^13.2.2"
   },
   "devDependencies": {
+    "@types/async": "^2.4.1",
+    "@types/glob": "^7.1.1",
     "@types/chai": "^4.1.7",
     "@types/mocha": "^5.2.6",
     "@types/node": "^11.10.5",
     "awesome-typescript-loader": "^5.2.1",
     "chai": "^4.2.0",
     "mocha": "^6.0.1",
-    "strip-json-comments": "^2.0.1",
     "ts-node": "^8.0.3",
     "typescript": "^3.3.3",
     "uglifyjs-webpack-plugin": "^2.1.1",

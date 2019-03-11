@@ -21,7 +21,15 @@ export class Checker {
 
 		this.rulesList = rulesNames
 				.filter(key => rulesConstructors[key].prototype instanceof Rule)
-				.map((key: string): IRule => new (<any>rulesConstructors)[key](linter.config.rules[lcfirst(key)]))
+				.map((key: string): IRule => {
+					let options = linter.config.rules[lcfirst(key)];
+
+					if (options === true) {
+						options = linter.config.defaultRules[lcfirst(key)];
+					}
+
+					return new (<any>rulesConstructors)[key](options)
+				})
 				.filter(rule => rule.state.enabled);
 
 		this.rulesListForLines = this.rulesList.filter(rule => rule.checkLine);
