@@ -15,7 +15,7 @@ export interface IRule<T extends IState = IState> {
 
 	isMatchType(type: string): boolean;
 
-	errors: [string, number, number, number][];
+	errors: [string, string, number, number, number][];
 
 	context: Dictionary;
 	clearContext: () => void;

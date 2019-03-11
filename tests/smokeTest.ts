@@ -6,8 +6,8 @@ const
 
 describe('Smoke test', () => {
 	it('should work fine', () => {
-		const linter = new Linter('./test.styl', wrongContent);
-		linter.lint();
+		const linter = new Linter();
+		linter.lint('./test.styl', wrongContent);
 
 		const response = linter.reporter.response;
 
@@ -17,8 +17,8 @@ describe('Smoke test', () => {
 
 	describe('Empty file test', () => {
 		it('should work fine', () => {
-			const linter = new Linter('./test.styl', '');
-			linter.lint();
+			const linter = new Linter();
+			linter.lint('./test.styl', '');
 
 			const response = linter.reporter.response;
 
@@ -29,8 +29,8 @@ describe('Smoke test', () => {
 
 	describe('Break content file test', () => {
 		it('should work fine', () => {
-			const linter = new Linter('./test.styl', '.');
-			linter.lint();
+			const linter = new Linter();
+			linter.lint('./test.styl', '.');
 
 			const response = linter.reporter.response;
 
@@ -42,13 +42,14 @@ describe('Smoke test', () => {
 		describe('Get hash field', () => {
 			it('should not return error', () => {
 				const
-					linter = new Linter('./test.styl','$p = {\n' +
-						'\toptionColor: #CCC\n' +
-						'}\n' +
-						'.test\n' +
-						'\tmargin-top $p.optionColor'
-					);
-				linter.lint();
+					linter = new Linter();
+
+				linter.lint('./test.styl','$p = {\n' +
+					'\toptionColor: #CCC\n' +
+					'}\n' +
+					'.test\n' +
+					'\tmargin-top $p.optionColor'
+				);
 
 				const response = linter.reporter.response;
 
@@ -58,17 +59,17 @@ describe('Smoke test', () => {
 		describe('Hash field with index', () => {
 			it('should not return error', () => {
 				const
-					linter = new Linter('./test.styl','$colors = {\n' +
-						'\twhite: #CCC #FFF #F00\n' +
-						'}\n' +
-						'$p = {\n' +
-						'\toptionColor: $colors.white[0]\n' +
-						'}\n' +
-						'.b-checkbox-list\n' +
-						'\tcolor $colors.white[1]'
-					);
+					linter = new Linter();
 
-				linter.lint();
+				linter.lint('./test.styl','$colors = {\n' +
+					'\twhite: #CCC #FFF #F00\n' +
+					'}\n' +
+					'$p = {\n' +
+					'\toptionColor: $colors.white[0]\n' +
+					'}\n' +
+					'.b-checkbox-list\n' +
+					'\tcolor $colors.white[1]'
+				);
 
 				const response = linter.reporter.response;
 
@@ -78,8 +79,8 @@ describe('Smoke test', () => {
 		describe('sss', () => {
 			it('sss', () => {
 				const
-					linter = new Linter('./test.styl');
-				linter.lint();
+					linter = new Linter();
+				linter.lint('./test.styl');
 			});
 		});
 	});

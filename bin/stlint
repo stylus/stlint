@@ -3,7 +3,7 @@
 'use strict'
 
 const yargs = require( 'yargs' );
-const stylusLinter = require( '../' );
+const stlint = require( '../' );
 
 
 const options = yargs
@@ -23,6 +23,11 @@ const options = yargs
 		describe: 'Try fix some rules',
 		type: 'boolean'
 	})
+	.option( 'watch', {
+		alias: 'w',
+		describe: 'Watch changes',
+		type: 'boolean'
+	})
 	.version(require( '../package' ).version)
 	.alias( 'version', 'v' )
 	.help( 'help' )
@@ -32,4 +37,4 @@ const options = yargs
 	.epilogue( 'MIT' )
 	.argv;
 
-stylusLinter(options._[0], options.content, options);
+stlint(options._[0], options.content, options);

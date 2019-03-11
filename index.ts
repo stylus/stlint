@@ -1,8 +1,23 @@
 import { Linter } from "./src/linter";
+import { Watcher } from "./src/watcher";
+import { Reader } from "./src/core/reader";
 
-const StylusLinter = (path: string, content?: string, options: Dictionary = {}): void => {
-	const linter = new Linter(path, content, options);
-	linter.lint();
+
+
+const StylusLinter = async (path: string | string[], content?: string, options: Dictionary = {}) => {
+	// if (options.watch) {
+	// 	const
+	// 		watcher = new Watcher();
+	//
+	// 	watcher.start(path);
+	// } else {
+	const
+		linter = new Linter(options),
+		reader = new Reader(linter.config);
+
+	await reader.read(path, linter.lint);
+
+	linter.display();
 };
 
 module.exports = StylusLinter;

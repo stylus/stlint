@@ -1,4 +1,5 @@
 export interface IMessage {
+	rule: string;
 	descr: string;
 	path: string;
 	line: number;

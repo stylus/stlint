@@ -54,5 +54,7 @@ export class Config {
 
 	config: string = '';
 
+	excludes: string[] = [];
+
 	[key: string]: any;
 }

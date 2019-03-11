@@ -40,7 +40,7 @@ export class Checker {
 			runner.visit(ast, null);
 
 		} catch (e) {
-			this.linter.reporter.add(e.message, e.lineno || 1, 0);
+			this.linter.reporter.add('parser', e.message, e.lineno || 1, 0);
 
 		} finally {
 			this.afterCheck();
@@ -76,8 +76,9 @@ export class Checker {
 					Rule.beforeCheckLine(line);
 					this.rulesListForLines.forEach(rule => rule.checkLine && rule.checkLine(line, index, lines));
 				});
+
 		} catch (e) {
-			this.linter.reporter.add(e.message, e.lineno || 1, 0);
+			this.linter.reporter.add('Line', e.message, e.lineno || 1, 0);
 
 		} finally {
 			this.afterCheck();

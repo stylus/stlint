@@ -5,18 +5,28 @@ import { inspect } from 'util'
 
 export class Reporter implements IReporter {
 	errors: IMessagePack[] = [];
-	constructor(readonly path: string) {}
+	private path: string = '';
+	setPath(path: string) {
+		this.path = path;
+	}
+
+	protected constructor() {}
 
 	private static __instance: IReporter | null = null;
 
-	static getInstance(path: string, type: string): IReporter {
+	static getInstance(type: string): IReporter {
 		if (!Reporter.__instance) {
 			switch (type) {
-				case 'emptyout':
-					Reporter.__instance = new EmptyOut(path);
+				case 'json':
+					Reporter.__instance = new Reporter();
 					break;
+
+				case 'emptyout':
+					Reporter.__instance = new EmptyOut();
+					break;
+
 				default:
-					Reporter.__instance = new Reporter(path);
+					Reporter.__instance = new RawReporter();
 			}
 		}
 
@@ -25,14 +35,16 @@ export class Reporter implements IReporter {
 
 	/**
 	 *
+	 * @param rule
 	 * @param message
 	 * @param line
 	 * @param start
 	 * @param end
 	 */
-	add(message: string, line: number = 0, start: number = 0, end: number = 0) {
+	add(rule: string, message: string, line: number = 0, start: number = 0, end: number = 0) {
 		this.errors.push({
 			message: [{
+				rule,
 				descr: message,
 				path: this.path,
 				line,
@@ -73,3 +85,4 @@ export const log = (val: any) => console.log(inspect(val, {
 }));
 
 import { EmptyOut } from "./reporters/emptyOut";
+import { RawReporter } from "./reporters/RawReporter";

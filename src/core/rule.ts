@@ -82,10 +82,10 @@ export abstract class Rule<T extends IState = IState> implements IRule<T> {
 
 	nodesFilter: string[] | null = null;
 
-	errors: [string, number, number, number][] = [];
+	errors: [string, string, number, number, number][] = [];
 
 	msg(message: string, line: number = 1, start: number = 0, end: number = 0) {
-		this.errors.push([this.name + ': ' + message, line, start, end]);
+		this.errors.push([this.name, message, line, start, end]);
 	}
 
 	isMatchType(type: string): boolean {
