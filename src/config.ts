@@ -10,7 +10,7 @@ export class Config extends BaseConfig implements IConfig {
 	reporter: ReporterType = 'raw';
 
 	rules: Dictionary<State> = {...<any>data};
-	readonly defaultRules: Dictionary<State> = {...<any>data};
+	defaultRules: Dictionary<State> = Object.freeze({...<any>data});
 
 	excludes: string[] = ['node_modules/'];
 

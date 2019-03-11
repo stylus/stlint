@@ -8,6 +8,4 @@ export class Watcher {
 			filter: /\.styl$/
 		}, callback)
 	}
-
 }
-
