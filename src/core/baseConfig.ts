@@ -9,6 +9,10 @@ export class BaseConfig {
 
 	private static __instance: IConfig | null = null;
 
+	/**
+	 * Use this becouse of tests
+	 * @param options
+	 */
 	static getInstance(options: Dictionary): IConfig {
 		if (!this.__instance) {
 			this.__instance = new (<any>this)(options);
@@ -17,6 +21,9 @@ export class BaseConfig {
 		return <IConfig>this.__instance;
 	}
 
+	/**
+	 * Try read config file .stlintrc
+	 */
 	readCustomConfig() {
 		if (!this.configFile) {
 			this.configFile = process.cwd() + '/' + this.configName;
@@ -34,6 +41,12 @@ export class BaseConfig {
 		}
 	}
 
+	/**
+	 * Extends default options by some object
+	 *
+	 * @param from
+	 * @param to
+	 */
 	extendsOption(from: Dictionary, to: Dictionary) {
 		Object.keys(from).forEach(key => {
 			if (isPlainObject(from[key]) && isPlainObject(to[key])) {

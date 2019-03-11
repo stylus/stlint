@@ -33,7 +33,7 @@ export class Linter {
 		this.reporter = Reporter.getInstance(this.config.reporter);
 		this.reporter.reset();
 
-		this.parser = new StylusParser();
+		this.parser = new StylusParser(this.config.stylusParserOptions);
 		this.checker = new Checker(this);
 	}
 

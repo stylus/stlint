@@ -123,7 +123,7 @@ describe('Test order rule', () => {
 				const rule = new SortOrder({
 					conf: "grouped",
 					startGroupChecking: 6,
-					order: (<Dictionary>Config.getInstance({}).defaultConfig.sortOrder).order
+					order: (<Dictionary>Config.getInstance({}).rules.sortOrder).order
 				});
 
 				parseAndRun('&__item3-title\n' +

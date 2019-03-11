@@ -1,5 +1,5 @@
 import { State } from "./core/types/state";
-import * as data from "./defaultConfig.json";
+import * as data from "./defaultRules.json";
 import { BaseConfig } from "./core/baseConfig";
 import { ReporterType } from "./core/types/reporter";
 import { IConfig } from "./core/types/config";
@@ -16,9 +16,11 @@ export class Config extends BaseConfig implements IConfig {
 
 	path: string = '';
 
+	stylusParserOptions: Dictionary = {};
+
 	constructor(options: Dictionary) {
 		super();
-		this.extendsOption(options, this);
 		this.readCustomConfig();
+		this.extendsOption(options, this);
 	}
 }

@@ -89,11 +89,13 @@ export class Checker {
 	 * After checking put errors in reporter
 	 */
 	private afterCheck() {
-		const rep: IReporter = this.linter.reporter;
+		const reporter: IReporter = this.linter.reporter;
 
 		this.rulesList.forEach(rule => {
-			rule.errors.forEach(msg => rep.add.apply(rep, msg));
+			rule.errors.forEach(msg => reporter.add.apply(reporter, msg));
 			rule.errors.length = 0;
 		});
+
+		reporter.fillResponse();
 	}
 }

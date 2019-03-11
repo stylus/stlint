@@ -4,20 +4,26 @@ import { Translator } from "./translator";
 import { ISNode } from "./types/ast/snode";
 
 export class StylusParser {
-	options = {};
 	/**
-	 * @param {string} [content]
+	 * @param options Stylus parser options
+	 */
+	constructor(readonly options: Dictionary = {}) {}
+
+	/**
+	 * Parse use native stylus parser into StylusAST and convert it in our AST
+	 *
+	 * @param {string} content
 	 * @returns {Tree}
 	 */
-	parse(content?: string): Tree {
+	parse(content: string): Tree {
 		const parser = new Parser(content, this.options);
 
 		try {
 			let stylusAST: ISNode = parser.parse();
 
-			const translitor = new Translator(stylusAST);
+			const translator = new Translator(stylusAST);
 
-			return translitor.transpile();
+			return translator.transpile();
 		} catch (err) {
 
 			err.lineno = err.lineno || parser.lexer.lineno || 0;

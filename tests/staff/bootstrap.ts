@@ -18,7 +18,7 @@ Config.getInstance({
  */
 export const parseAndRun = (content: string, rule: IRule) => {
 	const
-		parser = new StylusParser(),
+		parser = new StylusParser({}),
 		ast = parser.parse(content),
 		runner = new Runner(ast, (node) => {
 			if (rule.checkNode && rule.isMatchType(node.nodeName)) {

@@ -1,5 +1,5 @@
 import { Reporter } from "../reporter";
 
-export class EmptyOut extends Reporter {
+export class SilentReporter extends Reporter {
 	log() {}
 }

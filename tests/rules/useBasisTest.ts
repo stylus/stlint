@@ -13,7 +13,7 @@ describe('Use basis mixin test', () => {
 			parseAndRun('.tab\n\tfontsize 12px', rule);
 
 			expect(rule.errors.length).to.be.equal(1);
-			expect(rule.errors[0][0]).to.be.equal('useBasis: Use basis mixin instead "px" (basis(1.5))')
+			expect(rule.errors[0][1]).to.be.equal('Use basis mixin instead "px" (basis(1.5))')
 		});
 		it('Should check the AST has Unit node with wrong unit notation but no need replace', () => {
 
@@ -34,7 +34,7 @@ describe('Use basis mixin test', () => {
 			parseAndRun('.tab\n\tfontsize basis(1.5)', rule);
 
 			expect(rule.errors.length).to.be.equal(1);
-			expect(rule.errors[0][0]).to.be.equal('useBasis: Do not use Basis mixin')
+			expect(rule.errors[0][1]).to.be.equal('Do not use Basis mixin')
 		});
 	});
 });

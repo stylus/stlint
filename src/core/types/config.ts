@@ -17,5 +17,7 @@ export interface IConfig {
 
 	watch: boolean
 
+	stylusParserOptions: Dictionary
+
 	[key: string]: any;
 }

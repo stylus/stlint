@@ -3,9 +3,15 @@ import { IMessagePack} from "./types/message";
 import { IResponse } from "./types/response";
 import { inspect } from 'util'
 
-export class Reporter implements IReporter {
+export abstract class Reporter implements IReporter {
 	errors: IMessagePack[] = [];
+
 	private path: string = '';
+
+	/**
+	 * Set current working file
+	 * @param path
+	 */
 	setPath(path: string) {
 		this.path = path;
 	}
@@ -18,11 +24,11 @@ export class Reporter implements IReporter {
 		if (!Reporter.__instance) {
 			switch (type) {
 				case 'json':
-					Reporter.__instance = new Reporter();
+					Reporter.__instance = new JsonReporter();
 					break;
 
-				case 'emptyout':
-					Reporter.__instance = new EmptyOut();
+				case 'silent':
+					Reporter.__instance = new SilentReporter();
 					break;
 
 				default:
@@ -34,7 +40,7 @@ export class Reporter implements IReporter {
 	}
 
 	/**
-	 *
+	 * Add new error in message pull
 	 * @param rule
 	 * @param message
 	 * @param line
@@ -55,23 +61,38 @@ export class Reporter implements IReporter {
 		});
 	}
 
-	log(exit: boolean) {
-		console.log(JSON.stringify(this.response, null, 2));
-	}
+	/**
+	 * Output data some methods
+	 * @param exit
+	 */
+	abstract log(exit: boolean): void;
 
 	response: IResponse = {
 		passed: true
 	};
 
-	display(exit: boolean) {
+	/**
+	 * Fill response object
+	 */
+	fillResponse() {
 		if (this.errors.length) {
 			this.response.passed = false;
 			this.response.errors = this.errors;
 		}
+	}
 
+	/**
+	 * Prepare data and output result
+	 * @param exit
+	 */
+	display(exit: boolean) {
+		this.fillResponse();
 		this.log(exit);
 	}
 
+	/**
+	 * Reset all error stores
+	 */
 	reset() {
 		this.errors.length = 0;
 		this.response = {
@@ -84,5 +105,6 @@ export const log = (val: any) => console.log(inspect(val, {
 	depth: 10
 }));
 
-import { EmptyOut } from "./reporters/emptyOut";
-import { RawReporter } from "./reporters/RawReporter";
+import { SilentReporter } from "./reporters/silentReporter";
+import { RawReporter } from "./reporters/rawReporter";
+import { JsonReporter } from "./reporters/jsonReporter";

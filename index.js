@@ -208,7 +208,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var data = __webpack_require__(/*! ./defaultConfig.json */ "./src/defaultConfig.json");
+var data = __webpack_require__(/*! ./defaultRules.json */ "./src/defaultRules.json");
 var baseConfig_1 = __webpack_require__(/*! ./core/baseConfig */ "./src/core/baseConfig.ts");
 var Config = /** @class */ (function (_super) {
     __extends(Config, _super);
@@ -220,8 +220,9 @@ var Config = /** @class */ (function (_super) {
         _this.excludes = [];
         _this.watch = false;
         _this.path = '';
-        _this.extendsOption(options, _this);
+        _this.stylusParserOptions = {};
         _this.readCustomConfig();
+        _this.extendsOption(options, _this);
         return _this;
     }
     return Config;
@@ -1150,12 +1151,19 @@ var BaseConfig = /** @class */ (function () {
         this.configName = '.stlintrc';
         this.configFile = '';
     }
+    /**
+     * Use this becouse of tests
+     * @param options
+     */
     BaseConfig.getInstance = function (options) {
         if (!this.__instance) {
             this.__instance = new this(options);
         }
         return this.__instance;
     };
+    /**
+     * Try read config file .stlintrc
+     */
     BaseConfig.prototype.readCustomConfig = function () {
         if (!this.configFile) {
             this.configFile = process.cwd() + '/' + this.configName;
@@ -1170,6 +1178,12 @@ var BaseConfig = /** @class */ (function () {
             catch (_a) { }
         }
     };
+    /**
+     * Extends default options by some object
+     *
+     * @param from
+     * @param to
+     */
     BaseConfig.prototype.extendsOption = function (from, to) {
         var _this = this;
         Object.keys(from).forEach(function (key) {
@@ -1276,11 +1290,12 @@ var Checker = /** @class */ (function () {
      * After checking put errors in reporter
      */
     Checker.prototype.afterCheck = function () {
-        var rep = this.linter.reporter;
+        var reporter = this.linter.reporter;
         this.rulesList.forEach(function (rule) {
-            rule.errors.forEach(function (msg) { return rep.add.apply(rep, msg); });
+            rule.errors.forEach(function (msg) { return reporter.add.apply(reporter, msg); });
             rule.errors.length = 0;
         });
+        reporter.fillResponse();
     };
     return Checker;
 }());
@@ -1393,19 +1408,25 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var Parser = __webpack_require__(/*! stylus-pro/lib/parser */ "stylus-pro/lib/parser");
 var translator_1 = __webpack_require__(/*! ./translator */ "./src/core/translator.ts");
 var StylusParser = /** @class */ (function () {
-    function StylusParser() {
-        this.options = {};
+    /**
+     * @param options Stylus parser options
+     */
+    function StylusParser(options) {
+        if (options === void 0) { options = {}; }
+        this.options = options;
     }
     /**
-     * @param {string} [content]
+     * Parse use native stylus parser into StylusAST and convert it in our AST
+     *
+     * @param {string} content
      * @returns {Tree}
      */
     StylusParser.prototype.parse = function (content) {
         var parser = new Parser(content, this.options);
         try {
             var stylusAST = parser.parse();
-            var translitor = new translator_1.Translator(stylusAST);
-            return translitor.transpile();
+            var translator = new translator_1.Translator(stylusAST);
+            return translator.transpile();
         }
         catch (err) {
             err.lineno = err.lineno || parser.lexer.lineno || 0;
@@ -1606,6 +1627,10 @@ var Reporter = /** @class */ (function () {
             passed: true
         };
     }
+    /**
+     * Set current working file
+     * @param path
+     */
     Reporter.prototype.setPath = function (path) {
         this.path = path;
     };
@@ -1613,19 +1638,19 @@ var Reporter = /** @class */ (function () {
         if (!Reporter.__instance) {
             switch (type) {
                 case 'json':
-                    Reporter.__instance = new Reporter();
+                    Reporter.__instance = new jsonReporter_1.JsonReporter();
                     break;
-                case 'emptyout':
-                    Reporter.__instance = new emptyOut_1.EmptyOut();
+                case 'silent':
+                    Reporter.__instance = new silentReporter_1.SilentReporter();
                     break;
                 default:
-                    Reporter.__instance = new RawReporter_1.RawReporter();
+                    Reporter.__instance = new rawReporter_1.RawReporter();
             }
         }
         return Reporter.__instance;
     };
     /**
-     *
+     * Add new error in message pull
      * @param rule
      * @param message
      * @param line
@@ -1648,16 +1673,26 @@ var Reporter = /** @class */ (function () {
                 }]
         });
     };
-    Reporter.prototype.log = function (exit) {
-        console.log(JSON.stringify(this.response, null, 2));
-    };
-    Reporter.prototype.display = function (exit) {
+    /**
+     * Fill response object
+     */
+    Reporter.prototype.fillResponse = function () {
         if (this.errors.length) {
             this.response.passed = false;
             this.response.errors = this.errors;
         }
+    };
+    /**
+     * Prepare data and output result
+     * @param exit
+     */
+    Reporter.prototype.display = function (exit) {
+        this.fillResponse();
         this.log(exit);
     };
+    /**
+     * Reset all error stores
+     */
     Reporter.prototype.reset = function () {
         this.errors.length = 0;
         this.response = {
@@ -1671,15 +1706,58 @@ exports.Reporter = Reporter;
 exports.log = function (val) { return console.log(util_1.inspect(val, {
     depth: 10
 })); };
-var emptyOut_1 = __webpack_require__(/*! ./reporters/emptyOut */ "./src/core/reporters/emptyOut.ts");
-var RawReporter_1 = __webpack_require__(/*! ./reporters/RawReporter */ "./src/core/reporters/RawReporter.ts");
+var silentReporter_1 = __webpack_require__(/*! ./reporters/silentReporter */ "./src/core/reporters/silentReporter.ts");
+var rawReporter_1 = __webpack_require__(/*! ./reporters/rawReporter */ "./src/core/reporters/rawReporter.ts");
+var jsonReporter_1 = __webpack_require__(/*! ./reporters/jsonReporter */ "./src/core/reporters/jsonReporter.ts");
 
 
 /***/ }),
 
-/***/ "./src/core/reporters/RawReporter.ts":
+/***/ "./src/core/reporters/jsonReporter.ts":
+/*!********************************************!*\
+  !*** ./src/core/reporters/jsonReporter.ts ***!
+  \********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var reporter_1 = __webpack_require__(/*! ../reporter */ "./src/core/reporter.ts");
+var JsonReporter = /** @class */ (function (_super) {
+    __extends(JsonReporter, _super);
+    function JsonReporter() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    /**
+     * @override
+     */
+    JsonReporter.prototype.log = function (exit) {
+        console.log(JSON.stringify(this.response, null, 2));
+    };
+    return JsonReporter;
+}(reporter_1.Reporter));
+exports.JsonReporter = JsonReporter;
+
+
+/***/ }),
+
+/***/ "./src/core/reporters/rawReporter.ts":
 /*!*******************************************!*\
-  !*** ./src/core/reporters/RawReporter.ts ***!
+  !*** ./src/core/reporters/rawReporter.ts ***!
   \*******************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -1717,6 +1795,9 @@ var RawReporter = /** @class */ (function (_super) {
         };
         return _this;
     }
+    /**
+     * @override
+     */
     RawReporter.prototype.log = function (exit) {
         var _this = this;
         if (exit === void 0) { exit = true; }
@@ -1755,10 +1836,10 @@ exports.RawReporter = RawReporter;
 
 /***/ }),
 
-/***/ "./src/core/reporters/emptyOut.ts":
-/*!****************************************!*\
-  !*** ./src/core/reporters/emptyOut.ts ***!
-  \****************************************/
+/***/ "./src/core/reporters/silentReporter.ts":
+/*!**********************************************!*\
+  !*** ./src/core/reporters/silentReporter.ts ***!
+  \**********************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1779,15 +1860,15 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var reporter_1 = __webpack_require__(/*! ../reporter */ "./src/core/reporter.ts");
-var EmptyOut = /** @class */ (function (_super) {
-    __extends(EmptyOut, _super);
-    function EmptyOut() {
+var SilentReporter = /** @class */ (function (_super) {
+    __extends(SilentReporter, _super);
+    function SilentReporter() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    EmptyOut.prototype.log = function () { };
-    return EmptyOut;
+    SilentReporter.prototype.log = function () { };
+    return SilentReporter;
 }(reporter_1.Reporter));
-exports.EmptyOut = EmptyOut;
+exports.SilentReporter = SilentReporter;
 
 
 /***/ }),
@@ -2284,10 +2365,10 @@ module.exports = {"css":["{","}","*","&","~/","/","../",":root","::selection","*
 
 /***/ }),
 
-/***/ "./src/defaultConfig.json":
-/*!********************************!*\
-  !*** ./src/defaultConfig.json ***!
-  \********************************/
+/***/ "./src/defaultRules.json":
+/*!*******************************!*\
+  !*** ./src/defaultRules.json ***!
+  \*******************************/
 /*! exports provided: mixedSpaces, prefixVarsWithDollar, commaInObject, depthControl, quotePref, semicolons, colons, color, leadingZero, useBasis, sortOrder, default */
 /***/ (function(module) {
 
@@ -2359,7 +2440,7 @@ var Linter = /** @class */ (function () {
         config_1.Config.getInstance(this.options);
         this.reporter = reporter_1.Reporter.getInstance(this.config.reporter);
         this.reporter.reset();
-        this.parser = new parser_1.StylusParser();
+        this.parser = new parser_1.StylusParser(this.config.stylusParserOptions);
         this.checker = new checker_1.Checker(this);
     }
     Object.defineProperty(Linter.prototype, "config", {

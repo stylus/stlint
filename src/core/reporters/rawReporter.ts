@@ -18,8 +18,11 @@ export class RawReporter extends Reporter {
 		},
 		maxWidth: 200,
 		minWidth: 10,
-	}
+	};
 
+	/**
+	 * @override
+	 */
 	log(exit: boolean = true) {
 		const
 			cwd = process.cwd(),
