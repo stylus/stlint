@@ -27,17 +27,11 @@
     "test": "mocha tests/**/**.ts tests/**.ts"
   },
   "keywords": [
-    "cli",
-    "css",
-    "hinter",
     "lint",
     "linter",
-    "styl",
-    "style",
-    "stylint",
     "stylus",
-    "stylus-hint",
-    "stylus-lint"
+    "stylus-linter",
+    "stlint"
   ],
   "author": "Chupurnov Valeriy<chupurnov@gmail.com>",
   "license": "MIT",
