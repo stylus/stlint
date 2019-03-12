@@ -7,6 +7,7 @@ interface IDepthControlState extends IState {
 }
 
 export class DepthControl extends Rule<IDepthControlState> {
+
 	nodesFilter = ['block', 'selector', 'obj'];
 
 	checkNode(node: Block | Selector | Obj): void {
@@ -40,8 +41,8 @@ export class DepthControl extends Rule<IDepthControlState> {
 
 			if (key) {
 				node.nodes.forEach(child => {
-					if (child instanceof Property && child.column - indentPref !== key.column) {
-						this.msg('incorrect indent', child.lineno, 0, child.column);
+					if (child instanceof Property && child.key instanceof Ident && child.key.column - indentPref !== key.column) {
+						this.msg('incorrect indent', child.key.lineno, 0, child.key.column);
 					}
 				})
 			}

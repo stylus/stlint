@@ -90,14 +90,15 @@ export class SortOrder extends Rule<IOrderState> {
 		let index = 0;
 		node.nodes.forEach((child) => {
 			if (child instanceof Property) {
+				const key = child.key.toString();
 				if (names[index] !== child.key) {
-					const needIndex = names.indexOf(child.key);
+					const needIndex = names.indexOf(key);
 
 					this.msg(
 						'Property must be ' + (needIndex < index ? 'higher' : 'lower') + ' - ' + names.join(', '),
 						child.lineno,
 						child.column,
-						child.column + child.key.length
+						child.column + key.length
 					);
 				}
 
@@ -111,15 +112,16 @@ export class SortOrder extends Rule<IOrderState> {
 			this.state.conf === 'grouped'
 		) {
 			let
-				i = 0,
 				lastGroup: null | number = null;
 
 			node.nodes.forEach((node) => {
 				if (node instanceof Property) {
-					let group = this.cache.ketToGroup[node.key];
+					let
+						key = node.key.toString(),
+						group = this.cache.ketToGroup[key];
 
 					if (group === undefined) {
-						const parts = node.key.split('-');
+						const parts = key.split('-');
 
 						if (parts.length > 1) {
 							let l = parts.length - 1;

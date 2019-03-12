@@ -179,18 +179,24 @@ export class Translator extends  Visitor<ISNode, INode> {
 	visitObject(block: ISNode, parent: INode) {
 		const node = new Obj(block, parent);
 
-		const vals = block.vals;
+		const
+			vals = block.vals,
+			keys = block.keys;
 
-		if (vals && typeof vals === 'object') {
+		if (vals && typeof vals === 'object' && keys && typeof keys === 'object') {
 			Object.keys(vals).forEach((key: string) => {
 				const elm: ISNode = (<Dictionary>vals)[key];
 
 				if (elm) {
+					if (!keys[key]) {
+						debugger;
+					}
 					const
 						property = new Property(vals[key], node),
+						keyItem = new Ident(keys[key], property),
 						ret = this.visit(vals[key], property);
 
-					property.key = key;
+					property.key = keyItem;
 					property.value = ret;
 
 					node.append(property);

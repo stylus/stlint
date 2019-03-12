@@ -16,6 +16,7 @@ export interface ISNode {
 	params?: ISNode;
 	args?: ISNode;
 	vals?: Dictionary<ISNode>;
+	keys?: Dictionary<ISNode>;
 
 	[key: string]: unknown;
 	toString(): string;

@@ -2281,13 +2281,16 @@ var Translator = /** @class */ (function (_super) {
     Translator.prototype.visitObject = function (block, parent) {
         var _this = this;
         var node = new ast_1.Obj(block, parent);
-        var vals = block.vals;
-        if (vals && typeof vals === 'object') {
+        var vals = block.vals, keys = block.keys;
+        if (vals && typeof vals === 'object' && keys && typeof keys === 'object') {
             Object.keys(vals).forEach(function (key) {
                 var elm = vals[key];
                 if (elm) {
-                    var property = new ast_1.Property(vals[key], node), ret = _this.visit(vals[key], property);
-                    property.key = key;
+                    if (!keys[key]) {
+                        debugger;
+                    }
+                    var property = new ast_1.Property(vals[key], node), keyItem = new ast_1.Ident(keys[key], property), ret = _this.visit(vals[key], property);
+                    property.key = keyItem;
                     property.value = ret;
                     node.append(property);
                 }
@@ -2829,8 +2832,8 @@ var DepthControl = /** @class */ (function (_super) {
             var key_1 = node.closest(ast_1.Ident);
             if (key_1) {
                 node.nodes.forEach(function (child) {
-                    if (child instanceof ast_1.Property && child.column - indentPref !== key_1.column) {
-                        _this.msg('incorrect indent', child.lineno, 0, child.column);
+                    if (child instanceof ast_1.Property && child.key instanceof ast_1.Ident && child.key.column - indentPref !== key_1.column) {
+                        _this.msg('incorrect indent', child.key.lineno, 0, child.key.column);
                     }
                 });
             }
@@ -3267,9 +3270,10 @@ var SortOrder = /** @class */ (function (_super) {
         var index = 0;
         node.nodes.forEach(function (child) {
             if (child instanceof ast_1.Property) {
+                var key = child.key.toString();
                 if (names[index] !== child.key) {
-                    var needIndex = names.indexOf(child.key);
-                    _this.msg('Property must be ' + (needIndex < index ? 'higher' : 'lower') + ' - ' + names.join(', '), child.lineno, child.column, child.column + child.key.length);
+                    var needIndex = names.indexOf(key);
+                    _this.msg('Property must be ' + (needIndex < index ? 'higher' : 'lower') + ' - ' + names.join(', '), child.lineno, child.column, child.column + key.length);
                 }
                 index += 1;
             }
@@ -3277,12 +3281,12 @@ var SortOrder = /** @class */ (function (_super) {
         if (!this.errors.length &&
             names.length >= this.state.startGroupChecking &&
             this.state.conf === 'grouped') {
-            var i = 0, lastGroup_1 = null;
+            var lastGroup_1 = null;
             node.nodes.forEach(function (node) {
                 if (node instanceof ast_1.Property) {
-                    var group = _this.cache.ketToGroup[node.key];
+                    var key = node.key.toString(), group = _this.cache.ketToGroup[key];
                     if (group === undefined) {
-                        var parts = node.key.split('-');
+                        var parts = key.split('-');
                         if (parts.length > 1) {
                             var l = parts.length - 1;
                             while (l > 0 && group === undefined) {
