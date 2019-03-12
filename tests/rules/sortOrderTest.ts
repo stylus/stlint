@@ -128,13 +128,14 @@ describe('Test order rule', () => {
 
 				parseAndRun('&__item3-title\n' +
 					'\tabsolute top basis(3) right basis(3)\n' +
+					'\tz-index 100\n' +
 					'\n' +
 					'\tdisplay flex\n' +
 					'\tflex-direction column\n' +
 					'\tjustify-content center\n' +
 					'\talign-items center\n' +
-					'\twidth basis(40)\n' +
 					'\tsize 12px 0\n' +
+					'\twidth basis(40)\n' +
 					'\tpadding basis(4) 0\n' +
 					'\n' +
 					'\tfont Roboto\n' +
@@ -154,8 +155,8 @@ describe('Test order rule', () => {
 					'\t\t&::before\n' +
 					'\t\t\tabsolute left top\n' +
 					'\n' +
-					'\t\t\tdisplay block\n' +
 					'\t\t\tcontent ""\n' +
+					'\t\t\tdisplay block\n' +
 					'\t\t\twidth 100%\n' +
 					'\t\t\theight basis()\n' +
 					'\n' +

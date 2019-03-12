@@ -20,3 +20,4 @@ export * from './params';
 export * from './bool';
 export * from './each';
 export * from './condition';
+export * from './unaryop';

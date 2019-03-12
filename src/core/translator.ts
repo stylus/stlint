@@ -21,7 +21,8 @@ import {
 	Params,
 	Bool,
 	Each,
-	Condition
+	Condition,
+	UnaryOp
 } from "./ast";
 import { INode } from "./types/ast/node";
 import { ISNode } from "./types/ast/snode";
@@ -52,7 +53,7 @@ export class Translator extends  Visitor<ISNode, INode> {
 	}
 
 	/**
-	 * Обходим элементы корневого элемента
+	 * Root element in AST
 	 * @param block
 	 */
 	visitRoot(block: ISNode) {
@@ -305,7 +306,7 @@ export class Translator extends  Visitor<ISNode, INode> {
 	}
 
 	/**
-	 * Funtions params
+	 * Functions params
 	 * @param block
 	 * @param parent
 	 */
@@ -325,8 +326,7 @@ export class Translator extends  Visitor<ISNode, INode> {
 	 * @param parent
 	 */
 	visitComment(block: ISNode, parent: INode): INode {
-		const node = new Comment(block, parent);
-		return node
+		return new Comment(block, parent);
 	}
 
 	/**
@@ -335,8 +335,7 @@ export class Translator extends  Visitor<ISNode, INode> {
 	 * @param parent
 	 */
 	visitBoolean(block: ISNode, parent: INode): INode {
-		const node = new Bool(block, parent);
-		return node
+		return new Bool(block, parent);
 	}
 
 	/**
@@ -345,8 +344,7 @@ export class Translator extends  Visitor<ISNode, INode> {
 	 * @param parent
 	 */
 	visitEach(block: ISNode, parent: INode): INode {
-		const node = new Each(block, parent);
-		return node
+		return new Each(block, parent);
 	}
 
 	/**
@@ -355,7 +353,25 @@ export class Translator extends  Visitor<ISNode, INode> {
 	 * @param parent
 	 */
 	visitIf(block: ISNode, parent: INode): INode {
-		const node = new Condition(block, parent);
-		return node
+		return new Condition(block, parent);
+	}
+
+	/**
+	 * Unary operation
+	 * @param block
+	 * @param parent
+	 */
+	visitUnaryOp(block: ISNode, parent: INode) {
+		const node = new UnaryOp(block, parent);
+
+		if (block.left) {
+			node.left = new Ident(block.left, node);
+		}
+
+		if (block.right) {
+			node.right = new Ident(block.right, node);
+		}
+
+		return node;
 	}
 }

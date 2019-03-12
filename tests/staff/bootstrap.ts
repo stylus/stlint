@@ -17,16 +17,22 @@ Config.getInstance({
  * @param rule
  */
 export const parseAndRun = (content: string, rule: IRule) => {
-	const
-		parser = new StylusParser({}),
-		ast = parser.parse(content),
-		runner = new Runner(ast, (node) => {
-			if (rule.checkNode && rule.isMatchType(node.nodeName)) {
-				rule.checkNode(node);
-			}
-		});
+	if (rule.checkNode) {
+		const
+			parser = new StylusParser({}),
+			ast = parser.parse(content),
+			runner = new Runner(ast, (node) => {
+				if (rule.checkNode && rule.isMatchType(node.nodeName)) {
+					rule.checkNode(node);
+				}
+			});
 
-	runner.visit(ast, null);
+		runner.visit(ast, null);
+	}
+
+	if (rule.checkLine) {
+		splitAndRun(content, rule)
+	}
 };
 
 /**

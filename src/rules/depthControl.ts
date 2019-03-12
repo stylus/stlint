@@ -1,6 +1,7 @@
 import { Rule } from "../core/rule";
 import { ILine } from "../core/types/line";
 import { IState } from "../core/types/state";
+import { Block, Selector, Property, Obj, Ident } from "../core/ast";
 
 const
 	indentMixedRe = /^[\s]+/,
@@ -19,7 +20,7 @@ export class DepthControl extends Rule<IDepthControlState> {
 		return match ? match[0].replace(/\t/g, ' '.repeat(indentPref)).length: 0;
 	}
 
-	checkLine(line: ILine): void | boolean {
+	checkLine1(line: ILine): void | boolean {
 		if (!line.line.trim().length) {
 			return;
 		}
@@ -54,5 +55,48 @@ export class DepthControl extends Rule<IDepthControlState> {
 		}
 
 		return hasError;
+	}
+
+	nodesFilter = ['block', 'selector', 'obj'];
+
+	checkNode(node: Block | Selector | Obj): void {
+		const
+			indentPref: number = typeof this.state.indentPref === 'number' ? this.state.indentPref : 1;
+
+		if (node instanceof Block || node instanceof Selector) {
+			const
+				selector: Selector | null = node.closest<Selector>(Selector);
+
+			if (selector) {
+				if (node instanceof Block) {
+					node.nodes.forEach(child => {
+						if (child instanceof Property && child.column - indentPref !== selector.column) {
+							this.msg('incorrect indent', child.lineno, 0, child.column);
+						}
+					})
+				} else if (node.column - indentPref !== selector.column) {
+					this.msg('incorrect indent', node.lineno, 0, node.column);
+				}
+			} else if (node instanceof Selector && node.column !== 1) {
+				this.msg('incorrect indent', node.lineno, 0, node.column);
+			}
+
+			return;
+		}
+
+		if (node instanceof Obj) {
+			const
+				key: Ident | null = node.closest<Ident>(Ident);
+
+			if (key) {
+				node.nodes.forEach(child => {
+					if (child instanceof Property && child.column - indentPref !== key.column) {
+						this.msg('incorrect indent', child.lineno, 0, child.column);
+					}
+				})
+			}
+
+			return;
+		}
 	}
 }

@@ -60,4 +60,22 @@ export class Node implements INode {
 	nextSibling(): null | INode {
 		return this.getSibling(true);
 	}
+
+	/**
+	 * Get match parent
+	 * @param parentClass
+	 */
+	closest<T extends Node>(parentClass: Function): null | T {
+		let node = this.parent;
+
+		while (node) {
+			if (node instanceof parentClass) {
+				return <T>node;
+			}
+
+			node = node.parent;
+		}
+
+		return null;
+	}
 }

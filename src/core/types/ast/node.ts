@@ -23,4 +23,5 @@ export interface INode {
 	getSibling(next: boolean): null | INode;
 	previousSibling(): null | INode;
 	nextSibling(): null | INode;
+	closest<T extends INode>(parentClass: Function): null | T;
 }

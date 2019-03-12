@@ -19,6 +19,25 @@ const withoutDollar = 'test = #ccc\n' +
 	'';
 
 describe('Test prefixVarsWithDollar rule', () => {
+	describe('For mixins', () => {
+		it('should not doing check', () => {
+			const rule = new PrefixVarsWithDollar({
+				conf: "always",
+				prefix: "$"
+			});
+
+			parseAndRun('$c = #ccc\n' +
+				'app()\n' +
+				'\tcolor #ccc\n' +
+				'\n' +
+				'.test\n' +
+				'\tfont-size 10px\n' +
+				'\tapp()\n',
+				rule);
+
+			expect(rule.errors.length).to.be.equal(0)
+		});
+	});
 	describe('Always', () => {
 		it('should check variable name and set error if name is not starting with dollar', () => {
 			const rule = new PrefixVarsWithDollar({

@@ -1,6 +1,6 @@
 import { DepthControl } from "../../src/rules";
 import { expect } from "chai";
-import { splitAndRun } from "../staff/bootstrap";
+import { parseAndRun } from "../staff/bootstrap";
 
 describe('Depth control test', () => {
 	describe('Right content', () => {
@@ -10,11 +10,12 @@ describe('Depth control test', () => {
 				indentPref: "tab"
 			});
 
-			splitAndRun(
+			parseAndRun(
 				'$p = {\n' +
 				'\ta: #ccc,\n' +
 				'\tb: #ddd\n' +
-				'}.test\n' +
+				'}\n' +
+				'.test\n' +
 				'\tmax-height red;\n' +
 				'\n' +
 				'\tborder black',
@@ -22,6 +23,29 @@ describe('Depth control test', () => {
 			);
 
 			expect(rule.errors.length).to.be.equal(0)
+		});
+		describe('Selector after nested selector', () => {
+			it('Should not throw error', () => {
+				const rule = new DepthControl({
+					conf: "always",
+					indentPref: "tab"
+				});
+
+				parseAndRun(
+					'.test\n' +
+					'\t&__offer\n' +
+					'\t\tdisplay block\n' +
+					'\n' +
+					'\t\t&:last-child\n' +
+					'\t\t\tbackground-position top center\n' +
+					'\n' +
+					'\t&__rtb-offers\n' +
+					'\t\tdisplay block\n',
+					rule
+				);
+
+				expect(rule.errors.length).to.be.equal(0)
+			});
 		});
 	});
 	describe('Wrong content', () => {
@@ -31,13 +55,13 @@ describe('Depth control test', () => {
 				indentPref: "tab"
 			});
 
-			splitAndRun(
+			parseAndRun(
 				'$p = {\n' +
 				'\ta: #ccc,\n' +
 				'\t\tb: #ddd\n' +
 				'}\n' +
 				'.test\n' +
-				'\tmax-height red;\n' +
+				'\tmax-height red\n' +
 				'\n' +
 				'\t\t\tmax-height red;\n' +
 				'\tborder black',
@@ -53,7 +77,7 @@ describe('Depth control test', () => {
 					indentPref: 2
 				});
 
-				splitAndRun(
+				parseAndRun(
 					'$p = {\n' +
 					'  a: #ccc,\n' +
 					'  b: #ddd\n' +

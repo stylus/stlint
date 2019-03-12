@@ -704,6 +704,7 @@ __export(__webpack_require__(/*! ./params */ "./src/core/ast/params.ts"));
 __export(__webpack_require__(/*! ./bool */ "./src/core/ast/bool.ts"));
 __export(__webpack_require__(/*! ./each */ "./src/core/ast/each.ts"));
 __export(__webpack_require__(/*! ./condition */ "./src/core/ast/condition.ts"));
+__export(__webpack_require__(/*! ./unaryop */ "./src/core/ast/unaryop.ts"));
 
 
 /***/ }),
@@ -850,6 +851,20 @@ var Node = /** @class */ (function () {
      */
     Node.prototype.nextSibling = function () {
         return this.getSibling(true);
+    };
+    /**
+     * Get match parent
+     * @param parentClass
+     */
+    Node.prototype.closest = function (parentClass) {
+        var node = this.parent;
+        while (node) {
+            if (node instanceof parentClass) {
+                return node;
+            }
+            node = node.parent;
+        }
+        return null;
     };
     return Node;
 }());
@@ -1077,6 +1092,45 @@ var Tree = /** @class */ (function (_super) {
     return Tree;
 }(node_1.Node));
 exports.Tree = Tree;
+
+
+/***/ }),
+
+/***/ "./src/core/ast/unaryop.ts":
+/*!*********************************!*\
+  !*** ./src/core/ast/unaryop.ts ***!
+  \*********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
+var UnaryOp = /** @class */ (function (_super) {
+    __extends(UnaryOp, _super);
+    function UnaryOp() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.left = null;
+        _this.right = null;
+        return _this;
+    }
+    return UnaryOp;
+}(node_1.Node));
+exports.UnaryOp = UnaryOp;
 
 
 /***/ }),
@@ -2136,7 +2190,7 @@ var Translator = /** @class */ (function (_super) {
         }
     };
     /**
-     * Обходим элементы корневого элемента
+     * Root element in AST
      * @param block
      */
     Translator.prototype.visitRoot = function (block) {
@@ -2324,7 +2378,7 @@ var Translator = /** @class */ (function (_super) {
         return node;
     };
     /**
-     * Funtions params
+     * Functions params
      * @param block
      * @param parent
      */
@@ -2341,8 +2395,7 @@ var Translator = /** @class */ (function (_super) {
      * @param parent
      */
     Translator.prototype.visitComment = function (block, parent) {
-        var node = new ast_1.Comment(block, parent);
-        return node;
+        return new ast_1.Comment(block, parent);
     };
     /**
      * Visit boolean value
@@ -2350,8 +2403,7 @@ var Translator = /** @class */ (function (_super) {
      * @param parent
      */
     Translator.prototype.visitBoolean = function (block, parent) {
-        var node = new ast_1.Bool(block, parent);
-        return node;
+        return new ast_1.Bool(block, parent);
     };
     /**
      * Cycle value
@@ -2359,8 +2411,7 @@ var Translator = /** @class */ (function (_super) {
      * @param parent
      */
     Translator.prototype.visitEach = function (block, parent) {
-        var node = new ast_1.Each(block, parent);
-        return node;
+        return new ast_1.Each(block, parent);
     };
     /**
      * Condition nodes
@@ -2368,7 +2419,21 @@ var Translator = /** @class */ (function (_super) {
      * @param parent
      */
     Translator.prototype.visitIf = function (block, parent) {
-        var node = new ast_1.Condition(block, parent);
+        return new ast_1.Condition(block, parent);
+    };
+    /**
+     * Unary operation
+     * @param block
+     * @param parent
+     */
+    Translator.prototype.visitUnaryOp = function (block, parent) {
+        var node = new ast_1.UnaryOp(block, parent);
+        if (block.left) {
+            node.left = new ast_1.Ident(block.left, node);
+        }
+        if (block.right) {
+            node.right = new ast_1.Ident(block.right, node);
+        }
         return node;
     };
     return Translator;
@@ -2427,7 +2492,7 @@ module.exports = {"css":["{","}","*","&","~/","/","../",":root","::selection","*
 /*! exports provided: mixedSpaces, prefixVarsWithDollar, commaInObject, depthControl, quotePref, semicolons, colons, color, leadingZero, useBasis, sortOrder, default */
 /***/ (function(module) {
 
-module.exports = {"mixedSpaces":{"indentPref":false},"prefixVarsWithDollar":{"conf":"always","prefix":"$"},"commaInObject":["never"],"depthControl":{"indentPref":"tab"},"quotePref":["double"],"semicolons":["never"],"colons":["never"],"color":{"conf":"uppercase","enabled":true,"allowOnlyInVar":true},"leadingZero":["always"],"useBasis":["always"],"sortOrder":{"conf":"grouped","startGroupChecking":6,"order":[["absolute","position","z-index","top","right","bottom","left"],["display","flex","flex-direction","justify-content","align-items","box-sizing","vertical-align","content","width","height","size","overflow","overflow-x","overflow-y","float","visibility","opacity","max-width","min-width","max-height","min-height","margin","margin-top","margin-right","margin-bottom","margin-left","padding","padding-top","padding-right","padding-bottom","padding-left"],["font","font-family","font-size","font-style","font-weight","font-stretch","line-height","letter-spacing","text-align","text-indent","text-transform","text-decoration","text-shadow","text-overflow"],["pointer-events","border","border-top","border-right","border-bottom","border-left","border-width","border-style","border-color","border-spacing","border-collapse","border-radius","color","background","background-color","background-image","background-size","background-repeat","clip","list-style","whitespace","outline","cursor","box-shadow","backface-visibility","will-change","transition","transform","animation"]]}};
+module.exports = {"mixedSpaces":{"indentPref":false},"prefixVarsWithDollar":{"conf":"always","prefix":"$"},"commaInObject":["never"],"depthControl":{"indentPref":"tab"},"quotePref":["double"],"semicolons":["never"],"colons":["never"],"color":{"conf":"uppercase","enabled":true,"allowOnlyInVar":true},"leadingZero":["always"],"useBasis":["always"],"sortOrder":{"conf":"grouped","startGroupChecking":6,"order":[["absolute","position","z-index","top","right","bottom","left"],["content","display","flex","flex-grow","flex-shrink","flex-basis","flex-direction","order","flex-order","flex-wrap","flex-flow","justify-content","align-self","align-items","align-content","flex-pack","flex-align","box-sizing","vertical-align","size","width","height","max-width","min-width","max-height","min-height","overflow","overflow-x","overflow-y","float","clear","visibility","opacity","margin","margin-top","margin-right","margin-bottom","margin-left","padding","padding-top","padding-right","padding-bottom","padding-left"],["font","font-family","font-size","font-weight","font-style","font-variant","font-size-adjust","font-stretch","line-height","letter-spacing","text-align","text-align-last","text-decoration","text-emphasis","text-emphasis-position","text-emphasis-style","text-emphasis-color","text-indent","text-justify","text-outline","text-transform","text-wrap","text-overflow","text-overflow-ellipsis","text-overflow-mode","word-spacing","word-wrap","word-break","tab-size","hyphens"],["pointer-events","border","border-spacing","border-collapse","border-width","border-style","border-color","border-top","border-top-width","border-top-style","border-top-color","border-right","border-right-width","border-right-style","border-right-color","border-bottom","border-bottom-width","border-bottom-style","border-bottom-color","border-left","border-left-width","border-left-style","border-left-color","border-radius","border-top-left-radius","border-top-right-radius","border-bottom-right-radius","border-bottom-left-radius","border-image","border-image-source","border-image-slice","border-image-width","border-image-outset","border-image-repeat","border-top-image","border-right-image","border-bottom-image","border-left-image","border-corner-image","border-top-left-image","border-top-right-image","border-bottom-right-image","border-bottom-left-image","color","background","filter","background-color","background-image","background-attachment","background-position","background-position-x","background-position-y","background-clip","background-origin","background-size","background-repeat","clip","list-style","outline","outline-width","outline-style","outline-color","outline-offset","cursor","box-shadow","text-shadow","table-layout","backface-visibility","will-change","transition","transform","animation"]]}};
 
 /***/ }),
 
@@ -2730,17 +2795,20 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
+var ast_1 = __webpack_require__(/*! ../core/ast */ "./src/core/ast/index.ts");
 var indentMixedRe = /^[\s]+/, indentTabRe = /^[\t]+/, indentSpaceRe = /^[ ]+/;
 var DepthControl = /** @class */ (function (_super) {
     __extends(DepthControl, _super);
     function DepthControl() {
-        return _super !== null && _super.apply(this, arguments) || this;
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.nodesFilter = ['block', 'selector', 'obj'];
+        return _this;
     }
     DepthControl.prototype.getIndent = function (ln, indentPref) {
         var match = this.state.indentPref === 'tab' ? indentTabRe.exec(ln) : indentSpaceRe.exec(ln);
         return match ? match[0].replace(/\t/g, ' '.repeat(indentPref)).length : 0;
     };
-    DepthControl.prototype.checkLine = function (line) {
+    DepthControl.prototype.checkLine1 = function (line) {
         if (!line.line.trim().length) {
             return;
         }
@@ -2764,6 +2832,40 @@ var DepthControl = /** @class */ (function (_super) {
             }
         }
         return hasError;
+    };
+    DepthControl.prototype.checkNode = function (node) {
+        var _this = this;
+        var indentPref = typeof this.state.indentPref === 'number' ? this.state.indentPref : 1;
+        if (node instanceof ast_1.Block || node instanceof ast_1.Selector) {
+            var selector_1 = node.closest(ast_1.Selector);
+            if (selector_1) {
+                if (node instanceof ast_1.Block) {
+                    node.nodes.forEach(function (child) {
+                        if (child instanceof ast_1.Property && child.column - indentPref !== selector_1.column) {
+                            _this.msg('incorrect indent', child.lineno, 0, child.column);
+                        }
+                    });
+                }
+                else if (node.column - indentPref !== selector_1.column) {
+                    this.msg('incorrect indent', node.lineno, 0, node.column);
+                }
+            }
+            else if (node instanceof ast_1.Selector && node.column !== 1) {
+                this.msg('incorrect indent', node.lineno, 0, node.column);
+            }
+            return;
+        }
+        if (node instanceof ast_1.Obj) {
+            var key_1 = node.closest(ast_1.Ident);
+            if (key_1) {
+                node.nodes.forEach(function (child) {
+                    if (child instanceof ast_1.Property && child.column - indentPref !== key_1.column) {
+                        _this.msg('incorrect indent', child.lineno, 0, child.column);
+                    }
+                });
+            }
+            return;
+        }
     };
     return DepthControl;
 }(rule_1.Rule));
@@ -2940,16 +3042,16 @@ var PrefixVarsWithDollar = /** @class */ (function (_super) {
         return _this;
     }
     PrefixVarsWithDollar.prototype.checkNode = function (node) {
-        if (!(node.parent instanceof ast_1.Tree)) {
+        if (!(node.parent instanceof ast_1.Tree) || (node.value instanceof ast_1.Func)) {
             return;
         }
         var hasDollar = node.key.indexOf(this.state.prefix) === 0;
         if (this.state.conf === 'always' && hasDollar === false) {
             //console.log(node.key.length);
-            this.msg("variables and parameters must be prefixed with the " + this.state.prefix + " sign", node.lineno, node.column, node.column + node.key.length - 1);
+            this.msg("variables and parameters must be prefixed with the " + this.state.prefix + " sign (" + node.key + ")", node.lineno, node.column, node.column + node.key.length - 1);
         }
         else if (this.state.conf === 'never' && hasDollar === true) {
-            this.msg(this.state.prefix + " sign is disallowed for variables and parameters", node.lineno, node.column, node.column + node.key.length - 1);
+            this.msg(this.state.prefix + " sign is disallowed for variables and parameters (" + node.key + ")", node.lineno, node.column, node.column + node.key.length - 1);
         }
         return hasDollar;
     };

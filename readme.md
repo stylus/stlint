@@ -1,11 +1,11 @@
-# Stylus Linter by Edadeal
+# Stylus Linter
 ### Install
 ```bash
-npm i stylus-linter -D
+npm i stlint -D
 ```
 ### Use
 ```bash
-npx stylus-linter ./src/file.styl
+npx stlint ./src/file.styl
 ```
 
 ### Options
