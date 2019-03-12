@@ -1,7 +1,4 @@
-declare module 'stylus-pro/lib/parser';
-declare module 'stylus-pro/lib/utils';
-declare module 'stylus-pro/lib/visitor/evaluator';
-declare module 'stylus-pro/lib/visitor/normalizer';
+declare module 'stylus/lib/parser';
 declare module 'strip-json-comments';
 declare module 'columnify';
 declare module 'chalk';

@@ -1490,7 +1490,7 @@ exports.Line = Line;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var Parser = __webpack_require__(/*! stylus-pro/lib/parser */ "stylus-pro/lib/parser");
+var Parser = __webpack_require__(/*! stylus/lib/parser */ "stylus/lib/parser");
 var translator_1 = __webpack_require__(/*! ./translator */ "./src/core/translator.ts");
 var StylusParser = /** @class */ (function () {
     /**
@@ -3513,14 +3513,14 @@ module.exports = require("strip-json-comments");
 
 /***/ }),
 
-/***/ "stylus-pro/lib/parser":
-/*!****************************************!*\
-  !*** external "stylus-pro/lib/parser" ***!
-  \****************************************/
+/***/ "stylus/lib/parser":
+/*!************************************!*\
+  !*** external "stylus/lib/parser" ***!
+  \************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = require("stylus-pro/lib/parser");
+module.exports = require("stylus/lib/parser");
 
 /***/ }),
 

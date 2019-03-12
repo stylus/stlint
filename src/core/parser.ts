@@ -1,4 +1,4 @@
-import Parser = require('stylus-pro/lib/parser');
+import Parser = require('stylus/lib/parser');
 import { Tree } from "./ast";
 import { Translator } from "./translator";
 import { ISNode } from "./types/ast/snode";
