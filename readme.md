@@ -142,8 +142,6 @@ Another prefix
 	"prefix": "@"
 }
 ```
-## Disclaimer
-### Some rules based on https://github.com/SimenB/stylint
 
 ### License
 MIT
