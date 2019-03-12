@@ -2796,7 +2796,6 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
 var ast_1 = __webpack_require__(/*! ../core/ast */ "./src/core/ast/index.ts");
-var indentMixedRe = /^[\s]+/, indentTabRe = /^[\t]+/, indentSpaceRe = /^[ ]+/;
 var DepthControl = /** @class */ (function (_super) {
     __extends(DepthControl, _super);
     function DepthControl() {
@@ -2804,35 +2803,6 @@ var DepthControl = /** @class */ (function (_super) {
         _this.nodesFilter = ['block', 'selector', 'obj'];
         return _this;
     }
-    DepthControl.prototype.getIndent = function (ln, indentPref) {
-        var match = this.state.indentPref === 'tab' ? indentTabRe.exec(ln) : indentSpaceRe.exec(ln);
-        return match ? match[0].replace(/\t/g, ' '.repeat(indentPref)).length : 0;
-    };
-    DepthControl.prototype.checkLine1 = function (line) {
-        if (!line.line.trim().length) {
-            return;
-        }
-        var indentPref = typeof this.state.indentPref === 'number' ? this.state.indentPref : 4;
-        var hasError = false, currentLength = this.getIndent(line.line, indentPref);
-        if (currentLength % indentPref) {
-            var match = indentMixedRe.exec(line.line);
-            this.msg('incorrect indent', line.lineno, 0, match ? match[0].length : 0);
-            return false;
-        }
-        var prev = line.prev();
-        while (prev && !prev.line.length) {
-            prev = prev.prev();
-        }
-        if (prev) {
-            var depthDiff = Math.abs(currentLength - this.getIndent(prev.line, indentPref));
-            if (depthDiff !== indentPref && depthDiff !== 0) {
-                var match = indentMixedRe.exec(line.line);
-                this.msg('incorrect indent', line.lineno, 0, match ? match[0].length : 0);
-                return false;
-            }
-        }
-        return hasError;
-    };
     DepthControl.prototype.checkNode = function (node) {
         var _this = this;
         var indentPref = typeof this.state.indentPref === 'number' ? this.state.indentPref : 1;
