@@ -1,23 +1,14 @@
 $p = {
-	show: true
+	barBorderRadius: 2px
+	pin: false
 }
 
-@keyframes spinner
-	0%
-		transform rotate(0)
-	100%
-		transform rotate(360deg)
+.i-block
+	z-index 1
 
+	&-title
+		color $p.pointTitleColor
 
-&__wrapper
-	width 100%
-	max-width $p.maxContentWidth
-	margin 0 auto
-	@media screen and (max-width $p.widthBreakPoint)
-		width 95%
+		if $p.fonts
+			font-roboto Medium
 
-
-		if $p.show
-			.test
-				display none
-				absolute
