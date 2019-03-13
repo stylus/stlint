@@ -1,6 +1,23 @@
+$p = {
+	show: true
+}
+
+@keyframes spinner
+	0%
+		transform rotate(0)
+	100%
+		transform rotate(360deg)
+
+
 &__wrapper
 	width 100%
 	max-width $p.maxContentWidth
 	margin 0 auto
-		@media screen and (max-width $p.widthBreakPoint)
-			width 95%
+	@media screen and (max-width $p.widthBreakPoint)
+		width 95%
+
+
+		if $p.show
+			.test
+				display none
+				absolute

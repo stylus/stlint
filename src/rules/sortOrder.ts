@@ -1,5 +1,5 @@
 import { Rule } from "../core/rule";
-import { Block, Property } from "../core/ast";
+import { Block, Property, Value } from "../core/ast";
 import { IState } from "../core/types/state";
 
 interface IOrderState extends IState {
@@ -17,7 +17,7 @@ export class SortOrder extends Rule<IOrderState> {
 			startGroupChecking = this.state.startGroupChecking || 6;
 
 		node.nodes.forEach((child) => {
-			if (child instanceof Property) {
+			if (child instanceof Property || child instanceof Value) {
 				names.push(child.key.toString().toLowerCase());
 			}
 		});
@@ -39,7 +39,7 @@ export class SortOrder extends Rule<IOrderState> {
 						sort.push(key)
 					} else {
 						sort.push.apply(sort, key);
-						key.forEach((subkey) => this.cache.ketToGroup[subkey] = groupIndex);
+						key.forEach(subkey => this.cache.ketToGroup[subkey] = groupIndex);
 						groupIndex += 1;
 					}
 					return sort;
@@ -92,7 +92,7 @@ export class SortOrder extends Rule<IOrderState> {
 
 		let index = 0;
 		node.nodes.forEach((child) => {
-			if (child instanceof Property) {
+			if (child instanceof Property || child instanceof Value) {
 				const key = child.key.toString();
 				if (names[index] !== child.key) {
 					const needIndex = names.indexOf(key);

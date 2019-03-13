@@ -12,6 +12,7 @@ export interface ISNode {
 	left?: ISNode;
 	right?: ISNode;
 	type?: ISNode;
+	cond?: ISNode;
 	predicate?: string;
 
 	nodes: ISNode[];

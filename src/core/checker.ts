@@ -77,8 +77,10 @@ export class Checker {
 
 			lines
 				.forEach((line, index) => {
-					Rule.beforeCheckLine(line);
-					this.rulesListForLines.forEach(rule => rule.checkLine && rule.checkLine(line, index, lines));
+					if (index) {
+						Rule.beforeCheckLine(line);
+						this.rulesListForLines.forEach(rule => rule.checkLine && rule.checkLine(line, index, lines));
+					}
 				});
 
 		} catch (e) {

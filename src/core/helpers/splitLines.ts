@@ -6,7 +6,7 @@ export function splitLines(content: string): Line[] {
 
 	content.split(/\n/)
 		.forEach((ln, index) => {
-			lines[index] = new Line(ln, index + 1, lines);
+			lines[index + 1] = new Line(ln, index + 1, lines);
 		});
 
 	return lines;

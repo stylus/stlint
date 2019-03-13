@@ -1,6 +1,6 @@
 import { Rule } from "../core/rule";
 import { IState } from "../core/types/state";
-import { Block, Selector, Property, Obj, Ident, Node, Media } from "../core/ast";
+import { Block, Selector, Property, Obj, Ident, Node, Media, Condition } from "../core/ast";
 
 interface IDepthControlState extends IState {
 	indentPref?: "tab" | number
@@ -16,30 +16,30 @@ export class DepthControl extends Rule<IDepthControlState> {
 
 		if (node instanceof Block || node instanceof Selector) {
 			let
-				selector: Selector | Media | null = node.closest<Selector | Media>('selector|media'),
+				parentNode: Node | null = node.closest<Node>('selector|media|condition|keyframes'),
 				needCheckPreviousSelector: boolean = false,
-				prev: Node | null = selector;
+				prev: Node | null = parentNode;
 
-			if (selector && selector instanceof Selector) {
-				while (prev && selector)  {
+			if (parentNode && parentNode instanceof Selector) {
+				while (prev && parentNode)  {
 					prev = prev.previousSibling();
 
-					if (prev && prev instanceof Selector && prev.lineno === selector.lineno) {
-						selector = <Selector>prev;
+					if (prev && prev instanceof Selector && prev.lineno === parentNode.lineno) {
+						parentNode = <Selector>prev;
 					} else {
 						break;
 					}
 				}
 			}
 
-			if (selector) {
+			if (parentNode) {
 				if (node instanceof Block) {
 					node.nodes.forEach(child => {
-						if (selector && (child instanceof Property || child instanceof Media) && child.column - indentPref !== selector.column) {
+						if (parentNode && (child instanceof Property || child instanceof Media || child instanceof Condition) && child.column - indentPref !== parentNode.column) {
 							this.msg('incorrect indent', child.lineno, 0, child.column);
 						}
 					})
-				} else if (node.column - indentPref !== selector.column) {
+				} else if (node.column - indentPref !== parentNode.column) {
 					needCheckPreviousSelector = true;
 				}
 			} else if (node instanceof Selector && node.column !== 1) {

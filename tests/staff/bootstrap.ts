@@ -4,6 +4,7 @@ import { Runner } from "../../src/core/runner";
 import { StylusParser } from "../../src/core/parser";
 import { Rule } from "../../src/core/rule";
 import { Line } from "../../src/core/line";
+import { splitLines } from "../../src/core/helpers/splitLines";
 
 Config.getInstance({
 	reporter: 'emptyout',
@@ -42,25 +43,17 @@ export const parseAndRun = (content: string, rule: IRule) => {
  * @param rule
  */
 export const splitAndRun = (content: string, rule: IRule) => {
-	const lines: Line[] = [];
+	const lines: Line[] = splitLines(content);
 
 	if (rule.checkLine) {
-		content
-			.split('\n')
-			.map((ln, index) => {
-				lines.push(new Line(
-					ln,
-					index,
-					lines
-				));
-			});
-
 		Rule.clearContext();
 
 		lines
 			.forEach((line, index) => {
-				Rule.beforeCheckLine(line);
-				rule.checkLine && rule.checkLine(line, index, lines);
+				if (index) {
+					Rule.beforeCheckLine(line);
+					rule.checkLine && rule.checkLine(line, index, lines);
+				}
 			})
 	}
 };

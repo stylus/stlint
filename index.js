@@ -471,7 +471,9 @@ var node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
 var Condition = /** @class */ (function (_super) {
     __extends(Condition, _super);
     function Condition() {
-        return _super !== null && _super.apply(this, arguments) || this;
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.cond = null;
+        return _this;
     }
     return Condition;
 }(node_1.Node));
@@ -750,6 +752,43 @@ __export(__webpack_require__(/*! ./media */ "./src/core/ast/media.ts"));
 __export(__webpack_require__(/*! ./querylist */ "./src/core/ast/querylist.ts"));
 __export(__webpack_require__(/*! ./query */ "./src/core/ast/query.ts"));
 __export(__webpack_require__(/*! ./feature */ "./src/core/ast/feature.ts"));
+__export(__webpack_require__(/*! ./keyframes */ "./src/core/ast/keyframes.ts"));
+
+
+/***/ }),
+
+/***/ "./src/core/ast/keyframes.ts":
+/*!***********************************!*\
+  !*** ./src/core/ast/keyframes.ts ***!
+  \***********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
+var Keyframes = /** @class */ (function (_super) {
+    __extends(Keyframes, _super);
+    function Keyframes() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return Keyframes;
+}(node_1.Node));
+exports.Keyframes = Keyframes;
 
 
 /***/ }),
@@ -1363,6 +1402,16 @@ var Value = /** @class */ (function (_super) {
     function Value() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
+    Object.defineProperty(Value.prototype, "key", {
+        get: function () {
+            if (this.nodes.length && this.nodes[0].key) {
+                return String(this.nodes[0].key);
+            }
+            return '';
+        },
+        enumerable: true,
+        configurable: true
+    });
     Value.prototype.toString = function () {
         return this.nodes.join('');
     };
@@ -1517,8 +1566,10 @@ var Checker = /** @class */ (function () {
             var lines_1 = splitLines_1.splitLines(content);
             lines_1
                 .forEach(function (line, index) {
-                rule_1.Rule.beforeCheckLine(line);
-                _this.rulesListForLines.forEach(function (rule) { return rule.checkLine && rule.checkLine(line, index, lines_1); });
+                if (index) {
+                    rule_1.Rule.beforeCheckLine(line);
+                    _this.rulesListForLines.forEach(function (rule) { return rule.checkLine && rule.checkLine(line, index, lines_1); });
+                }
             });
         }
         catch (e) {
@@ -1605,7 +1656,7 @@ function splitLines(content) {
     var lines = [];
     content.split(/\n/)
         .forEach(function (ln, index) {
-        lines[index] = new line_1.Line(ln, index + 1, lines);
+        lines[index + 1] = new line_1.Line(ln, index + 1, lines);
     });
     return lines;
 }
@@ -2534,9 +2585,11 @@ var Translator = /** @class */ (function (_super) {
         var node = new ast_1.Member(block, parent);
         if (block.left) {
             node.left = new ast_1.Ident(block.left, node);
+            node.left.key = block.name || '';
         }
         if (block.right) {
             node.right = new ast_1.Ident(block.right, node);
+            node.right.key = block.name || '';
         }
         return node;
     };
@@ -2616,7 +2669,17 @@ var Translator = /** @class */ (function (_super) {
      * @param parent
      */
     Translator.prototype.visitIf = function (block, parent) {
-        return new ast_1.Condition(block, parent);
+        var node = new ast_1.Condition(block, parent);
+        if (block.block) {
+            node.append(this.visit(block.block, node));
+        }
+        if (block.cond) {
+            node.cond = this.visit(block.cond, node);
+        }
+        this.eachVisit(block.elses, function (ret) {
+            node.append(ret);
+        }, node);
+        return node;
     };
     /**
      * Unary operation
@@ -2647,8 +2710,8 @@ var Translator = /** @class */ (function (_super) {
             node.query = this.visit(block.val, node);
         }
         // Hack because stylus set Media.column on end of line
-        if (this.lines[node.lineno - 1]) {
-            var column = this.lines[node.lineno - 1].line.indexOf('@media');
+        if (this.lines[node.lineno]) {
+            var column = this.lines[node.lineno].line.indexOf('@media');
             if (~column && column + 1 !== node.column) {
                 node.column = column + 1;
             }
@@ -2692,6 +2755,21 @@ var Translator = /** @class */ (function (_super) {
         }, node);
         if (block.expr) {
             node.append(this.visit(block.expr, node));
+        }
+        return node;
+    };
+    /**
+     * Visit keyframes node
+     * @param block
+     * @param parent
+     */
+    Translator.prototype.visitKeyframes = function (block, parent) {
+        var node = new ast_1.Keyframes(block, parent);
+        this.eachVisit(block.segments, function (ret) {
+            node.append(ret, 'segments');
+        }, node);
+        if (block.block) {
+            node.append(this.visit(block.block, node));
         }
         return node;
     };
@@ -2751,7 +2829,7 @@ module.exports = {"css":["{","}","*","&","~/","/","../",":root","::selection","*
 /*! exports provided: mixedSpaces, prefixVarsWithDollar, commaInObject, depthControl, quotePref, semicolons, colons, color, leadingZero, useMixinInsteadUnit, sortOrder, default */
 /***/ (function(module) {
 
-module.exports = {"mixedSpaces":{"indentPref":false},"prefixVarsWithDollar":{"conf":"always","prefix":"$"},"commaInObject":["never"],"depthControl":{"indentPref":"tab"},"quotePref":["double"],"semicolons":["never"],"colons":["never"],"color":{"conf":"uppercase","enabled":true,"allowOnlyInVar":true},"leadingZero":["always"],"useMixinInsteadUnit":{"conf":"always","mixin":"basis","unitType":"px"},"sortOrder":{"conf":"grouped","startGroupChecking":6,"order":[["absolute","position","z-index","top","right","bottom","left"],["content","display","flex","flex-grow","flex-shrink","flex-basis","flex-direction","order","flex-order","flex-wrap","flex-flow","justify-content","align-self","align-items","align-content","flex-pack","flex-align","box-sizing","vertical-align","size","width","height","max-width","min-width","max-height","min-height","overflow","overflow-x","overflow-y","float","clear","visibility","opacity","margin","margin-top","margin-right","margin-bottom","margin-left","padding","padding-top","padding-right","padding-bottom","padding-left"],["font","font-family","font-size","font-weight","font-style","font-variant","font-size-adjust","font-stretch","line-height","letter-spacing","text-align","text-align-last","text-decoration","text-emphasis","text-emphasis-position","text-emphasis-style","text-emphasis-color","text-indent","text-justify","text-outline","text-transform","text-wrap","text-overflow","text-overflow-ellipsis","text-overflow-mode","word-spacing","word-wrap","word-break","tab-size","hyphens"],["pointer-events","border","border-spacing","border-collapse","border-width","border-style","border-color","border-top","border-top-width","border-top-style","border-top-color","border-right","border-right-width","border-right-style","border-right-color","border-bottom","border-bottom-width","border-bottom-style","border-bottom-color","border-left","border-left-width","border-left-style","border-left-color","border-radius","border-top-left-radius","border-top-right-radius","border-bottom-right-radius","border-bottom-left-radius","border-image","border-image-source","border-image-slice","border-image-width","border-image-outset","border-image-repeat","border-top-image","border-right-image","border-bottom-image","border-left-image","border-corner-image","border-top-left-image","border-top-right-image","border-bottom-right-image","border-bottom-left-image","color","background","filter","background-color","background-image","background-attachment","background-position","background-position-x","background-position-y","background-clip","background-origin","background-size","background-repeat","clip","list-style","outline","outline-width","outline-style","outline-color","outline-offset","cursor","box-shadow","text-shadow","table-layout","backface-visibility","will-change","transition","transform","animation"]]}};
+module.exports = {"mixedSpaces":{"indentPref":false},"prefixVarsWithDollar":{"conf":"always","prefix":"$"},"commaInObject":["never"],"depthControl":{"indentPref":"tab"},"quotePref":["double"],"semicolons":["never"],"colons":["never"],"color":{"conf":"uppercase","enabled":true,"allowOnlyInVar":true},"leadingZero":["always"],"useMixinInsteadUnit":{"conf":"always","mixin":"basis","unitType":"px"},"sortOrder":{"conf":"grouped","startGroupChecking":6,"order":[["absolute","position","z-index","top","right","bottom","left"],["content","display","flexbox","flex","flex-grow","flex-shrink","flex-basis","flex-direction","order","flex-order","flex-wrap","flex-flow","justify-content","align-self","align-items","align-content","flex-pack","flex-align","box-sizing","vertical-align","size","width","height","max-width","min-width","max-height","min-height","overflow","overflow-x","overflow-y","float","clear","visibility","opacity","margin","margin-top","margin-right","margin-bottom","margin-left","padding","padding-top","padding-right","padding-bottom","padding-left"],["font","font-family","font-size","font-weight","font-style","font-variant","font-size-adjust","font-stretch","line-height","letter-spacing","text-align","text-align-last","text-decoration","text-emphasis","text-emphasis-position","text-emphasis-style","text-emphasis-color","text-indent","text-justify","text-outline","text-transform","text-wrap","text-overflow","text-overflow-ellipsis","text-overflow-mode","word-spacing","word-wrap","word-break","tab-size","hyphens"],["pointer-events","border","border-spacing","border-collapse","border-width","border-style","border-color","border-top","border-top-width","border-top-style","border-top-color","border-right","border-right-width","border-right-style","border-right-color","border-bottom","border-bottom-width","border-bottom-style","border-bottom-color","border-left","border-left-width","border-left-style","border-left-color","border-radius","border-top-left-radius","border-top-right-radius","border-bottom-right-radius","border-bottom-left-radius","border-image","border-image-source","border-image-slice","border-image-width","border-image-outset","border-image-repeat","border-top-image","border-right-image","border-bottom-image","border-left-image","border-corner-image","border-top-left-image","border-top-right-image","border-bottom-right-image","border-bottom-left-image","color","background","filter","background-color","background-image","background-attachment","background-position","background-position-x","background-position-y","background-clip","background-origin","background-size","background-repeat","clip","list-style","outline","outline-width","outline-style","outline-color","outline-offset","cursor","box-shadow","text-shadow","table-layout","backface-visibility","will-change","transition","transform","animation"]]}};
 
 /***/ }),
 
@@ -3066,27 +3144,27 @@ var DepthControl = /** @class */ (function (_super) {
         var _this = this;
         var indentPref = typeof this.state.indentPref === 'number' ? this.state.indentPref : 1;
         if (node instanceof ast_1.Block || node instanceof ast_1.Selector) {
-            var selector_1 = node.closest('selector|media'), needCheckPreviousSelector = false, prev = selector_1;
-            if (selector_1 && selector_1 instanceof ast_1.Selector) {
-                while (prev && selector_1) {
+            var parentNode_1 = node.closest('selector|media|condition|keyframes'), needCheckPreviousSelector = false, prev = parentNode_1;
+            if (parentNode_1 && parentNode_1 instanceof ast_1.Selector) {
+                while (prev && parentNode_1) {
                     prev = prev.previousSibling();
-                    if (prev && prev instanceof ast_1.Selector && prev.lineno === selector_1.lineno) {
-                        selector_1 = prev;
+                    if (prev && prev instanceof ast_1.Selector && prev.lineno === parentNode_1.lineno) {
+                        parentNode_1 = prev;
                     }
                     else {
                         break;
                     }
                 }
             }
-            if (selector_1) {
+            if (parentNode_1) {
                 if (node instanceof ast_1.Block) {
                     node.nodes.forEach(function (child) {
-                        if (selector_1 && (child instanceof ast_1.Property || child instanceof ast_1.Media) && child.column - indentPref !== selector_1.column) {
+                        if (parentNode_1 && (child instanceof ast_1.Property || child instanceof ast_1.Media || child instanceof ast_1.Condition) && child.column - indentPref !== parentNode_1.column) {
                             _this.msg('incorrect indent', child.lineno, 0, child.column);
                         }
                     });
                 }
-                else if (node.column - indentPref !== selector_1.column) {
+                else if (node.column - indentPref !== parentNode_1.column) {
                     needCheckPreviousSelector = true;
                 }
             }
@@ -3481,7 +3559,7 @@ var SortOrder = /** @class */ (function (_super) {
         var _this = this;
         var names = [], order = this.state.order || [], startGroupChecking = this.state.startGroupChecking || 6;
         node.nodes.forEach(function (child) {
-            if (child instanceof ast_1.Property) {
+            if (child instanceof ast_1.Property || child instanceof ast_1.Value) {
                 names.push(child.key.toString().toLowerCase());
             }
         });
@@ -3543,7 +3621,7 @@ var SortOrder = /** @class */ (function (_super) {
         }
         var index = 0;
         node.nodes.forEach(function (child) {
-            if (child instanceof ast_1.Property) {
+            if (child instanceof ast_1.Property || child instanceof ast_1.Value) {
                 var key = child.key.toString();
                 if (names[index] !== child.key) {
                     var needIndex = names.indexOf(key);

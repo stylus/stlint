@@ -56,7 +56,7 @@ describe('Test order rule', () => {
 		});
 	});
 	describe('Grouped order', () => {
-		it('should check properties in alphabetical order', () => {
+		it('should check properties order by list positions', () => {
 			const rule = new SortOrder({
 				conf: "grouped",
 				startGroupChecking: 1,
@@ -65,6 +65,7 @@ describe('Test order rule', () => {
 						'position',
 						'right',
 						'left',
+						'flexbox'
 					],
 					['font-size'],
 					[
@@ -78,6 +79,7 @@ describe('Test order rule', () => {
 				'\tposition absolute\n' +
 				'\tright 10px\n' +
 				'\tleft 10px\n' +
+				'\tflexbox()\n' +
 				'\tfont-size 10px\n' +
 				'\tcolor #CCC\n' +
 				'\tbackground-color $p.color\n' +

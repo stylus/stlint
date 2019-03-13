@@ -234,4 +234,93 @@ describe('Depth control test', () => {
 			});
 		});
 	});
+	describe('IF ELSE statement', () => {
+		describe('Right depth', () => {
+			it('Should not show error', () => {
+				const rule = new DepthControl({
+					conf: "always"
+				});
+
+				parseAndRun(
+					'$p = {\n' +
+					'\tshow: true\n' +
+					'}\n' +
+					'.test\n' +
+					'\tdisplay none\n' +
+					'\tif $p.show\n' +
+					'\t\tdisplay block\n' +
+					''
+					,
+					rule
+				);
+
+				expect(rule.errors.length).to.be.equal(0)
+			});
+		});
+		describe('Wrong depth', () => {
+			it('Should show error', () => {
+				const rule = new DepthControl({
+					conf: "always"
+				});
+
+				parseAndRun(
+					'$p = {\n' +
+					'\tshow: true\n' +
+					'}\n' +
+					'.test\n' +
+					'\tdisplay none\n' +
+					'\tif $p.show\n' +
+					'\t\t\tdisplay block\n' +
+					''
+					,
+					rule
+				);
+
+				expect(rule.errors.length).to.be.equal(1)
+			});
+		});
+	});
+
+	describe('Keyframes', () => {
+		describe('Right depth', () => {
+			it('Should not show error', () => {
+				const rule = new DepthControl({
+					conf: "always"
+				});
+
+				parseAndRun(
+					'@keyframes spinner\n' +
+					'\t0%\n' +
+					'\t\ttransform rotate(0)\n' +
+					'\t100%\n' +
+					'\t\ttransform rotate(360deg)\n' +
+					''
+					,
+					rule
+				);
+
+				expect(rule.errors.length).to.be.equal(0)
+			});
+		});
+		describe('Wrong depth', () => {
+			it('Should show error', () => {
+				const rule = new DepthControl({
+					conf: "always"
+				});
+
+				parseAndRun(
+					'@keyframes spinner\n' +
+					'\t\t0%\n' +
+					'\t\t\ttransform rotate(0)\n' +
+					'\t100%\n' +
+					'\t\ttransform rotate(360deg)\n' +
+					''
+					,
+					rule
+				);
+
+				expect(rule.errors.length).to.be.equal(2)
+			});
+		});
+	});
 });

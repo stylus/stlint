@@ -23,7 +23,7 @@ import {
 	Bool,
 	Each,
 	Condition,
-	UnaryOp, Media, Querylist, Query, Feature
+	UnaryOp, Media, Querylist, Query, Feature, Keyframes
 } from "./ast";
 import { INode } from "./types/ast/node";
 import { ISNode } from "./types/ast/snode";
@@ -115,7 +115,7 @@ export class Translator extends  Visitor<ISNode, INode> {
 		node.key = block.name || (Array.isArray(block.segments) ? block.segments.join('') : '');
 
 		if (block.expr) {
-			node.value = this.visit(block.expr, node);
+			node.value = <Value>this.visit(block.expr, node);
 		}
 
 		return node;
@@ -157,7 +157,7 @@ export class Translator extends  Visitor<ISNode, INode> {
 		node.key = block.string || block.name || '';
 
 		if (block.val) {
-			node.value = this.visit(block.val, node);
+			node.value = <Value>this.visit(block.val, node);
 		}
 
 		return node;
@@ -202,7 +202,7 @@ export class Translator extends  Visitor<ISNode, INode> {
 						ret = this.visit(vals[key], property);
 
 					property.key = keyItem;
-					property.value = ret;
+					property.value = <Value>ret;
 
 					node.append(property);
 				}
@@ -263,10 +263,12 @@ export class Translator extends  Visitor<ISNode, INode> {
 
 		if (block.left) {
 			node.left = new Ident(block.left, node);
+			node.left.key = block.name || '';
 		}
 
 		if (block.right) {
 			node.right = new Ident(block.right, node);
+			node.right.key = block.name || '';
 		}
 
 		return node;
@@ -364,7 +366,21 @@ export class Translator extends  Visitor<ISNode, INode> {
 	 * @param parent
 	 */
 	visitIf(block: ISNode, parent: INode): INode {
-		return new Condition(block, parent);
+		const node = new Condition(block, parent);
+
+		if (block.block) {
+			node.append(this.visit(block.block, node));
+		}
+
+		if (block.cond) {
+			node.cond = this.visit(block.cond, node);
+		}
+
+		this.eachVisit(block.elses, (ret: INode) => {
+			node.append(ret);
+		}, node);
+
+		return node;
 	}
 
 	/**
@@ -403,8 +419,8 @@ export class Translator extends  Visitor<ISNode, INode> {
 		}
 
 		// Hack because stylus set Media.column on end of line
-		if (this.lines[node.lineno - 1]) {
-			const column = this.lines[node.lineno - 1].line.indexOf('@media');
+		if (this.lines[node.lineno]) {
+			const column = this.lines[node.lineno].line.indexOf('@media');
 
 			if (~column && column + 1 !== node.column) {
 				node.column = column + 1;
@@ -461,6 +477,25 @@ export class Translator extends  Visitor<ISNode, INode> {
 
 		if (block.expr) {
 			node.append(this.visit(block.expr, node));
+		}
+
+		return node;
+	}
+
+	/**
+	 * Visit keyframes node
+	 * @param block
+	 * @param parent
+	 */
+	visitKeyframes(block: ISNode, parent: INode) {
+		const node = new Keyframes(block, parent);
+
+		this.eachVisit(block.segments, (ret: INode) => {
+			node.append(ret, 'segments');
+		}, node);
+
+		if (block.block) {
+			node.append(this.visit(block.block, node));
 		}
 
 		return node;
