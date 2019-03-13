@@ -1705,6 +1705,12 @@ var Line = /** @class */ (function () {
         }
         return null;
     };
+    /**
+     * Check the line is empty
+     */
+    Line.prototype.isEmpty = function () {
+        return this.line.trim().length === 0;
+    };
     return Line;
 }());
 exports.Line = Line;
@@ -2312,8 +2318,8 @@ var Rule = /** @class */ (function () {
     };
     Rule.prototype.msg = function (message, line, start, end) {
         if (line === void 0) { line = 1; }
-        if (start === void 0) { start = 0; }
-        if (end === void 0) { end = 0; }
+        if (start === void 0) { start = 1; }
+        if (end === void 0) { end = 1; }
         var error = [this.name, message, line, start, end], hash = error.join('&');
         if (!this.hashErrors[hash]) {
             this.hashErrors[hash] = true;
@@ -2826,10 +2832,10 @@ module.exports = {"css":["{","}","*","&","~/","/","../",":root","::selection","*
 /*!*******************************!*\
   !*** ./src/defaultRules.json ***!
   \*******************************/
-/*! exports provided: mixedSpaces, prefixVarsWithDollar, commaInObject, depthControl, quotePref, semicolons, colons, color, leadingZero, useMixinInsteadUnit, sortOrder, default */
+/*! exports provided: mixedSpaces, prefixVarsWithDollar, emptyLines, commaInObject, depthControl, quotePref, semicolons, colons, color, leadingZero, useMixinInsteadUnit, sortOrder, default */
 /***/ (function(module) {
 
-module.exports = {"mixedSpaces":{"indentPref":false},"prefixVarsWithDollar":{"conf":"always","prefix":"$"},"commaInObject":["never"],"depthControl":{"indentPref":"tab"},"quotePref":["double"],"semicolons":["never"],"colons":["never"],"color":{"conf":"uppercase","enabled":true,"allowOnlyInVar":true},"leadingZero":["always"],"useMixinInsteadUnit":{"conf":"always","mixin":"basis","unitType":"px"},"sortOrder":{"conf":"grouped","startGroupChecking":6,"order":[["absolute","position","z-index","top","right","bottom","left"],["content","display","flexbox","flex","flex-grow","flex-shrink","flex-basis","flex-direction","order","flex-order","flex-wrap","flex-flow","justify-content","align-self","align-items","align-content","flex-pack","flex-align","box-sizing","vertical-align","size","width","height","max-width","min-width","max-height","min-height","overflow","overflow-x","overflow-y","float","clear","visibility","opacity","margin","margin-top","margin-right","margin-bottom","margin-left","padding","padding-top","padding-right","padding-bottom","padding-left"],["font","font-family","font-size","font-weight","font-style","font-variant","font-size-adjust","font-stretch","line-height","letter-spacing","text-align","text-align-last","text-decoration","text-emphasis","text-emphasis-position","text-emphasis-style","text-emphasis-color","text-indent","text-justify","text-outline","text-transform","text-wrap","text-overflow","text-overflow-ellipsis","text-overflow-mode","word-spacing","word-wrap","word-break","tab-size","hyphens"],["pointer-events","border","border-spacing","border-collapse","border-width","border-style","border-color","border-top","border-top-width","border-top-style","border-top-color","border-right","border-right-width","border-right-style","border-right-color","border-bottom","border-bottom-width","border-bottom-style","border-bottom-color","border-left","border-left-width","border-left-style","border-left-color","border-radius","border-top-left-radius","border-top-right-radius","border-bottom-right-radius","border-bottom-left-radius","border-image","border-image-source","border-image-slice","border-image-width","border-image-outset","border-image-repeat","border-top-image","border-right-image","border-bottom-image","border-left-image","border-corner-image","border-top-left-image","border-top-right-image","border-bottom-right-image","border-bottom-left-image","color","background","filter","background-color","background-image","background-attachment","background-position","background-position-x","background-position-y","background-clip","background-origin","background-size","background-repeat","clip","list-style","outline","outline-width","outline-style","outline-color","outline-offset","cursor","box-shadow","text-shadow","table-layout","backface-visibility","will-change","transition","transform","animation"]]}};
+module.exports = {"mixedSpaces":{"indentPref":"tab"},"prefixVarsWithDollar":{"conf":"always","prefix":"$"},"emptyLines":true,"commaInObject":["never"],"depthControl":{"indentPref":"tab"},"quotePref":["double"],"semicolons":["never"],"colons":["never"],"color":{"conf":"uppercase","enabled":true,"allowOnlyInVar":true},"leadingZero":["always"],"useMixinInsteadUnit":{"conf":"always","mixin":"basis","unitType":"px"},"sortOrder":{"conf":"grouped","startGroupChecking":6,"order":[["absolute","position","z-index","top","right","bottom","left"],["content","display","flexbox","flex","flex-grow","flex-shrink","flex-basis","flex-direction","order","flex-order","flex-wrap","flex-flow","justify-content","align-self","align-items","align-content","flex-pack","flex-align","box-sizing","vertical-align","size","width","height","max-width","min-width","max-height","min-height","overflow","overflow-x","overflow-y","float","clear","visibility","opacity","margin","margin-top","margin-right","margin-bottom","margin-left","padding","padding-top","padding-right","padding-bottom","padding-left"],["font","font-family","font-size","font-weight","font-style","font-variant","font-size-adjust","font-stretch","line-height","letter-spacing","text-align","text-align-last","text-decoration","text-emphasis","text-emphasis-position","text-emphasis-style","text-emphasis-color","text-indent","text-justify","text-outline","text-transform","text-wrap","text-overflow","text-overflow-ellipsis","text-overflow-mode","word-spacing","word-wrap","word-break","tab-size","hyphens"],["pointer-events","border","border-spacing","border-collapse","border-width","border-style","border-color","border-top","border-top-width","border-top-style","border-top-color","border-right","border-right-width","border-right-style","border-right-color","border-bottom","border-bottom-width","border-bottom-style","border-bottom-color","border-left","border-left-width","border-left-style","border-left-color","border-radius","border-top-left-radius","border-top-right-radius","border-bottom-right-radius","border-bottom-left-radius","border-image","border-image-source","border-image-slice","border-image-width","border-image-outset","border-image-repeat","border-top-image","border-right-image","border-bottom-image","border-left-image","border-corner-image","border-top-left-image","border-top-right-image","border-bottom-right-image","border-bottom-left-image","color","background","filter","background-color","background-image","background-attachment","background-position","background-position-x","background-position-y","background-clip","background-origin","background-size","background-repeat","clip","list-style","outline","outline-width","outline-style","outline-color","outline-offset","cursor","box-shadow","text-shadow","table-layout","backface-visibility","will-change","transition","transform","animation"]]}};
 
 /***/ }),
 
@@ -3199,6 +3205,53 @@ exports.DepthControl = DepthControl;
 
 /***/ }),
 
+/***/ "./src/rules/emptyLines.ts":
+/*!*********************************!*\
+  !*** ./src/rules/emptyLines.ts ***!
+  \*********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
+/**
+ * Check if document has several empty lines
+ */
+var EmptyLines = /** @class */ (function (_super) {
+    __extends(EmptyLines, _super);
+    function EmptyLines() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    EmptyLines.prototype.checkLine = function (line) {
+        if (line.isEmpty()) {
+            var prev = line.prev();
+            if (prev && prev.isEmpty()) {
+                this.msg('Deny several empty lines', line.lineno);
+            }
+        }
+    };
+    return EmptyLines;
+}(rule_1.Rule));
+exports.EmptyLines = EmptyLines;
+
+
+/***/ }),
+
 /***/ "./src/rules/index.ts":
 /*!****************************!*\
   !*** ./src/rules/index.ts ***!
@@ -3223,6 +3276,7 @@ __export(__webpack_require__(/*! ./prefixVarsWithDollar */ "./src/rules/prefixVa
 __export(__webpack_require__(/*! ./mixedSpaces */ "./src/rules/mixedSpaces.ts"));
 __export(__webpack_require__(/*! ./commaInObject */ "./src/rules/commaInObject.ts"));
 __export(__webpack_require__(/*! ./depthControl */ "./src/rules/depthControl.ts"));
+__export(__webpack_require__(/*! ./emptyLines */ "./src/rules/emptyLines.ts"));
 
 
 /***/ }),

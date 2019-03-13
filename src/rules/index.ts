@@ -9,3 +9,4 @@ export * from './prefixVarsWithDollar';
 export * from './mixedSpaces';
 export * from './commaInObject';
 export * from './depthControl';
+export * from './emptyLines';

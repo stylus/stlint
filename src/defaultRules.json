@@ -1,12 +1,16 @@
 {
   "mixedSpaces": {
-    "indentPref": false
+    "indentPref": "tab"
   },
   "prefixVarsWithDollar": {
     "conf": "always",
     "prefix": "$"
   },
+
+  "emptyLines": true,
+
   "commaInObject": ["never"],
+
   "depthControl": {
     "indentPref": "tab"
   },

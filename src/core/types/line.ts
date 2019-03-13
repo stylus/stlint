@@ -4,4 +4,5 @@ export interface ILine {
 	lines?: ILine[];
 	next(): null | ILine;
 	prev(): null | ILine;
+	isEmpty(): boolean;
 }

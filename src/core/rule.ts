@@ -92,7 +92,7 @@ export abstract class Rule<T extends IState = IState> implements IRule<T> {
 		this.hashErrors = {};
 	}
 
-	msg(message: string, line: number = 1, start: number = 0, end: number = 0) {
+	msg(message: string, line: number = 1, start: number = 1, end: number = 1) {
 		const
 			error: ErrorArray = [this.name, message, line, start, end],
 			hash = error.join('&');

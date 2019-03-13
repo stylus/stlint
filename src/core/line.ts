@@ -36,4 +36,11 @@ export class Line implements ILine {
 
 		return null;
 	}
+
+	/**
+	 * Check the line is empty
+	 */
+	isEmpty(): boolean {
+		return this.line.trim().length === 0;
+	}
 }
