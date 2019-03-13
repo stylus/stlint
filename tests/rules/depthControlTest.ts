@@ -167,4 +167,71 @@ describe('Depth control test', () => {
 			});
 		});
 	});
+	describe('Depth control in the hash', () => {
+		it('Should check depth in hash', () => {
+			const rule = new DepthControl({
+				conf: "always"
+			});
+
+			parseAndRun(
+				'$p = {\n' +
+				'\ta: #ccc\n' +
+				'\t\tb: #ddd\n' +
+				'}\n' +
+				'.test\n' +
+				'\tcolor red\n'
+				,
+				rule
+			);
+
+			expect(rule.errors.length).to.be.equal(1)
+		});
+
+		describe('hash in hash', () => {
+			it('Should check depth', () => {
+				const rule = new DepthControl({
+					conf: "always"
+				});
+
+				parseAndRun(
+					'$p = {\n' +
+					'\ta: #ccc\n' +
+					'\tb: {\n' +
+					'\t\tc: #ddd\n' +
+					'\t\td: #fff\n' +
+					'\t}\n' +
+					'}\n' +
+					'.test\n' +
+					'\tcolor red\n'
+					,
+					rule
+				);
+
+				expect(rule.errors.length).to.be.equal(0)
+			});
+			describe('Wrong depth', () => {
+				it('Should check depth', () => {
+					const rule = new DepthControl({
+						conf: "always"
+					});
+
+					parseAndRun(
+						'$p = {\n' +
+						'\ta: #ccc\n' +
+						'\tb: {\n' +
+						'\t\tc: #ddd\n' +
+						'\td: #fff\n' +
+						'\t}\n' +
+						'}\n' +
+						'.test\n' +
+						'\tcolor red\n'
+						,
+						rule
+					);
+
+					expect(rule.errors.length).to.be.equal(1)
+				});
+			});
+		});
+	});
 });

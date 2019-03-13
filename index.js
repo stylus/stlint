@@ -3102,10 +3102,11 @@ var DepthControl = /** @class */ (function (_super) {
             return;
         }
         if (node instanceof ast_1.Obj) {
-            var key_1 = node.closest('ident');
-            if (key_1) {
+            var key = node.closest('ident|property');
+            if (key) {
+                var parentColumn_1 = (key instanceof ast_1.Property && key.key instanceof ast_1.Ident) ? key.key.column : key.column;
                 node.nodes.forEach(function (child) {
-                    if (child instanceof ast_1.Property && child.key instanceof ast_1.Ident && child.key.column - indentPref !== key_1.column) {
+                    if (child instanceof ast_1.Property && child.key instanceof ast_1.Ident && child.key.column - indentPref !== parentColumn_1) {
                         _this.msg('incorrect indent', child.key.lineno, 0, child.key.column);
                     }
                 });

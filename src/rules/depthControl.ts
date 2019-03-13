@@ -59,11 +59,13 @@ export class DepthControl extends Rule<IDepthControlState> {
 
 		if (node instanceof Obj) {
 			const
-				key: Ident | null = node.closest<Ident>('ident');
+				key: Ident | Property | null = node.closest<Ident | Property>('ident|property');
 
 			if (key) {
+				const parentColumn = (key instanceof Property && key.key instanceof Ident) ? key.key.column : key.column;
+
 				node.nodes.forEach(child => {
-					if (child instanceof Property && child.key instanceof Ident && child.key.column - indentPref !== key.column) {
+					if (child instanceof Property && child.key instanceof Ident && child.key.column - indentPref !== parentColumn) {
 						this.msg('incorrect indent', child.key.lineno, 0, child.key.column);
 					}
 				})
