@@ -71,18 +71,51 @@ describe('Depth control test', () => {
 			expect(rule.errors.length).to.be.equal(2)
 		});
 
-		// TODO does not work - because of lexer.js remove some spaces
-		/*
+		describe('Selector after selector', () => {
+			describe('In one line', () => {
+				it('Should not show error', () => {
+					const rule = new DepthControl({
+						conf: "always"
+					});
+
+					parseAndRun(
+						'.test, .test2\n' +
+						'\tmax-height red;\n'
+						, rule
+					);
+
+					expect(rule.errors.length).to.be.equal(0)
+				});
+			});
+			describe('On different lines', () => {
+				it('Should show error', () => {
+					const rule = new DepthControl({
+						conf: "always"
+					});
+
+					parseAndRun(
+						'.test,\n' +
+						'\t\t.test2\n' +
+						'\tmax-height red;\n'
+						, rule
+					);
+
+					// Property indent wrong too because it's parents .test2 and .test
+					expect(rule.errors.length).to.be.equal(2)
+				});
+			});
+		});
+
 		describe('Use spaces', () => {
 			it('Should check all line has normal indent by previous', () => {
 				const rule = new DepthControl({
 					conf: "always",
-					indentPref: 4
+					indentPref: 4 // TODO does not work fo 2 - because of lexer.js remove some spaces
 				});
 
 				parseAndRun(
 					'$p = {\n' +
-					'    a: #ccc,\n' +
+					'    a: #ccc\n' +
 					'    b: #ddd\n' +
 					'}\n' +
 					'.test\n' +
@@ -96,6 +129,5 @@ describe('Depth control test', () => {
 				expect(rule.errors.length).to.be.equal(0)
 			});
 		});
-		*/
 	});
 });

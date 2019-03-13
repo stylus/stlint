@@ -1051,6 +1051,9 @@ var Selector = /** @class */ (function (_super) {
         _this.segments = [];
         return _this;
     }
+    Selector.prototype.toString = function () {
+        return this.segments.join('');
+    };
     return Selector;
 }(node_1.Node));
 exports.Selector = Selector;
@@ -1378,7 +1381,7 @@ var Checker = /** @class */ (function () {
         var reporter = this.linter.reporter;
         this.rulesList.forEach(function (rule) {
             rule.errors.forEach(function (msg) { return reporter.add.apply(reporter, msg); });
-            rule.errors.length = 0;
+            rule.clearErrors();
         });
         reporter.fillResponse();
     };
@@ -2005,7 +2008,7 @@ var initContext = {
     inHash: false,
     inComment: false,
 };
-var hashStartRe = /\$?[\w]+\s*[=:]\s*\{/, hashEndRe = /}/, startMultyComment = /\/\*/, endMultyComment = /\*\//;
+var hashStartRe = /\$?[\w]+\s*[=:]\s*{/, hashEndRe = /}/, startMultyComment = /\/\*/, endMultyComment = /\*\//;
 var Rule = /** @class */ (function () {
     function Rule(conf) {
         this.conf = conf;
@@ -2015,6 +2018,7 @@ var Rule = /** @class */ (function () {
         };
         this.cache = {};
         this.nodesFilter = null;
+        this.hashErrors = {};
         this.errors = [];
         if (typeof conf !== 'boolean') {
             if (Array.isArray(conf)) {
@@ -2071,11 +2075,19 @@ var Rule = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    Rule.prototype.clearErrors = function () {
+        this.errors.length = 0;
+        this.hashErrors = {};
+    };
     Rule.prototype.msg = function (message, line, start, end) {
         if (line === void 0) { line = 1; }
         if (start === void 0) { start = 0; }
         if (end === void 0) { end = 0; }
-        this.errors.push([this.name, message, line, start, end]);
+        var error = [this.name, message, line, start, end], hash = error.join('&');
+        if (!this.hashErrors[hash]) {
+            this.hashErrors[hash] = true;
+            this.errors.push(error);
+        }
     };
     /**
      * Check type included in filter
@@ -2810,21 +2822,36 @@ var DepthControl = /** @class */ (function (_super) {
         var _this = this;
         var indentPref = typeof this.state.indentPref === 'number' ? this.state.indentPref : 1;
         if (node instanceof ast_1.Block || node instanceof ast_1.Selector) {
-            var selector_1 = node.closest(ast_1.Selector);
+            var selector_1 = node.closest(ast_1.Selector), needCheckPreviousSelector = false, prev = selector_1;
+            while (prev && selector_1) {
+                prev = prev.previousSibling();
+                if (prev && prev instanceof ast_1.Selector && prev.lineno === selector_1.lineno) {
+                    selector_1 = prev;
+                }
+                else {
+                    break;
+                }
+            }
             if (selector_1) {
                 if (node instanceof ast_1.Block) {
                     node.nodes.forEach(function (child) {
-                        if (child instanceof ast_1.Property && child.column - indentPref !== selector_1.column) {
+                        if (selector_1 && child instanceof ast_1.Property && child.column - indentPref !== selector_1.column) {
                             _this.msg('incorrect indent', child.lineno, 0, child.column);
                         }
                     });
                 }
                 else if (node.column - indentPref !== selector_1.column) {
-                    this.msg('incorrect indent', node.lineno, 0, node.column);
+                    needCheckPreviousSelector = true;
                 }
             }
             else if (node instanceof ast_1.Selector && node.column !== 1) {
-                this.msg('incorrect indent', node.lineno, 0, node.column);
+                needCheckPreviousSelector = true;
+            }
+            if (needCheckPreviousSelector) {
+                prev = node.previousSibling();
+                if (!prev || prev.lineno !== node.lineno) {
+                    this.msg('incorrect indent', node.lineno, 0, node.column);
+                }
             }
             return;
         }

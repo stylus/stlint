@@ -101,7 +101,7 @@ export class Checker {
 
 		this.rulesList.forEach(rule => {
 			rule.errors.forEach(msg => reporter.add.apply(reporter, msg));
-			rule.errors.length = 0;
+			rule.clearErrors();
 		});
 
 		reporter.fillResponse();

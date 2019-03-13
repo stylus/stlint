@@ -10,8 +10,11 @@ const initContext: IContext  = {
 	inComment: false,
 };
 
+
+type ErrorArray = [string, string, number, number, number];
+
 const
-	hashStartRe = /\$?[\w]+\s*[=:]\s*\{/,
+	hashStartRe = /\$?[\w]+\s*[=:]\s*{/,
 	hashEndRe = /}/,
 	startMultyComment = /\/\*/,
 	endMultyComment = /\*\//;
@@ -82,10 +85,22 @@ export abstract class Rule<T extends IState = IState> implements IRule<T> {
 
 	nodesFilter: string[] | null = null;
 
-	errors: [string, string, number, number, number][] = [];
+	hashErrors: Dictionary<boolean> = {};
+	errors: ErrorArray[] = [];
+	clearErrors(){
+		this.errors.length = 0;
+		this.hashErrors = {};
+	}
 
 	msg(message: string, line: number = 1, start: number = 0, end: number = 0) {
-		this.errors.push([this.name, message, line, start, end]);
+		const
+			error: ErrorArray = [this.name, message, line, start, end],
+			hash = error.join('&');
+
+		if (!this.hashErrors[hash]) {
+			this.hashErrors[hash] = true;
+			this.errors.push(error);
+		}
 	}
 
 	/**
