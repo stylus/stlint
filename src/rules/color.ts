@@ -3,7 +3,7 @@ import { IState } from "../core/types/state";
 import { Block, RGB } from "../core/ast";
 
 interface IColorState extends IState {
-	allowOnlyInVar: boolean
+	allowOnlyInVar?: boolean
 }
 
 export class Color extends Rule<IColorState> {

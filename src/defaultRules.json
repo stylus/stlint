@@ -19,7 +19,11 @@
     "allowOnlyInVar": true
   },
   "leadingZero": ["always"],
-  "useBasis": ["always"],
+  "useMixinInsteadUnit": {
+    "conf": "always",
+    "mixin": "basis",
+    "unitType": "px"
+  },
   "sortOrder": {
     "conf": "grouped",
     "startGroupChecking": 6,

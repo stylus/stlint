@@ -27,7 +27,7 @@ export abstract class Rule<T extends IState = IState> implements IRule<T> {
 
 	cache: Dictionary = {};
 
-	constructor(readonly conf: State) {
+	constructor(readonly conf: T) {
 		if (typeof conf !== 'boolean') {
 			if (Array.isArray(conf)) {
 				this.state.conf = conf[0];

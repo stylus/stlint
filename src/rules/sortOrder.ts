@@ -3,15 +3,18 @@ import { Block, Property } from "../core/ast";
 import { IState } from "../core/types/state";
 
 interface IOrderState extends IState {
-	order: Array<string[] | string>,
-	startGroupChecking: number
+	order?: Array<string[] | string>,
+	startGroupChecking?: number
 }
 
 export class SortOrder extends Rule<IOrderState> {
 	nodesFilter = ['block'];
 
 	checkNode(node: Block): void {
-		const names: string[] = [];
+		const
+			names: string[] = [],
+			order = this.state.order || [],
+			startGroupChecking = this.state.startGroupChecking || 6;
 
 		node.nodes.forEach((child) => {
 			if (child instanceof Property) {
@@ -31,7 +34,7 @@ export class SortOrder extends Rule<IOrderState> {
 				this.cache.ketToGroup = {};
 				let groupIndex = 0;
 
-				this.cache.order = this.state.order.reduce<string[]>((sort, key) => {
+				this.cache.order = order.reduce<string[]>((sort, key) => {
 					if (typeof key === 'string') {
 						sort.push(key)
 					} else {
@@ -108,7 +111,7 @@ export class SortOrder extends Rule<IOrderState> {
 
 		if (
 			!this.errors.length &&
-			names.length >= this.state.startGroupChecking &&
+			names.length >= startGroupChecking &&
 			this.state.conf === 'grouped'
 		) {
 			let

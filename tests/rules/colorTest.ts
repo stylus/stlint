@@ -5,7 +5,9 @@ import { parseAndRun } from "../staff/bootstrap";
 describe('Color test', () => {
 	describe('Boolean enable state', () => {
 		it('Should work like default options', () => {
-			const rule = new Color(true);
+			const rule = new Color({
+				conf: 'always'
+			});
 
 			parseAndRun('.tab\n\tcolor: #ccc\n\tbackground-color #fff', rule);
 

@@ -3,7 +3,7 @@ import { IState } from "../core/types/state";
 import { Block, Selector, Property, Obj, Ident, Node } from "../core/ast";
 
 interface IDepthControlState extends IState {
-	indentPref: "tab" | number
+	indentPref?: "tab" | number
 }
 
 export class DepthControl extends Rule<IDepthControlState> {

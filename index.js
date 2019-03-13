@@ -2504,10 +2504,10 @@ module.exports = {"css":["{","}","*","&","~/","/","../",":root","::selection","*
 /*!*******************************!*\
   !*** ./src/defaultRules.json ***!
   \*******************************/
-/*! exports provided: mixedSpaces, prefixVarsWithDollar, commaInObject, depthControl, quotePref, semicolons, colons, color, leadingZero, useBasis, sortOrder, default */
+/*! exports provided: mixedSpaces, prefixVarsWithDollar, commaInObject, depthControl, quotePref, semicolons, colons, color, leadingZero, useMixinInsteadUnit, sortOrder, default */
 /***/ (function(module) {
 
-module.exports = {"mixedSpaces":{"indentPref":false},"prefixVarsWithDollar":{"conf":"always","prefix":"$"},"commaInObject":["never"],"depthControl":{"indentPref":"tab"},"quotePref":["double"],"semicolons":["never"],"colons":["never"],"color":{"conf":"uppercase","enabled":true,"allowOnlyInVar":true},"leadingZero":["always"],"useBasis":["always"],"sortOrder":{"conf":"grouped","startGroupChecking":6,"order":[["absolute","position","z-index","top","right","bottom","left"],["content","display","flex","flex-grow","flex-shrink","flex-basis","flex-direction","order","flex-order","flex-wrap","flex-flow","justify-content","align-self","align-items","align-content","flex-pack","flex-align","box-sizing","vertical-align","size","width","height","max-width","min-width","max-height","min-height","overflow","overflow-x","overflow-y","float","clear","visibility","opacity","margin","margin-top","margin-right","margin-bottom","margin-left","padding","padding-top","padding-right","padding-bottom","padding-left"],["font","font-family","font-size","font-weight","font-style","font-variant","font-size-adjust","font-stretch","line-height","letter-spacing","text-align","text-align-last","text-decoration","text-emphasis","text-emphasis-position","text-emphasis-style","text-emphasis-color","text-indent","text-justify","text-outline","text-transform","text-wrap","text-overflow","text-overflow-ellipsis","text-overflow-mode","word-spacing","word-wrap","word-break","tab-size","hyphens"],["pointer-events","border","border-spacing","border-collapse","border-width","border-style","border-color","border-top","border-top-width","border-top-style","border-top-color","border-right","border-right-width","border-right-style","border-right-color","border-bottom","border-bottom-width","border-bottom-style","border-bottom-color","border-left","border-left-width","border-left-style","border-left-color","border-radius","border-top-left-radius","border-top-right-radius","border-bottom-right-radius","border-bottom-left-radius","border-image","border-image-source","border-image-slice","border-image-width","border-image-outset","border-image-repeat","border-top-image","border-right-image","border-bottom-image","border-left-image","border-corner-image","border-top-left-image","border-top-right-image","border-bottom-right-image","border-bottom-left-image","color","background","filter","background-color","background-image","background-attachment","background-position","background-position-x","background-position-y","background-clip","background-origin","background-size","background-repeat","clip","list-style","outline","outline-width","outline-style","outline-color","outline-offset","cursor","box-shadow","text-shadow","table-layout","backface-visibility","will-change","transition","transform","animation"]]}};
+module.exports = {"mixedSpaces":{"indentPref":false},"prefixVarsWithDollar":{"conf":"always","prefix":"$"},"commaInObject":["never"],"depthControl":{"indentPref":"tab"},"quotePref":["double"],"semicolons":["never"],"colons":["never"],"color":{"conf":"uppercase","enabled":true,"allowOnlyInVar":true},"leadingZero":["always"],"useMixinInsteadUnit":{"conf":"always","mixin":"basis","unitType":"px"},"sortOrder":{"conf":"grouped","startGroupChecking":6,"order":[["absolute","position","z-index","top","right","bottom","left"],["content","display","flex","flex-grow","flex-shrink","flex-basis","flex-direction","order","flex-order","flex-wrap","flex-flow","justify-content","align-self","align-items","align-content","flex-pack","flex-align","box-sizing","vertical-align","size","width","height","max-width","min-width","max-height","min-height","overflow","overflow-x","overflow-y","float","clear","visibility","opacity","margin","margin-top","margin-right","margin-bottom","margin-left","padding","padding-top","padding-right","padding-bottom","padding-left"],["font","font-family","font-size","font-weight","font-style","font-variant","font-size-adjust","font-stretch","line-height","letter-spacing","text-align","text-align-last","text-decoration","text-emphasis","text-emphasis-position","text-emphasis-style","text-emphasis-color","text-indent","text-justify","text-outline","text-transform","text-wrap","text-overflow","text-overflow-ellipsis","text-overflow-mode","word-spacing","word-wrap","word-break","tab-size","hyphens"],["pointer-events","border","border-spacing","border-collapse","border-width","border-style","border-color","border-top","border-top-width","border-top-style","border-top-color","border-right","border-right-width","border-right-style","border-right-color","border-bottom","border-bottom-width","border-bottom-style","border-bottom-color","border-left","border-left-width","border-left-style","border-left-color","border-radius","border-top-left-radius","border-top-right-radius","border-bottom-right-radius","border-bottom-left-radius","border-image","border-image-source","border-image-slice","border-image-width","border-image-outset","border-image-repeat","border-top-image","border-right-image","border-bottom-image","border-left-image","border-corner-image","border-top-left-image","border-top-right-image","border-bottom-right-image","border-bottom-left-image","color","background","filter","background-color","background-image","background-attachment","background-position","background-position-x","background-position-y","background-clip","background-origin","background-size","background-repeat","clip","list-style","outline","outline-width","outline-style","outline-color","outline-offset","cursor","box-shadow","text-shadow","table-layout","backface-visibility","will-change","transition","transform","animation"]]}};
 
 /***/ }),
 
@@ -2890,7 +2890,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __export(__webpack_require__(/*! ./color */ "./src/rules/color.ts"));
 __export(__webpack_require__(/*! ./colons */ "./src/rules/colons.ts"));
 __export(__webpack_require__(/*! ./leadingZero */ "./src/rules/leadingZero.ts"));
-__export(__webpack_require__(/*! ./useBasis */ "./src/rules/useBasis.ts"));
+__export(__webpack_require__(/*! ./useMixinInsteadUnit */ "./src/rules/useMixinInsteadUnit.ts"));
 __export(__webpack_require__(/*! ./semicolons */ "./src/rules/semicolons.ts"));
 __export(__webpack_require__(/*! ./quotePref */ "./src/rules/quotePref.ts"));
 __export(__webpack_require__(/*! ./sortOrder */ "./src/rules/sortOrder.ts"));
@@ -3232,7 +3232,7 @@ var SortOrder = /** @class */ (function (_super) {
     }
     SortOrder.prototype.checkNode = function (node) {
         var _this = this;
-        var names = [];
+        var names = [], order = this.state.order || [], startGroupChecking = this.state.startGroupChecking || 6;
         node.nodes.forEach(function (child) {
             if (child instanceof ast_1.Property) {
                 names.push(child.key.toString().toLowerCase());
@@ -3249,7 +3249,7 @@ var SortOrder = /** @class */ (function (_super) {
             if (!this.cache.order) {
                 this.cache.ketToGroup = {};
                 var groupIndex_1 = 0;
-                this.cache.order = this.state.order.reduce(function (sort, key) {
+                this.cache.order = order.reduce(function (sort, key) {
                     if (typeof key === 'string') {
                         sort.push(key);
                     }
@@ -3306,7 +3306,7 @@ var SortOrder = /** @class */ (function (_super) {
             }
         });
         if (!this.errors.length &&
-            names.length >= this.state.startGroupChecking &&
+            names.length >= startGroupChecking &&
             this.state.conf === 'grouped') {
             var lastGroup_1 = null;
             node.nodes.forEach(function (node) {
@@ -3342,10 +3342,10 @@ exports.SortOrder = SortOrder;
 
 /***/ }),
 
-/***/ "./src/rules/useBasis.ts":
-/*!*******************************!*\
-  !*** ./src/rules/useBasis.ts ***!
-  \*******************************/
+/***/ "./src/rules/useMixinInsteadUnit.ts":
+/*!******************************************!*\
+  !*** ./src/rules/useMixinInsteadUnit.ts ***!
+  \******************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -3366,34 +3366,38 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
-var useBasis = /** @class */ (function (_super) {
-    __extends(useBasis, _super);
-    function useBasis() {
+var useMixinInsteadUnit = /** @class */ (function (_super) {
+    __extends(useMixinInsteadUnit, _super);
+    function useMixinInsteadUnit() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.nodesFilter = ['unit', 'call'];
         return _this;
     }
-    useBasis.prototype.checkNode = function (node) {
+    useMixinInsteadUnit.prototype.checkNode = function (node) {
         if (this.state.conf === 'always') {
             if (node.value && typeof node.value === 'string') {
-                var unit = /([\d]+)px/.exec(node.value);
+                var unit = RegExp('([\\d]+)' + this.state.unitType).exec(node.value);
                 if (unit) {
-                    var unitSize = Number(unit[1]), basis = (unitSize / 8);
-                    this.msg("Use basis mixin instead \"px\" (basis(" + basis + "))", node.lineno, node.column, node.column + node.value.length - 1);
+                    var extraInfo = '';
+                    if (this.state.mixin === 'basis') {
+                        var unitSize = Number(unit[1]), basis = (unitSize / 8);
+                        extraInfo = " (basis(" + basis + "))";
+                    }
+                    this.msg("Use \"" + this.state.mixin + "\" mixin instead \"" + this.state.unitType + "\"" + extraInfo, node.lineno, node.column, node.column + node.value.length - 1);
                     return true;
                 }
             }
         }
         else {
-            if (node.nodeName === 'call' && typeof node.key === 'string' && node.key === 'basis') {
-                this.msg("Do not use Basis mixin", node.lineno, node.column, node.column + node.key.length - 1);
+            if (node.nodeName === 'call' && typeof node.key === 'string' && node.key === this.state.mixin) {
+                this.msg("Do not use \"" + this.state.mixin + "\" mixin", node.lineno, node.column, node.column + node.key.length - 1);
             }
         }
         return false;
     };
-    return useBasis;
+    return useMixinInsteadUnit;
 }(rule_1.Rule));
-exports.useBasis = useBasis;
+exports.useMixinInsteadUnit = useMixinInsteadUnit;
 
 
 /***/ }),

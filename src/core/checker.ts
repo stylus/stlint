@@ -16,7 +16,7 @@ export class Checker {
 
 	constructor(readonly linter: Linter) {
 		const
-			rulesConstructors: Dictionary<Function> = <any>rules,
+			rulesConstructors: Dictionary<typeof Rule> = <any>rules,
 			rulesNames: string[] = Object.keys(rulesConstructors),
 			config = linter.config;
 
