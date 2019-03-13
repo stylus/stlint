@@ -10,6 +10,8 @@ export class JsonReporter extends Reporter {
 				message.descr = message.rule + ': ' + message.descr;
 			}))
 		}
+
+		console.clear();
 		console.log(JSON.stringify(this.response, null, 2));
 	}
 }

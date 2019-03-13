@@ -46,7 +46,7 @@ export class RawReporter extends Reporter {
 
 		const cnt = this.errors.length;
 
-		msg.push('Stlint: ' + (cnt ? chalk.red(cnt) : chalk.yellow(0)) + ' Errors.');
+		msg.push('Stlint: ' + (cnt ? chalk.red(cnt) : chalk.green(0)) + ' Errors.');
 
 		console.log(msg.join(''));
 	}

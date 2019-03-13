@@ -1,6 +1,6 @@
 import { Rule } from "../core/rule";
 import { IState } from "../core/types/state";
-import { Block, Selector, Property, Obj, Ident, Node } from "../core/ast";
+import { Block, Selector, Property, Obj, Ident, Node, Media } from "../core/ast";
 
 interface IDepthControlState extends IState {
 	indentPref?: "tab" | number
@@ -16,24 +16,26 @@ export class DepthControl extends Rule<IDepthControlState> {
 
 		if (node instanceof Block || node instanceof Selector) {
 			let
-				selector: Selector | null = node.closest<Selector>(Selector),
+				selector: Selector | Media | null = node.closest<Selector | Media>('selector|media'),
 				needCheckPreviousSelector: boolean = false,
 				prev: Node | null = selector;
 
-			while (prev && selector)  {
-				prev = prev.previousSibling();
+			if (selector && selector instanceof Selector) {
+				while (prev && selector)  {
+					prev = prev.previousSibling();
 
-				if (prev && prev instanceof Selector && prev.lineno === selector.lineno) {
-					selector = <Selector>prev;
-				} else {
-					break;
+					if (prev && prev instanceof Selector && prev.lineno === selector.lineno) {
+						selector = <Selector>prev;
+					} else {
+						break;
+					}
 				}
 			}
 
 			if (selector) {
 				if (node instanceof Block) {
 					node.nodes.forEach(child => {
-						if (selector && child instanceof Property && child.column - indentPref !== selector.column) {
+						if (selector && (child instanceof Property || child instanceof Media) && child.column - indentPref !== selector.column) {
 							this.msg('incorrect indent', child.lineno, 0, child.column);
 						}
 					})
@@ -57,7 +59,7 @@ export class DepthControl extends Rule<IDepthControlState> {
 
 		if (node instanceof Obj) {
 			const
-				key: Ident | null = node.closest<Ident>(Ident);
+				key: Ident | null = node.closest<Ident>('ident');
 
 			if (key) {
 				node.nodes.forEach(child => {

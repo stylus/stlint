@@ -2,6 +2,7 @@ import Parser = require('stylus/lib/parser');
 import { Tree } from "./ast";
 import { Translator } from "./translator";
 import { ISNode } from "./types/ast/snode";
+import {splitLines} from "./helpers/splitLines";
 
 export class StylusParser {
 	/**
@@ -21,14 +22,14 @@ export class StylusParser {
 		try {
 			let stylusAST: ISNode = parser.parse();
 
-			const translator = new Translator(stylusAST);
+			const translator = new Translator(stylusAST, splitLines(content));
 
 			return translator.transpile();
 		} catch (err) {
 
-			err.lineno = err.lineno || parser.lexer.lineno || 0;
-			err.message = 'Syntax error: ' + err.message;
-			err.column = parser.lexer.column;
+			err.lineno = parser.lexer.lineno || err.lineno || 1;
+			err.column = parser.lexer.column || err.column || 1;
+			err.message = 'Syntax error: ' + err.message + `(${err.lineno},${err.column})`;
 
 			throw err;
 		}

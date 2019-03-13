@@ -1,9 +1,6 @@
-$p = {
-	a: #ccc
-	b: #ddd
-}
-.test,
-	.test
-		max-height #fffddd
-		max-height red
-		border black
+&__wrapper
+	width 100%
+	max-width $p.maxContentWidth
+	margin 0 auto
+		@media screen and (max-width $p.widthBreakPoint)
+			width 95%

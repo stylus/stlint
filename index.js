@@ -516,6 +516,47 @@ exports.Each = Each;
 
 /***/ }),
 
+/***/ "./src/core/ast/feature.ts":
+/*!*********************************!*\
+  !*** ./src/core/ast/feature.ts ***!
+  \*********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
+var Feature = /** @class */ (function (_super) {
+    __extends(Feature, _super);
+    function Feature() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.segments = [];
+        return _this;
+    }
+    Feature.prototype.toString = function () {
+        return this.segments.join('');
+    };
+    return Feature;
+}(node_1.Node));
+exports.Feature = Feature;
+
+
+/***/ }),
+
 /***/ "./src/core/ast/func.ts":
 /*!******************************!*\
   !*** ./src/core/ast/func.ts ***!
@@ -705,6 +746,10 @@ __export(__webpack_require__(/*! ./bool */ "./src/core/ast/bool.ts"));
 __export(__webpack_require__(/*! ./each */ "./src/core/ast/each.ts"));
 __export(__webpack_require__(/*! ./condition */ "./src/core/ast/condition.ts"));
 __export(__webpack_require__(/*! ./unaryop */ "./src/core/ast/unaryop.ts"));
+__export(__webpack_require__(/*! ./media */ "./src/core/ast/media.ts"));
+__export(__webpack_require__(/*! ./querylist */ "./src/core/ast/querylist.ts"));
+__export(__webpack_require__(/*! ./query */ "./src/core/ast/query.ts"));
+__export(__webpack_require__(/*! ./feature */ "./src/core/ast/feature.ts"));
 
 
 /***/ }),
@@ -746,6 +791,44 @@ var Literal = /** @class */ (function (_super) {
     return Literal;
 }(node_1.Node));
 exports.Literal = Literal;
+
+
+/***/ }),
+
+/***/ "./src/core/ast/media.ts":
+/*!*******************************!*\
+  !*** ./src/core/ast/media.ts ***!
+  \*******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
+var Media = /** @class */ (function (_super) {
+    __extends(Media, _super);
+    function Media() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.query = null;
+        return _this;
+    }
+    return Media;
+}(node_1.Node));
+exports.Media = Media;
 
 
 /***/ }),
@@ -857,9 +940,9 @@ var Node = /** @class */ (function () {
      * @param parentClass
      */
     Node.prototype.closest = function (parentClass) {
-        var node = this.parent;
+        var reg = RegExp("^(" + parentClass + ")$", 'i'), node = this.parent;
         while (node) {
-            if (node instanceof parentClass) {
+            if (reg.test(node.nodeName)) {
                 return node;
             }
             node = node.parent;
@@ -980,6 +1063,81 @@ var Property = /** @class */ (function (_super) {
     return Property;
 }(node_1.Node));
 exports.Property = Property;
+
+
+/***/ }),
+
+/***/ "./src/core/ast/query.ts":
+/*!*******************************!*\
+  !*** ./src/core/ast/query.ts ***!
+  \*******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
+var Query = /** @class */ (function (_super) {
+    __extends(Query, _super);
+    function Query() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.predicate = '';
+        _this.type = null;
+        return _this;
+    }
+    return Query;
+}(node_1.Node));
+exports.Query = Query;
+
+
+/***/ }),
+
+/***/ "./src/core/ast/querylist.ts":
+/*!***********************************!*\
+  !*** ./src/core/ast/querylist.ts ***!
+  \***********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
+var Querylist = /** @class */ (function (_super) {
+    __extends(Querylist, _super);
+    function Querylist() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return Querylist;
+}(node_1.Node));
+exports.Querylist = Querylist;
 
 
 /***/ }),
@@ -1303,9 +1461,9 @@ exports.BaseConfig = BaseConfig;
 Object.defineProperty(exports, "__esModule", { value: true });
 var rules = __webpack_require__(/*! ../rules */ "./src/rules/index.ts");
 var runner_1 = __webpack_require__(/*! ./runner */ "./src/core/runner.ts");
-var line_1 = __webpack_require__(/*! ./line */ "./src/core/line.ts");
 var rule_1 = __webpack_require__(/*! ./rule */ "./src/core/rule.ts");
 var lcfirst_1 = __webpack_require__(/*! ./helpers/lcfirst */ "./src/core/helpers/lcfirst.ts");
+var splitLines_1 = __webpack_require__(/*! ./helpers/splitLines */ "./src/core/helpers/splitLines.ts");
 var Checker = /** @class */ (function () {
     function Checker(linter) {
         var _this = this;
@@ -1356,11 +1514,7 @@ var Checker = /** @class */ (function () {
     Checker.prototype.checkLineRules = function (content) {
         var _this = this;
         try {
-            var lines_1 = [];
-            content.split(/\n/)
-                .forEach(function (ln, index) {
-                lines_1[index] = new line_1.Line(ln, index + 1, lines_1);
-            });
+            var lines_1 = splitLines_1.splitLines(content);
             lines_1
                 .forEach(function (line, index) {
                 rule_1.Rule.beforeCheckLine(line);
@@ -1436,6 +1590,30 @@ exports.lcfirst = function (str) {
 
 /***/ }),
 
+/***/ "./src/core/helpers/splitLines.ts":
+/*!****************************************!*\
+  !*** ./src/core/helpers/splitLines.ts ***!
+  \****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var line_1 = __webpack_require__(/*! ../line */ "./src/core/line.ts");
+function splitLines(content) {
+    var lines = [];
+    content.split(/\n/)
+        .forEach(function (ln, index) {
+        lines[index] = new line_1.Line(ln, index + 1, lines);
+    });
+    return lines;
+}
+exports.splitLines = splitLines;
+
+
+/***/ }),
+
 /***/ "./src/core/line.ts":
 /*!**************************!*\
   !*** ./src/core/line.ts ***!
@@ -1495,6 +1673,7 @@ exports.Line = Line;
 Object.defineProperty(exports, "__esModule", { value: true });
 var Parser = __webpack_require__(/*! stylus/lib/parser */ "stylus/lib/parser");
 var translator_1 = __webpack_require__(/*! ./translator */ "./src/core/translator.ts");
+var splitLines_1 = __webpack_require__(/*! ./helpers/splitLines */ "./src/core/helpers/splitLines.ts");
 var StylusParser = /** @class */ (function () {
     /**
      * @param options Stylus parser options
@@ -1513,13 +1692,13 @@ var StylusParser = /** @class */ (function () {
         var parser = new Parser(content, this.options);
         try {
             var stylusAST = parser.parse();
-            var translator = new translator_1.Translator(stylusAST);
+            var translator = new translator_1.Translator(stylusAST, splitLines_1.splitLines(content));
             return translator.transpile();
         }
         catch (err) {
-            err.lineno = err.lineno || parser.lexer.lineno || 0;
-            err.message = 'Syntax error: ' + err.message;
-            err.column = parser.lexer.column;
+            err.lineno = parser.lexer.lineno || err.lineno || 1;
+            err.column = parser.lexer.column || err.column || 1;
+            err.message = 'Syntax error: ' + err.message + ("(" + err.lineno + "," + err.column + ")");
             throw err;
         }
     };
@@ -1868,6 +2047,7 @@ var JsonReporter = /** @class */ (function (_super) {
                 message.descr = message.rule + ': ' + message.descr;
             }); });
         }
+        console.clear();
         console.log(JSON.stringify(this.response, null, 2));
     };
     return JsonReporter;
@@ -1934,7 +2114,7 @@ var RawReporter = /** @class */ (function (_super) {
         });
         msg.push(msgGrouped.join('\n'));
         var cnt = this.errors.length;
-        msg.push('Stlint: ' + (cnt ? chalk.red(cnt) : chalk.yellow(0)) + ' Errors.');
+        msg.push('Stlint: ' + (cnt ? chalk.red(cnt) : chalk.green(0)) + ' Errors.');
         console.log(msg.join(''));
     };
     return RawReporter;
@@ -2179,8 +2359,10 @@ var visitor_1 = __webpack_require__(/*! ./visitor */ "./src/core/visitor.ts");
 var ast_1 = __webpack_require__(/*! ./ast */ "./src/core/ast/index.ts");
 var Translator = /** @class */ (function (_super) {
     __extends(Translator, _super);
-    function Translator() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    function Translator(root, lines) {
+        var _this = _super.call(this, root) || this;
+        _this.lines = lines;
+        return _this;
     }
     Translator.prototype.methodNotExists = function (method, node) {
         var e = new Error("No method " + method + " line:" + node.lineno);
@@ -2448,6 +2630,68 @@ var Translator = /** @class */ (function (_super) {
         }
         if (block.right) {
             node.right = new ast_1.Ident(block.right, node);
+        }
+        return node;
+    };
+    /**
+     * Media scope
+     * @param block
+     * @param parent
+     */
+    Translator.prototype.visitMedia = function (block, parent) {
+        var node = new ast_1.Media(block, parent);
+        if (block.block) {
+            node.append(this.visit(block.block, node));
+        }
+        if (block.val) {
+            node.query = this.visit(block.val, node);
+        }
+        // Hack because stylus set Media.column on end of line
+        if (this.lines[node.lineno - 1]) {
+            var column = this.lines[node.lineno - 1].line.indexOf('@media');
+            if (~column && column + 1 !== node.column) {
+                node.column = column + 1;
+            }
+        }
+        return node;
+    };
+    /**
+     * Query list in media scope
+     * @param block
+     * @param parent
+     */
+    Translator.prototype.visitQueryList = function (block, parent) {
+        var node = new ast_1.Querylist(block, parent);
+        this.eachVisit(block.nodes, function (ret) {
+            node.append(ret);
+        }, node);
+        return node;
+    };
+    /**
+     * Query in query list
+     * @param block
+     * @param parent
+     */
+    Translator.prototype.visitQuery = function (block, parent) {
+        var node = new ast_1.Query(block, parent);
+        if (block.type) {
+            node.type = this.visit(block.type, node);
+        }
+        if (block.predicate) {
+            node.predicate = block.predicate;
+        }
+        this.eachVisit(block.nodes, function (ret) {
+            node.append(ret);
+        }, node);
+        return node;
+    };
+    Translator.prototype.visitFeature = function (block, parent) {
+        var node = new ast_1.Feature(block, parent);
+        this.eachVisit(block.segments, function (ret) {
+            node.append(ret, 'segments');
+        }, node);
+        if (block.expr) {
+            node.append(this.visit(block.expr, node));
         }
         return node;
     };
@@ -2822,20 +3066,22 @@ var DepthControl = /** @class */ (function (_super) {
         var _this = this;
         var indentPref = typeof this.state.indentPref === 'number' ? this.state.indentPref : 1;
         if (node instanceof ast_1.Block || node instanceof ast_1.Selector) {
-            var selector_1 = node.closest(ast_1.Selector), needCheckPreviousSelector = false, prev = selector_1;
-            while (prev && selector_1) {
-                prev = prev.previousSibling();
-                if (prev && prev instanceof ast_1.Selector && prev.lineno === selector_1.lineno) {
-                    selector_1 = prev;
-                }
-                else {
-                    break;
+            var selector_1 = node.closest('selector|media'), needCheckPreviousSelector = false, prev = selector_1;
+            if (selector_1 && selector_1 instanceof ast_1.Selector) {
+                while (prev && selector_1) {
+                    prev = prev.previousSibling();
+                    if (prev && prev instanceof ast_1.Selector && prev.lineno === selector_1.lineno) {
+                        selector_1 = prev;
+                    }
+                    else {
+                        break;
+                    }
                 }
             }
             if (selector_1) {
                 if (node instanceof ast_1.Block) {
                     node.nodes.forEach(function (child) {
-                        if (selector_1 && child instanceof ast_1.Property && child.column - indentPref !== selector_1.column) {
+                        if (selector_1 && (child instanceof ast_1.Property || child instanceof ast_1.Media) && child.column - indentPref !== selector_1.column) {
                             _this.msg('incorrect indent', child.lineno, 0, child.column);
                         }
                     });
@@ -2856,7 +3102,7 @@ var DepthControl = /** @class */ (function (_super) {
             return;
         }
         if (node instanceof ast_1.Obj) {
-            var key_1 = node.closest(ast_1.Ident);
+            var key_1 = node.closest('ident');
             if (key_1) {
                 node.nodes.forEach(function (child) {
                     if (child instanceof ast_1.Property && child.key instanceof ast_1.Ident && child.key.column - indentPref !== key_1.column) {

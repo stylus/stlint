@@ -1,4 +1,5 @@
 import { Visitor } from "./visitor";
+import { Line } from "./line";
 import {
 	Tree,
 	Group,
@@ -22,12 +23,16 @@ import {
 	Bool,
 	Each,
 	Condition,
-	UnaryOp
+	UnaryOp, Media, Querylist, Query, Feature
 } from "./ast";
 import { INode } from "./types/ast/node";
 import { ISNode } from "./types/ast/snode";
 
 export class Translator extends  Visitor<ISNode, INode> {
+	constructor(root: ISNode, readonly lines: Line[]) {
+		super(root);
+	}
+
 	methodNotExists(method: string, node: ISNode) {
 		const e = new Error(`No method ${method} line:${node.lineno}`);
 		(<any>e).lineno = node.lineno;
@@ -376,6 +381,86 @@ export class Translator extends  Visitor<ISNode, INode> {
 
 		if (block.right) {
 			node.right = new Ident(block.right, node);
+		}
+
+		return node;
+	}
+
+	/**
+	 * Media scope
+	 * @param block
+	 * @param parent
+	 */
+	visitMedia(block: ISNode, parent: INode) {
+		const node = new Media(block, parent);
+
+		if (block.block) {
+			node.append(this.visit(block.block, node));
+		}
+
+		if (block.val) {
+			node.query = this.visit(block.val, node);
+		}
+
+		// Hack because stylus set Media.column on end of line
+		if (this.lines[node.lineno - 1]) {
+			const column = this.lines[node.lineno - 1].line.indexOf('@media');
+
+			if (~column && column + 1 !== node.column) {
+				node.column = column + 1;
+			}
+		}
+
+		return node;
+	}
+
+	/**
+	 * Query list in media scope
+	 * @param block
+	 * @param parent
+	 */
+	visitQueryList(block: ISNode, parent: INode) {
+		const node = new Querylist(block, parent);
+
+		this.eachVisit(block.nodes, (ret: INode) => {
+			node.append(ret);
+		}, node);
+
+		return node;
+	}
+
+	/**
+	 * Query in query list
+	 * @param block
+	 * @param parent
+	 */
+	visitQuery(block: ISNode, parent: INode) {
+		const node = new Query(block, parent);
+
+		if (block.type) {
+			node.type = this.visit(block.type, node);
+		}
+
+		if (block.predicate) {
+			node.predicate = block.predicate;
+		}
+
+		this.eachVisit(block.nodes, (ret: INode) => {
+			node.append(ret);
+		}, node);
+
+		return node;
+	}
+
+	visitFeature(block: ISNode, parent: INode) {
+		const node = new Feature(block, parent);
+
+		this.eachVisit(block.segments, (ret: INode) => {
+			node.append(ret, 'segments');
+		}, node);
+
+		if (block.expr) {
+			node.append(this.visit(block.expr, node));
 		}
 
 		return node;

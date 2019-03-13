@@ -11,6 +11,8 @@ export interface ISNode {
 	val?: ISNode;
 	left?: ISNode;
 	right?: ISNode;
+	type?: ISNode;
+	predicate?: string;
 
 	nodes: ISNode[];
 	params?: ISNode;

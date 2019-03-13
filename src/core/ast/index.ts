@@ -21,3 +21,7 @@ export * from './bool';
 export * from './each';
 export * from './condition';
 export * from './unaryop';
+export * from './media';
+export * from './querylist';
+export * from './query';
+export * from './feature';

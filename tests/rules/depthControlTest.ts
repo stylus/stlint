@@ -47,6 +47,43 @@ describe('Depth control test', () => {
 				expect(rule.errors.length).to.be.equal(0)
 			});
 		});
+		describe('Property after @media', () => {
+			describe('Property has indent equal @media\'s indent + 1', () => {
+				it('Should not show error', () => {
+					const rule = new DepthControl({
+						conf: "always"
+					});
+
+					parseAndRun(
+						'.test\n' +
+						'\tmax-height red;\n' +
+						'\t@media screen and (max-width 600px) \n' +
+						'\t\tmax-height red;\n' +
+						'\t\tborder black',
+						rule
+					);
+
+					expect(rule.errors.length).to.be.equal(0)
+				});
+			});
+			describe('Property has indent not equal @media\'s indent + 1', () => {
+				it('Should show error', () => {
+					const rule = new DepthControl({
+						conf: "always"
+					});
+
+					parseAndRun(
+						'.test\n' +
+						'\tmax-height red;\n' +
+						'\t@media screen and (max-width 600px) \n' +
+						'\t\t\tborder black',
+						rule
+					);
+
+					expect(rule.errors.length).to.be.equal(1)
+				});
+			});
+		});
 	});
 	describe('Wrong content', () => {
 		it('Should check all line has normal indent by previous', () => {

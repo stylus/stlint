@@ -8,6 +8,7 @@ import { Line } from "./line";
 import { Rule } from "./rule";
 import { IReporter } from "./types/reporter";
 import { lcfirst } from "./helpers/lcfirst";
+import { splitLines } from "./helpers/splitLines";
 
 export class Checker {
 	readonly rulesListForNodes: IRule[];
@@ -72,12 +73,7 @@ export class Checker {
 	checkLineRules(content: string) {
 		try {
 			const
-				lines: Line[] = [];
-
-			content.split(/\n/)
-				.forEach((ln, index) => {
-					lines[index] = new Line(ln, index + 1, lines);
-				});
+				lines: Line[] = splitLines(content);
 
 			lines
 				.forEach((line, index) => {

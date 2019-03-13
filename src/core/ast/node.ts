@@ -65,11 +65,13 @@ export class Node implements INode {
 	 * Get match parent
 	 * @param parentClass
 	 */
-	closest<T extends Node>(parentClass: Function): null | T {
-		let node = this.parent;
+	closest<T extends Node>(parentClass: string): null | T {
+		let
+			reg = RegExp(`^(${parentClass})$`, 'i'),
+			node = this.parent;
 
 		while (node) {
-			if (node instanceof parentClass) {
+			if (reg.test(node.nodeName)) {
 				return <T>node;
 			}
 
