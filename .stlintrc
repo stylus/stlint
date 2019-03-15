@@ -1,4 +1,5 @@
 {
 	"watch": true,
-	"path": "./test.styl"
+	"path": "./test.styl",
+	"extends": ["stlint-v4fire"]
 }

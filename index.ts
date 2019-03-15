@@ -2,8 +2,6 @@ import { Linter } from "./src/linter";
 import { Watcher } from "./src/watcher";
 import { Reader } from "./src/core/reader";
 
-
-
 async function StylusLinter(path: string): Promise<void>;
 async function StylusLinter(path: string, content: string): Promise<void>;
 async function StylusLinter(path: string, content: string, options: Dictionary): Promise<void>;

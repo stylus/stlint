@@ -3,7 +3,7 @@ import { ReporterType } from "./reporter";
 
 export interface IConfig {
 	extendsOption(from: Dictionary, to: Dictionary): void;
-	readCustomConfig(): void;
+	readConfig(path: string): void;
 	configName: string
 	configFile: string
 
@@ -20,6 +20,9 @@ export interface IConfig {
 
 	stylusParserOptions: Dictionary
 	reportOptions: Dictionary
+
+	extends: string | string[];
+	extraRules: string | string[];
 
 	[key: string]: any;
 }

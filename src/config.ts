@@ -4,6 +4,7 @@ import { BaseConfig } from "./core/baseConfig";
 import { ReporterType } from "./core/types/reporter";
 import { IConfig } from "./core/types/config";
 import chalk = require("chalk");
+import { resolve } from "path";
 
 export class Config extends BaseConfig implements IConfig {
 	debug: boolean = false;
@@ -20,6 +21,8 @@ export class Config extends BaseConfig implements IConfig {
 
 	stylusParserOptions: Dictionary = {};
 
+	extends: string | string[] = '';
+
 	reportOptions = {
 		columnSplitter: ' | ',
 		headingTransform: (heading: string) => {
@@ -32,7 +35,21 @@ export class Config extends BaseConfig implements IConfig {
 
 	constructor(options: Dictionary) {
 		super();
-		this.readCustomConfig();
+
 		this.extendsOption(options, this);
+
+		if (!this.configFile) {
+			this.configFile = resolve(process.cwd(), this.configName);
+		}
+
+		this.readConfig(this.configFile);
+
+		if (this.extends) {
+			if (Array.isArray(this.extends)) {
+				this.extends.forEach(this.extendsByPath.bind(this))
+			} else {
+				this.extendsByPath(this.extends);
+			}
+		}
 	}
 }

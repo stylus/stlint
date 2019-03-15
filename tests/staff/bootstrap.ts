@@ -6,10 +6,10 @@ import { Rule } from "../../src/core/rule";
 import { Line } from "../../src/core/line";
 import { splitLines } from "../../src/core/helpers/splitLines";
 
-Config.getInstance({
-	reporter: 'emptyout',
-	config: './.notexistsfile'
-});
+// Config.getInstance({
+// 	reporter: 'emptyout',
+// 	config: './.notexistsfile'
+// });
 
 /**
  * Парсит дерево АСТ а потом пробегает по нему правилом

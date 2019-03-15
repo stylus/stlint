@@ -225,6 +225,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var data = __webpack_require__(/*! ./defaultRules.json */ "./src/defaultRules.json");
 var baseConfig_1 = __webpack_require__(/*! ./core/baseConfig */ "./src/core/baseConfig.ts");
 var chalk = __webpack_require__(/*! chalk */ "chalk");
+var path_1 = __webpack_require__(/*! path */ "path");
 var Config = /** @class */ (function (_super) {
     __extends(Config, _super);
     function Config(options) {
@@ -237,6 +238,7 @@ var Config = /** @class */ (function (_super) {
         _this.watch = false;
         _this.path = '';
         _this.stylusParserOptions = {};
+        _this.extends = '';
         _this.reportOptions = {
             columnSplitter: ' | ',
             headingTransform: function (heading) {
@@ -246,14 +248,44 @@ var Config = /** @class */ (function (_super) {
             minWidth: 10,
             truncate: false,
         };
-        _this.readCustomConfig();
         _this.extendsOption(options, _this);
+        if (!_this.configFile) {
+            _this.configFile = path_1.resolve(process.cwd(), _this.configName);
+        }
+        _this.readConfig(_this.configFile);
+        if (_this.extends) {
+            if (Array.isArray(_this.extends)) {
+                _this.extends.forEach(_this.extendsByPath.bind(_this));
+            }
+            else {
+                _this.extendsByPath(_this.extends);
+            }
+        }
         return _this;
     }
     return Config;
 }(baseConfig_1.BaseConfig));
 exports.Config = Config;
 
+
+/***/ }),
+
+/***/ "./src/core sync recursive":
+/*!***********************!*\
+  !*** ./src/core sync ***!
+  \***********************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+function webpackEmptyContext(req) {
+	var e = new Error("Cannot find module '" + req + "'");
+	e.code = 'MODULE_NOT_FOUND';
+	throw e;
+}
+webpackEmptyContext.keys = function() { return []; };
+webpackEmptyContext.resolve = webpackEmptyContext;
+module.exports = webpackEmptyContext;
+webpackEmptyContext.id = "./src/core sync recursive";
 
 /***/ }),
 
@@ -1435,10 +1467,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var isPlainObject_1 = __webpack_require__(/*! ./helpers/isPlainObject */ "./src/core/helpers/isPlainObject.ts");
 var fs_1 = __webpack_require__(/*! fs */ "fs");
 var stripJsonComments = __webpack_require__(/*! strip-json-comments */ "strip-json-comments");
+var path_1 = __webpack_require__(/*! path */ "path");
+var fs_2 = __webpack_require__(/*! fs */ "fs");
 var BaseConfig = /** @class */ (function () {
     function BaseConfig() {
         this.configName = '.stlintrc';
         this.configFile = '';
+        this.extraRules = '';
     }
     /**
      * Use this becouse of tests
@@ -1453,16 +1488,21 @@ var BaseConfig = /** @class */ (function () {
     /**
      * Try read config file .stlintrc
      */
-    BaseConfig.prototype.readCustomConfig = function () {
-        if (!this.configFile) {
-            this.configFile = process.cwd() + '/' + this.configName;
-        }
-        if (fs_1.existsSync(this.configFile)) {
+    BaseConfig.prototype.readConfig = function (configFile) {
+        if (fs_1.existsSync(configFile)) {
             try {
-                var customConfig = JSON.parse(stripJsonComments(fs_1.readFileSync(this.configFile, 'utf8')));
+                var customConfig = JSON.parse(stripJsonComments(fs_1.readFileSync(configFile, 'utf8')));
                 if (customConfig) {
                     this.extendsOption(customConfig, this);
-                    this.extendsOption(customConfig, this.rules);
+                    if (this.extraRules) {
+                        var dir_1 = path_1.dirname(configFile), normaliePath = function (extra) { return path_1.resolve(dir_1, extra); };
+                        if (Array.isArray(this.extraRules)) {
+                            this.extraRules = this.extraRules.map(normaliePath);
+                        }
+                        else {
+                            this.extraRules = normaliePath(this.extraRules);
+                        }
+                    }
                 }
             }
             catch (_a) { }
@@ -1490,6 +1530,25 @@ var BaseConfig = /** @class */ (function () {
             }
         });
     };
+    /**
+     * Load extra config files
+     */
+    BaseConfig.prototype.extendsByPath = function (pathOrPackage) {
+        var path;
+        if (/^\./.test(pathOrPackage)) {
+            path = path_1.resolve(process.cwd(), pathOrPackage);
+        }
+        else {
+            path = path_1.resolve(process.cwd(), 'node_modules', pathOrPackage);
+        }
+        var stat = fs_2.statSync(path);
+        if (stat.isFile()) {
+            this.readConfig(path);
+        }
+        else {
+            this.readConfig(path_1.resolve(path, this.configName));
+        }
+    };
     BaseConfig.__instance = null;
     return BaseConfig;
 }());
@@ -1507,12 +1566,25 @@ exports.BaseConfig = BaseConfig;
 
 "use strict";
 
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 var rules = __webpack_require__(/*! ../rules */ "./src/rules/index.ts");
 var runner_1 = __webpack_require__(/*! ./runner */ "./src/core/runner.ts");
 var rule_1 = __webpack_require__(/*! ./rule */ "./src/core/rule.ts");
 var lcfirst_1 = __webpack_require__(/*! ./helpers/lcfirst */ "./src/core/helpers/lcfirst.ts");
 var splitLines_1 = __webpack_require__(/*! ./helpers/splitLines */ "./src/core/helpers/splitLines.ts");
+var fs_1 = __webpack_require__(/*! fs */ "fs");
+var path_1 = __webpack_require__(/*! path */ "path");
 var Checker = /** @class */ (function () {
     function Checker(linter) {
         var _this = this;
@@ -1525,20 +1597,79 @@ var Checker = /** @class */ (function () {
                 }
             });
         };
-        var rulesConstructors = rules, rulesNames = Object.keys(rulesConstructors), config = linter.config;
-        this.rulesList = rulesNames
-            .filter(function (key) { return rulesConstructors[key].prototype instanceof rule_1.Rule; })
+        this.rulesList = this.initRules(rules);
+        if (linter.config.extraRules) {
+            var extraRules = this.loadRules(linter.config.extraRules);
+            this.rulesList.concat(this.initRules(extraRules));
+        }
+        this.rulesListForLines = this.rulesList.filter(function (rule) { return rule.checkLine; });
+        this.rulesListForNodes = this.rulesList.filter(function (rule) { return rule.checkNode; });
+    }
+    /**
+     * Load one rule or several rules
+     * @param path
+     */
+    Checker.prototype.requireRule = function (path) {
+        var _a;
+        if (/\.js$/.test(path)) {
+            try {
+                var rule = __webpack_require__("./src/core sync recursive")(path);
+                if (typeof rule === 'function') {
+                    return _a = {},
+                        _a[rule.name] = rule,
+                        _a;
+                }
+                else {
+                    return __assign({}, rule);
+                }
+            }
+            catch (_b) { }
+        }
+        return {};
+    };
+    /**
+     * Load rules from folder
+     */
+    Checker.prototype.loadRules = function (path) {
+        var _this = this;
+        var results = {};
+        if (Array.isArray(path)) {
+            path.map(this.loadRules).forEach(function (rules) {
+                results = __assign({}, results, rules);
+            });
+            return results;
+        }
+        var stat = fs_1.statSync(path);
+        if (stat.isFile()) {
+            results = __assign({}, results, this.requireRule(path));
+        }
+        else if (stat.isDirectory()) {
+            fs_1.readdirSync(path).forEach(function (file) {
+                results = __assign({}, results, _this.requireRule(path_1.resolve(path, file)));
+            });
+        }
+        return results;
+    };
+    /**
+     * Create instance od all rules all rules
+     * @param rulesConstructors
+     */
+    Checker.prototype.initRules = function (rulesConstructors) {
+        var rulesNames = Object.keys(rulesConstructors), config = this.linter.config;
+        return rulesNames
+            .filter(function (key) { return typeof rulesConstructors[key] === 'function'; })
             .map(function (key) {
             var options = config.rules[lcfirst_1.lcfirst(key)];
             if (options === true && config.defaultRules[lcfirst_1.lcfirst(key)]) {
                 options = config.defaultRules[lcfirst_1.lcfirst(key)];
             }
+            if (!(rulesConstructors[key].prototype instanceof rule_1.Rule)) {
+                rulesConstructors[key].prototype = rule_1.Rule.getInstance();
+            }
             return new rulesConstructors[key](options);
         })
             .filter(function (rule) { return rule.state.enabled; });
-        this.rulesListForLines = this.rulesList.filter(function (rule) { return rule.checkLine; });
-        this.rulesListForNodes = this.rulesList.filter(function (rule) { return rule.checkNode; });
-    }
+    };
     /**
      * Check whole AST
      *
@@ -2270,6 +2401,12 @@ var Rule = /** @class */ (function () {
             this.state.enabled = conf;
         }
     }
+    Rule.getInstance = function () {
+        if (!this.__instance) {
+            return this.__instance = Object.create(Rule);
+        }
+        return this.__instance;
+    };
     Object.defineProperty(Rule.prototype, "context", {
         get: function () {
             return Rule.context;

@@ -9,6 +9,8 @@ import { Rule } from "./rule";
 import { IReporter } from "./types/reporter";
 import { lcfirst } from "./helpers/lcfirst";
 import { splitLines } from "./helpers/splitLines";
+import { statSync,readdirSync } from "fs";
+import { resolve } from "path";
 
 export class Checker {
 	readonly rulesListForNodes: IRule[];
@@ -16,26 +18,92 @@ export class Checker {
 	readonly rulesList: IRule[];
 
 	constructor(readonly linter: Linter) {
-		const
-			rulesConstructors: Dictionary<typeof Rule> = <any>rules,
-			rulesNames: string[] = Object.keys(rulesConstructors),
-			config = linter.config;
+		this.rulesList = this.initRules(<any>rules);
 
-		this.rulesList = rulesNames
-				.filter(key => rulesConstructors[key].prototype instanceof Rule)
-				.map((key: string): IRule => {
-					let options = config.rules[lcfirst(key)];
-
-					if (options === true && config.defaultRules[lcfirst(key)]) {
-						options = config.defaultRules[lcfirst(key)];
-					}
-
-					return new (<any>rulesConstructors)[key](options)
-				})
-				.filter(rule => rule.state.enabled);
+		if (linter.config.extraRules) {
+			const extraRules = this.loadRules(linter.config.extraRules);
+			this.rulesList.concat(this.initRules(extraRules))
+		}
 
 		this.rulesListForLines = this.rulesList.filter(rule => rule.checkLine);
 		this.rulesListForNodes = this.rulesList.filter(rule => rule.checkNode);
+	}
+
+	/**
+	 * Load one rule or several rules
+	 * @param path
+	 */
+	requireRule(path: string) {
+		if (/\.js$/.test(path)) {
+			try {
+				const rule = require(path);
+				if (typeof rule === 'function') {
+					return {
+						[rule.name]: rule
+					}
+				} else {
+					return {
+						...rule
+					}
+				}
+			} catch {}
+		}
+
+		return {};
+	}
+
+	/**
+	 * Load rules from folder
+	 */
+	loadRules(path: string | string[]): Dictionary<typeof Rule> {
+		let results: Dictionary<typeof Rule> = {};
+
+		if (Array.isArray(path)) {
+			path.map(this.loadRules).forEach(rules => {
+				results = {...results, ...rules};
+			});
+
+			return results;
+		}
+
+		const stat = statSync(path);
+
+		if (stat.isFile()) {
+			results = {...results, ...this.requireRule(path)};
+		} else if (stat.isDirectory()) {
+			readdirSync(path).forEach((file) => {
+				results = {...results, ...this.requireRule(resolve(path, file))};
+			});
+		}
+
+		return results;
+	}
+
+	/**
+	 * Create instance od all rules all rules
+	 * @param rulesConstructors
+	 */
+	initRules(rulesConstructors: Dictionary<typeof Rule>): IRule[] {
+		const
+			rulesNames: string[] = Object.keys(rulesConstructors),
+			config = this.linter.config;
+
+		return rulesNames
+			.filter(key => typeof rulesConstructors[key] === 'function')
+			.map((key: string): IRule => {
+				let options = config.rules[lcfirst(key)];
+
+				if (options === true && config.defaultRules[lcfirst(key)]) {
+					options = config.defaultRules[lcfirst(key)];
+				}
+
+				if (!(rulesConstructors[key].prototype instanceof Rule)) {
+					rulesConstructors[key].prototype = Rule.getInstance();
+				}
+
+				return new (<any>rulesConstructors)[key](options)
+			})
+			.filter(rule => rule.state.enabled);
 	}
 
 	/**

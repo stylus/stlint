@@ -27,6 +27,16 @@ export abstract class Rule<T extends IState = IState> implements IRule<T> {
 
 	cache: Dictionary = {};
 
+	private static __instance: Rule | null;
+
+	static getInstance(): Rule {
+		if (!this.__instance) {
+			return this.__instance = Object.create(Rule);
+		}
+
+		return this.__instance;
+	}
+
 	constructor(readonly conf: T) {
 		if (typeof conf !== 'boolean') {
 			if (Array.isArray(conf)) {
