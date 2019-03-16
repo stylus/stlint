@@ -3,8 +3,7 @@
 'use strict'
 
 const yargs = require( 'yargs' );
-const stlint = require( '../' );
-
+const stlint = require( '../' ).StylusLinter;
 
 const options = yargs
 	.usage( 'Usage: $0 file' )
@@ -25,7 +24,8 @@ const options = yargs
 	})
 	.option( 'watch', {
 		alias: 'w',
-		describe: 'Watch changes',
+		describe: 'Watc' +
+			'h changes',
 		type: 'boolean'
 	})
 	.version(require( '../package' ).version)

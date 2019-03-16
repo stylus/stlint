@@ -2,10 +2,12 @@ import { Linter } from "./src/linter";
 import { Watcher } from "./src/watcher";
 import { Reader } from "./src/core/reader";
 
-async function StylusLinter(path: string): Promise<void>;
-async function StylusLinter(path: string, content: string): Promise<void>;
-async function StylusLinter(path: string, content: string, options: Dictionary): Promise<void>;
-async function StylusLinter(path: string | string[], content?: string, options: Dictionary = {}) {
+export * from "./src/core/rule";
+
+export async function StylusLinter(path: string): Promise<void>;
+export async function StylusLinter(path: string, content: string): Promise<void>;
+export async function StylusLinter(path: string, content: string, options: Dictionary): Promise<void>;
+export async function StylusLinter(path: string | string[], content?: string, options: Dictionary = {}) {
 	const
 		linter = new Linter(options),
 		first = () => Array.isArray(path) ? path[0] : path;
@@ -36,5 +38,3 @@ async function StylusLinter(path: string | string[], content?: string, options: 
 
 	await readAndDisplay();
 }
-
-module.exports = StylusLinter;

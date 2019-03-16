@@ -1,7 +1,7 @@
 import { IRule } from "./types/rule";
-import * as rules from "../rules";
+import * as rules from "../rules/index";
 import { INode } from "./types/ast/node";
-import { Tree } from "./ast";
+import { Tree } from "./ast/index";
 import { Runner } from "./runner";
 import { Linter } from "../linter";
 import { Line } from "./line";
@@ -9,20 +9,27 @@ import { Rule } from "./rule";
 import { IReporter } from "./types/reporter";
 import { lcfirst } from "./helpers/lcfirst";
 import { splitLines } from "./helpers/splitLines";
-import { statSync,readdirSync } from "fs";
+import { statSync, readdirSync } from "fs";
 import { resolve } from "path";
+import _require = require('native-require')
 
 export class Checker {
-	readonly rulesListForNodes: IRule[];
-	readonly rulesListForLines: IRule[];
-	readonly rulesList: IRule[];
+	rulesListForNodes: IRule[] = [];
+	rulesListForLines: IRule[] = [];
+	rulesList: IRule[] = [];
 
-	constructor(readonly linter: Linter) {
+	constructor(readonly linter: Linter) {}
+
+	/**
+	 * Load and init rules (and external rules too)
+	 */
+	loadAndInitRules() {
+
 		this.rulesList = this.initRules(<any>rules);
 
-		if (linter.config.extraRules) {
-			const extraRules = this.loadRules(linter.config.extraRules);
-			this.rulesList.concat(this.initRules(extraRules))
+		if (this.linter.config.extraRules) {
+			const extraRules = this.loadRules(this.linter.config.extraRules);
+			this.rulesList = this.rulesList.concat(this.initRules(extraRules))
 		}
 
 		this.rulesListForLines = this.rulesList.filter(rule => rule.checkLine);
@@ -34,9 +41,11 @@ export class Checker {
 	 * @param path
 	 */
 	requireRule(path: string) {
+
 		if (/\.js$/.test(path)) {
 			try {
-				const rule = require(path);
+				const rule = _require(`${path}`);
+
 				if (typeof rule === 'function') {
 					return {
 						[rule.name]: rule
@@ -46,7 +55,12 @@ export class Checker {
 						...rule
 					}
 				}
-			} catch {}
+			} catch(e) {
+				console.log(e);
+
+				throw e;
+				this.linter.reporter.add('JS', e.message, 1, 1);
+			}
 		}
 
 		return {};
@@ -90,6 +104,14 @@ export class Checker {
 
 		return rulesNames
 			.filter(key => typeof rulesConstructors[key] === 'function')
+			.map(key => {
+				if (!(rulesConstructors[key].prototype instanceof Rule)) {
+					rulesConstructors[key].prototype = new Rule({"conf": "always"});
+					rulesConstructors[key].prototype.constructor = rulesConstructors[key];
+				}
+
+				return key;
+			})
 			.map((key: string): IRule => {
 				let options = config.rules[lcfirst(key)];
 
@@ -97,11 +119,7 @@ export class Checker {
 					options = config.defaultRules[lcfirst(key)];
 				}
 
-				if (!(rulesConstructors[key].prototype instanceof Rule)) {
-					rulesConstructors[key].prototype = Rule.getInstance();
-				}
-
-				return new (<any>rulesConstructors)[key](options)
+				return new (<any>rulesConstructors)[key](options);
 			})
 			.filter(rule => rule.state.enabled);
 	}

@@ -19,7 +19,7 @@ const
 	startMultyComment = /\/\*/,
 	endMultyComment = /\*\//;
 
-export abstract class Rule<T extends IState = IState> implements IRule<T> {
+export class Rule<T extends IState = IState> implements IRule<T> {
 	state: T = <T>{
 		conf: 'always',
 		enabled: true

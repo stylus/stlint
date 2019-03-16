@@ -36,7 +36,7 @@ export class Linter {
 	/**
 	 * Parse styl file and check rules
 	 */
-	lint = (path: string, content: string | null = null) => {
+	lint = async (path: string, content: string | null = null) => {
 		path = resolve(path);
 
 		try {
@@ -47,6 +47,8 @@ export class Linter {
 			if (typeof content !== 'string') {
 				content = readFileSync(path, 'utf8');
 			}
+
+			this.checker.loadAndInitRules();
 
 			this.reporter.setPath(path);
 

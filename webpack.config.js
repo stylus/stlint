@@ -10,11 +10,6 @@ module.exports = {
 	resolve: {
 		extensions: [ '.ts', '.js' ]
 	},
-
-	node: {
-		fs: 'empty',
-	},
-
 	module: {
 		rules: [
 			{
@@ -23,9 +18,13 @@ module.exports = {
 					loader: 'awesome-typescript-loader',
 				},
 				exclude: path.resolve(__dirname, "node_modules/stylus")
-
 			}
 		]
+	},
+
+	node: {
+		__dirname: 'mock',
+		fs: 'mock'
 	},
 
 	output: {

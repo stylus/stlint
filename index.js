@@ -140,10 +140,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
 Object.defineProperty(exports, "__esModule", { value: true });
 var linter_1 = __webpack_require__(/*! ./src/linter */ "./src/linter.ts");
 var watcher_1 = __webpack_require__(/*! ./src/watcher */ "./src/watcher.ts");
 var reader_1 = __webpack_require__(/*! ./src/core/reader */ "./src/core/reader.ts");
+__export(__webpack_require__(/*! ./src/core/rule */ "./src/core/rule.ts"));
 function StylusLinter(path, content, options) {
     if (options === void 0) { options = {}; }
     return __awaiter(this, void 0, void 0, function () {
@@ -183,7 +187,7 @@ function StylusLinter(path, content, options) {
         });
     });
 }
-module.exports = StylusLinter;
+exports.StylusLinter = StylusLinter;
 
 
 /***/ }),
@@ -267,25 +271,6 @@ var Config = /** @class */ (function (_super) {
 }(baseConfig_1.BaseConfig));
 exports.Config = Config;
 
-
-/***/ }),
-
-/***/ "./src/core sync recursive":
-/*!***********************!*\
-  !*** ./src/core sync ***!
-  \***********************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-function webpackEmptyContext(req) {
-	var e = new Error("Cannot find module '" + req + "'");
-	e.code = 'MODULE_NOT_FOUND';
-	throw e;
-}
-webpackEmptyContext.keys = function() { return []; };
-webpackEmptyContext.resolve = webpackEmptyContext;
-module.exports = webpackEmptyContext;
-webpackEmptyContext.id = "./src/core sync recursive";
 
 /***/ }),
 
@@ -1578,17 +1563,21 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var rules = __webpack_require__(/*! ../rules */ "./src/rules/index.ts");
+var rules = __webpack_require__(/*! ../rules/index */ "./src/rules/index.ts");
 var runner_1 = __webpack_require__(/*! ./runner */ "./src/core/runner.ts");
 var rule_1 = __webpack_require__(/*! ./rule */ "./src/core/rule.ts");
 var lcfirst_1 = __webpack_require__(/*! ./helpers/lcfirst */ "./src/core/helpers/lcfirst.ts");
 var splitLines_1 = __webpack_require__(/*! ./helpers/splitLines */ "./src/core/helpers/splitLines.ts");
 var fs_1 = __webpack_require__(/*! fs */ "fs");
 var path_1 = __webpack_require__(/*! path */ "path");
+var _require = __webpack_require__(/*! native-require */ "native-require");
 var Checker = /** @class */ (function () {
     function Checker(linter) {
         var _this = this;
         this.linter = linter;
+        this.rulesListForNodes = [];
+        this.rulesListForLines = [];
+        this.rulesList = [];
         this.check = function (root) {
             var type = root.nodeName;
             _this.rulesListForNodes.forEach(function (rule) {
@@ -1597,14 +1586,19 @@ var Checker = /** @class */ (function () {
                 }
             });
         };
+    }
+    /**
+     * Load and init rules (and external rules too)
+     */
+    Checker.prototype.loadAndInitRules = function () {
         this.rulesList = this.initRules(rules);
-        if (linter.config.extraRules) {
-            var extraRules = this.loadRules(linter.config.extraRules);
-            this.rulesList.concat(this.initRules(extraRules));
+        if (this.linter.config.extraRules) {
+            var extraRules = this.loadRules(this.linter.config.extraRules);
+            this.rulesList = this.rulesList.concat(this.initRules(extraRules));
         }
         this.rulesListForLines = this.rulesList.filter(function (rule) { return rule.checkLine; });
         this.rulesListForNodes = this.rulesList.filter(function (rule) { return rule.checkNode; });
-    }
+    };
     /**
      * Load one rule or several rules
      * @param path
@@ -1613,7 +1607,7 @@ var Checker = /** @class */ (function () {
         var _a;
         if (/\.js$/.test(path)) {
             try {
-                var rule = __webpack_require__("./src/core sync recursive")(path);
+                var rule = _require("" + path);
                 if (typeof rule === 'function') {
                     return _a = {},
                         _a[rule.name] = rule,
@@ -1623,7 +1617,11 @@ var Checker = /** @class */ (function () {
                     return __assign({}, rule);
                 }
             }
-            catch (_b) { }
+            catch (e) {
+                console.log(e);
+                throw e;
+                this.linter.reporter.add('JS', e.message, 1, 1);
+            }
         }
         return {};
     };
@@ -1659,12 +1657,16 @@ var Checker = /** @class */ (function () {
         return rulesNames
             .filter(function (key) { return typeof rulesConstructors[key] === 'function'; })
             .map(function (key) {
+            if (!(rulesConstructors[key].prototype instanceof rule_1.Rule)) {
+                rulesConstructors[key].prototype = new rule_1.Rule({ "conf": "always" });
+                rulesConstructors[key].prototype.constructor = rulesConstructors[key];
+            }
+            return key;
+        })
+            .map(function (key) {
             var options = config.rules[lcfirst_1.lcfirst(key)];
             if (options === true && config.defaultRules[lcfirst_1.lcfirst(key)]) {
                 options = config.defaultRules[lcfirst_1.lcfirst(key)];
-            }
-            if (!(rulesConstructors[key].prototype instanceof rule_1.Rule)) {
-                rulesConstructors[key].prototype = rule_1.Rule.getInstance();
             }
             return new rulesConstructors[key](options);
         })
@@ -2985,6 +2987,41 @@ module.exports = {"mixedSpaces":{"indentPref":"tab"},"prefixVarsWithDollar":{"co
 
 "use strict";
 
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 var config_1 = __webpack_require__(/*! ./config */ "./src/config.ts");
 var reporter_1 = __webpack_require__(/*! ./core/reporter */ "./src/core/reporter.ts");
@@ -3006,30 +3043,37 @@ var Linter = /** @class */ (function () {
          */
         this.lint = function (path, content) {
             if (content === void 0) { content = null; }
-            path = path_1.resolve(path);
-            try {
-                if (!fs_1.existsSync(path)) {
-                    throw new Error('File not exists');
-                }
-                if (typeof content !== 'string') {
-                    content = fs_1.readFileSync(path, 'utf8');
-                }
-                _this.reporter.setPath(path);
-                rule_1.Rule.clearContext();
-                try {
-                    var ast = _this.parser.parse(content);
-                    _this.checker.checkASTRules(ast);
-                }
-                catch (e) {
-                    _this.reporter.add('parse', e.message, e.lineno, e.startOffset);
-                }
-                _this.checker.checkLineRules(content);
-            }
-            catch (e) {
-                if (_this.config.debug) {
-                    throw e;
-                }
-            }
+            return __awaiter(_this, void 0, void 0, function () {
+                var ast;
+                return __generator(this, function (_a) {
+                    path = path_1.resolve(path);
+                    try {
+                        if (!fs_1.existsSync(path)) {
+                            throw new Error('File not exists');
+                        }
+                        if (typeof content !== 'string') {
+                            content = fs_1.readFileSync(path, 'utf8');
+                        }
+                        this.checker.loadAndInitRules();
+                        this.reporter.setPath(path);
+                        rule_1.Rule.clearContext();
+                        try {
+                            ast = this.parser.parse(content);
+                            this.checker.checkASTRules(ast);
+                        }
+                        catch (e) {
+                            this.reporter.add('parse', e.message, e.lineno, e.startOffset);
+                        }
+                        this.checker.checkLineRules(content);
+                    }
+                    catch (e) {
+                        if (this.config.debug) {
+                            throw e;
+                        }
+                    }
+                    return [2 /*return*/];
+                });
+            });
         };
         this.options = options;
         var config = config_1.Config.getInstance(this.options);
@@ -3998,6 +4042,17 @@ module.exports = require("fs");
 /***/ (function(module, exports) {
 
 module.exports = require("glob");
+
+/***/ }),
+
+/***/ "native-require":
+/*!*********************************!*\
+  !*** external "native-require" ***!
+  \*********************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("native-require");
 
 /***/ }),
 
