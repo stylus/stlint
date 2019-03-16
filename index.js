@@ -1461,16 +1461,6 @@ var BaseConfig = /** @class */ (function () {
         this.extraRules = '';
     }
     /**
-     * Use this becouse of tests
-     * @param options
-     */
-    BaseConfig.getInstance = function (options) {
-        if (!this.__instance) {
-            this.__instance = new this(options);
-        }
-        return this.__instance;
-    };
-    /**
      * Try read config file .stlintrc
      */
     BaseConfig.prototype.readConfig = function (configFile) {
@@ -1534,7 +1524,6 @@ var BaseConfig = /** @class */ (function () {
             this.readConfig(path_1.resolve(path, this.configName));
         }
     };
-    BaseConfig.__instance = null;
     return BaseConfig;
 }());
 exports.BaseConfig = BaseConfig;
@@ -3023,13 +3012,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var config_1 = __webpack_require__(/*! ./config */ "./src/config.ts");
 var reporter_1 = __webpack_require__(/*! ./core/reporter */ "./src/core/reporter.ts");
 var parser_1 = __webpack_require__(/*! ./core/parser */ "./src/core/parser.ts");
 var checker_1 = __webpack_require__(/*! ./core/checker */ "./src/core/checker.ts");
 var fs_1 = __webpack_require__(/*! fs */ "fs");
 var path_1 = __webpack_require__(/*! path */ "path");
 var rule_1 = __webpack_require__(/*! ./core/rule */ "./src/core/rule.ts");
+var config_1 = __webpack_require__(/*! ./config */ "./src/config.ts");
 var Linter = /** @class */ (function () {
     /**
      * @param options
@@ -3076,20 +3065,12 @@ var Linter = /** @class */ (function () {
             });
         };
         this.options = options;
-        var config = config_1.Config.getInstance(this.options);
-        this.reporter = reporter_1.Reporter.getInstance(this.config.reporter, config.reportOptions);
+        this.config = new config_1.Config(this.options);
+        this.reporter = reporter_1.Reporter.getInstance(this.config.reporter, this.config.reportOptions);
         this.reporter.reset();
-        this.parser = new parser_1.StylusParser(config.stylusParserOptions);
+        this.parser = new parser_1.StylusParser(this.config.stylusParserOptions);
         this.checker = new checker_1.Checker(this);
     }
-    Object.defineProperty(Linter.prototype, "config", {
-        get: function () {
-            return config_1.Config.getInstance(this.options);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    ;
     /**
      * Print all errors or warnings
      */

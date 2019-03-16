@@ -10,20 +10,6 @@ export class BaseConfig {
 	configFile: string = '';
 	extraRules: string | string[] = '';
 
-	private static __instance: IConfig | null = null;
-
-	/**
-	 * Use this becouse of tests
-	 * @param options
-	 */
-	static getInstance(options: Dictionary): IConfig {
-		if (!this.__instance) {
-			this.__instance = new (<any>this)(options);
-		}
-
-		return <IConfig>this.__instance;
-	}
-
 	/**
 	 * Try read config file .stlintrc
 	 */

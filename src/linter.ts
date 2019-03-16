@@ -1,4 +1,3 @@
-import { Config } from "./config";
 import { Reporter } from "./core/reporter";
 import { StylusParser } from "./core/parser";
 import { Checker } from "./core/checker";
@@ -7,13 +6,12 @@ import { resolve } from "path";
 import { IReporter } from "./core/types/reporter";
 import { Rule } from "./core/rule";
 import { IConfig } from "./core/types/config";
+import { Config } from "./config";
 
 export class Linter {
 	options: Dictionary = {};
 
-	get config(): IConfig {
-		return Config.getInstance(this.options)
-	};
+	config: IConfig;
 
 	reporter: IReporter;
 	parser: StylusParser;
@@ -24,12 +22,12 @@ export class Linter {
 	 */
 	constructor(options: Dictionary = {}) {
 		this.options = options;
-		const config = Config.getInstance(this.options);
+		this.config = new Config(this.options);
 
-		this.reporter = Reporter.getInstance(this.config.reporter, config.reportOptions);
+		this.reporter = Reporter.getInstance(this.config.reporter, this.config.reportOptions);
 		this.reporter.reset();
 
-		this.parser = new StylusParser(config.stylusParserOptions);
+		this.parser = new StylusParser(this.config.stylusParserOptions);
 		this.checker = new Checker(this);
 	}
 

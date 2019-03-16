@@ -1,7 +1,7 @@
 import { SortOrder } from "../../src/rules";
 import { parseAndRun } from "../staff/bootstrap";
 import { expect } from "chai";
-import {Config} from "../../src/config";
+import * as data from "../../src/defaultRules.json";
 
 const content = '.tab\n' +
 	'\tcolor #CCC\n' +
@@ -125,7 +125,7 @@ describe('Test order rule', () => {
 				const rule = new SortOrder({
 					conf: "grouped",
 					startGroupChecking: 6,
-					order: (<Dictionary>Config.getInstance({}).rules.sortOrder).order
+					order: (<Dictionary>data).sortOrder.order
 				});
 
 				parseAndRun('&__item3-title\n' +

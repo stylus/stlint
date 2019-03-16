@@ -1,15 +1,9 @@
-import { Config } from "../../src/config";
 import { IRule } from "../../src/core/types/rule";
 import { Runner } from "../../src/core/runner";
 import { StylusParser } from "../../src/core/parser";
 import { Rule } from "../../src/core/rule";
 import { Line } from "../../src/core/line";
 import { splitLines } from "../../src/core/helpers/splitLines";
-
-// Config.getInstance({
-// 	reporter: 'emptyout',
-// 	config: './.notexistsfile'
-// });
 
 /**
  * Парсит дерево АСТ а потом пробегает по нему правилом
