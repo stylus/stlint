@@ -1,5 +1,5 @@
 import { IReporter } from "./types/reporter";
-import { IMessagePack} from "./types/message";
+import { IMessagePack } from "./types/message";
 import { IResponse } from "./types/response";
 import { inspect } from 'util'
 
@@ -46,8 +46,9 @@ export abstract class Reporter implements IReporter {
 	 * @param line
 	 * @param start
 	 * @param end
+	 * @param fix
 	 */
-	add(rule: string, message: string, line: number = 0, start: number = 0, end: number = 0) {
+	add(rule: string, message: string, line: number = 0, start: number = 0, end: number = 0, fix: string | null = null) {
 		this.errors.push({
 			message: [{
 				rule,
@@ -56,14 +57,14 @@ export abstract class Reporter implements IReporter {
 				line,
 				endline: line,
 				start,
-				end: end > start ? end : start
+				end: end > start ? end : start,
+				fix: typeof fix === 'string' ? {replace: fix} : null
 			}]
 		});
 	}
 
 	/**
 	 * Output data some methods
-	 * @param exit
 	 */
 	abstract log(): void;
 
@@ -112,4 +113,3 @@ export const log = (val: any) => console.log(inspect(val, {
 import { SilentReporter } from "./reporters/silentReporter";
 import { RawReporter } from "./reporters/rawReporter";
 import { JsonReporter } from "./reporters/jsonReporter";
-import {IConfig} from "./types/config";

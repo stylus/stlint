@@ -24,6 +24,7 @@
   },
   "leadingZero": ["always"],
   "useMixinInsteadUnit": {
+    "enabled": false,
     "conf": "always",
     "mixin": "basis",
     "unitType": "px"

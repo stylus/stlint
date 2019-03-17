@@ -25,7 +25,14 @@ export class Color extends Rule<IColorState> {
 		}
 
 		if (node.value && typeof node.value === 'string' && checkReg.test(node.value)) {
-			this.msg(`Only ${ this.state.conf } HEX format`, node.lineno, node.column, node.column + node.value.length - 1);
+			const fix = node.value.toString();
+			this.msg(
+				`Only ${ this.state.conf } HEX format`,
+				node.lineno,
+				node.column,
+				node.column + node.value.length - 1,
+				this.state.conf === 'uppercase' ? fix.toUpperCase() : fix.toLowerCase()
+			);
 			return true;
 		}
 

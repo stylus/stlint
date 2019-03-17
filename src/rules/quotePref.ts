@@ -3,9 +3,8 @@ import { ILine } from "../core/types/line";
 
 const stringRe = /(?=["'])(?:"[^"\\]*(?:\\[\s\S][^"\\]*)*"|'[^'\\]*(?:\\[\s\S][^'\\]*)*')/g;
 
-
 /**
- * @description check that quote style is consistent with config
+ * Check that quote style is consistent with config
  */
 export class QuotePref extends Rule {
 	checkLine(line: ILine): void | boolean {
@@ -30,22 +29,25 @@ export class QuotePref extends Rule {
 						this.msg(
 							'preferred quote style is ' + this.state.conf + ' quotes',
 							line.lineno,
-							match.index,
-							match[0].length + match.index
+							match.index + 1,
+							match[0].length + match.index,
+							match[0].replace(/^"/g, '\'').replace(/'$/g, '\''),
 						);
 					}
+
 				} else if (this.state.conf === 'double' && match[0].indexOf("'") === 0) {
 					hasInnerQuote = content.indexOf('"') !== -1;
 
 					if (!hasInnerQuote) {
 						badQuotes = true;
+
 						this.msg(
 							'preferred quote style is ' + this.state.conf + ' quotes',
 							line.lineno,
-							match.index,
-							match[0].length + match.index
-						);
-					}
+							match.index + 1,
+							match[0].length + match.index,
+							match[0].replace(/^'/g, '"').replace(/'$/g, '"')
+						);}
 				}
 			}
 

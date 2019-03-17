@@ -2,6 +2,8 @@ import { INode } from "./ast/node";
 import { ILine } from "./line";
 import { IState } from "./state";
 
+export type ErrorArray = [string, string, number, number, number, null | string];
+
 export interface IRule<T extends IState = IState> {
 	state: T;
 	cache: Dictionary;
@@ -15,7 +17,7 @@ export interface IRule<T extends IState = IState> {
 
 	isMatchType(type: string): boolean;
 
-	errors: [string, string, number, number, number][];
+	errors: ErrorArray[];
 	clearErrors(): void;
 
 	context: Dictionary;

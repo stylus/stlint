@@ -1,3 +1,7 @@
+export interface IFix {
+	replace: string;
+}
+
 export interface IMessage {
 	rule: string;
 	descr: string;
@@ -6,6 +10,7 @@ export interface IMessage {
 	endline: number;
 	start: number;
 	end: number;
+	fix: IFix | null;
 }
 
 export interface IMessagePack {

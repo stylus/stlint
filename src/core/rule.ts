@@ -1,5 +1,5 @@
-import { IRule } from "./types/rule";
-import { IState, State } from "./types/state";
+import { ErrorArray, IRule } from "./types/rule";
+import { IState } from "./types/state";
 import { lcfirst } from "./helpers/lcfirst";
 import { ILine } from "./types/line";
 import { IContext } from "./types/context";
@@ -10,14 +10,11 @@ const initContext: IContext  = {
 	inComment: false,
 };
 
-
-type ErrorArray = [string, string, number, number, number];
-
 const
 	hashStartRe = /\$?[\w]+\s*[=:]\s*{/,
 	hashEndRe = /}/,
-	startMultyComment = /\/\*/,
-	endMultyComment = /\*\//;
+	startMultiComment = /\/\*/,
+	endMultiComment = /\*\//;
 
 export class Rule<T extends IState = IState> implements IRule<T> {
 	state: T = <T>{
@@ -27,16 +24,6 @@ export class Rule<T extends IState = IState> implements IRule<T> {
 
 	cache: Dictionary = {};
 
-	private static __instance: Rule | null;
-
-	static getInstance(): Rule {
-		if (!this.__instance) {
-			return this.__instance = Object.create(Rule);
-		}
-
-		return this.__instance;
-	}
-
 	constructor(readonly conf: T) {
 		if (typeof conf !== 'boolean') {
 			if (Array.isArray(conf)) {
@@ -44,6 +31,10 @@ export class Rule<T extends IState = IState> implements IRule<T> {
 				this.state.enabled = conf[1] === undefined || Boolean(conf[1]);
 			} else {
 				this.state = {...this.state, ...conf};
+
+				if (conf.enabled === undefined) {
+					this.state.enabled = true;
+				}
 			}
 		} else {
 			this.state.enabled = conf;
@@ -51,12 +42,11 @@ export class Rule<T extends IState = IState> implements IRule<T> {
 	}
 
 	private static context: IContext = {...initContext};
+
 	get context(): IContext {
 		return Rule.context;
 	}
-	clearContext() {
-		Rule.clearContext();
-	}
+
 	static clearContext() {
 		Rule.context = {...initContext};
 	}
@@ -76,19 +66,22 @@ export class Rule<T extends IState = IState> implements IRule<T> {
 			Rule.context.hashDeep -= 1;
 		}
 
-		if (startMultyComment.test(line.line)) {
+		if (startMultiComment.test(line.line)) {
 			Rule.context.inComment = true;
 		}
 
 		if (Rule.context.inComment) {
 			const prev = line.prev();
 
-			if (prev && endMultyComment.test(prev.line)) {
+			if (prev && endMultiComment.test(prev.line)) {
 				Rule.context.inComment = false;
 			}
 		}
 	}
 
+	/**
+	 * Rule name
+	 */
 	get name(): string {
 		return lcfirst(this.constructor.name);
 	}
@@ -97,14 +90,28 @@ export class Rule<T extends IState = IState> implements IRule<T> {
 
 	hashErrors: Dictionary<boolean> = {};
 	errors: ErrorArray[] = [];
-	clearErrors(){
+
+	clearErrors() {
 		this.errors.length = 0;
 		this.hashErrors = {};
 	}
 
-	msg(message: string, line: number = 1, start: number = 1, end: number = 1) {
+	clearContext() {
+		Rule.clearContext();
+	}
+
+	/**
+	 * Add error message in list
+	 *
+	 * @param message
+	 * @param line
+	 * @param start
+	 * @param end
+	 * @param fix
+	 */
+	msg(message: string, line: number = 1, start: number = 1, end: number = 1, fix: null | string = null) {
 		const
-			error: ErrorArray = [this.name, message, line, start, end],
+			error: ErrorArray = [this.name, message, line, start, end, fix],
 			hash = error.join('&');
 
 		if (!this.hashErrors[hash]) {
