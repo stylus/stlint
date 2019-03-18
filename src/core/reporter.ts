@@ -104,6 +104,19 @@ export abstract class Reporter implements IReporter {
 			passed: true
 		};
 	}
+
+	/**
+	 * Filter messages
+	 * @param grep
+	 */
+	filterErrors(grep: string) {
+		this.errors = this.errors.filter(
+			error => {
+				error.message = error.message.filter(msg => ~msg.descr.indexOf(grep) || ~msg.rule.indexOf(grep));
+				return error.message.length;
+			}
+		)
+	}
 }
 
 export const log = (val: any) => console.log(inspect(val, {

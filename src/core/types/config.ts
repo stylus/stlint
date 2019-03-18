@@ -10,6 +10,7 @@ export interface IConfig {
 	debug: boolean
 	reporter: ReporterType
 	path: string
+	grep: string
 
 	rules: Dictionary<State>;
 	defaultRules: Dictionary<State>;

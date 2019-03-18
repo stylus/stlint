@@ -13,5 +13,8 @@ export interface IReporter {
 	log(): void;
 	setPath(path: string): void;
 	fillResponse(): void;
+
+	filterErrors(grep: string): void;
+
 	response: IResponse;
 }

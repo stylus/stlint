@@ -135,7 +135,7 @@ export class Checker {
 			runner.visit(ast, null);
 
 		} catch (e) {
-			this.linter.reporter.add('parser', e.message, e.lineno || 1, 0);
+			this.linter.reporter.add('astError', e.message, e.lineno || 1, 0);
 
 		} finally {
 			this.afterCheck();

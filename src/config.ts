@@ -18,6 +18,7 @@ export class Config extends BaseConfig implements IConfig {
 	watch: boolean = false;
 
 	path: string = '';
+	grep: string = '';
 
 	stylusParserOptions: Dictionary = {};
 

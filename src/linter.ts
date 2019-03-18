@@ -57,7 +57,7 @@ export class Linter {
 				this.checker.checkASTRules(ast);
 
 			} catch (e) {
-				this.reporter.add('parse', e.message, e.lineno, e.startOffset);
+				this.reporter.add('syntaxError', e.message, e.lineno, e.startOffset);
 			}
 
 			this.checker.checkLineRules(content);
@@ -74,6 +74,10 @@ export class Linter {
 	 * Print all errors or warnings
 	 */
 	display(exit: boolean = true) {
+		if (this.config.grep) {
+			this.reporter.filterErrors(this.config.grep);
+		}
+
 		this.reporter.display(exit);
 	}
 }

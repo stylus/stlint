@@ -241,6 +241,7 @@ var Config = /** @class */ (function (_super) {
         _this.excludes = ['node_modules/'];
         _this.watch = false;
         _this.path = '';
+        _this.grep = '';
         _this.stylusParserOptions = {};
         _this.extends = '';
         _this.reportOptions = {
@@ -1672,7 +1673,7 @@ var Checker = /** @class */ (function () {
             runner.visit(ast, null);
         }
         catch (e) {
-            this.linter.reporter.add('parser', e.message, e.lineno || 1, 0);
+            this.linter.reporter.add('astError', e.message, e.lineno || 1, 0);
         }
         finally {
             this.afterCheck();
@@ -2176,6 +2177,16 @@ var Reporter = /** @class */ (function () {
         this.response = {
             passed: true
         };
+    };
+    /**
+     * Filter messages
+     * @param grep
+     */
+    Reporter.prototype.filterErrors = function (grep) {
+        this.errors = this.errors.filter(function (error) {
+            error.message = error.message.filter(function (msg) { return ~msg.descr.indexOf(grep) || ~msg.rule.indexOf(grep); });
+            return error.message.length;
+        });
     };
     Reporter.__instance = null;
     return Reporter;
@@ -3064,7 +3075,7 @@ var Linter = /** @class */ (function () {
                             this.checker.checkASTRules(ast);
                         }
                         catch (e) {
-                            this.reporter.add('parse', e.message, e.lineno, e.startOffset);
+                            this.reporter.add('syntaxError', e.message, e.lineno, e.startOffset);
                         }
                         this.checker.checkLineRules(content);
                     }
@@ -3089,6 +3100,9 @@ var Linter = /** @class */ (function () {
      */
     Linter.prototype.display = function (exit) {
         if (exit === void 0) { exit = true; }
+        if (this.config.grep) {
+            this.reporter.filterErrors(this.config.grep);
+        }
         this.reporter.display(exit);
     };
     return Linter;

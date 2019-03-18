@@ -17,6 +17,11 @@ const options = yargs
 		describe: 'Reporter name',
 		type: 'string'
 	})
+	.option( 'grep', {
+		alias: 'g',
+		describe: 'Filter rules and errors',
+		type: 'string'
+	})
 	.option( 'fix', {
 		alias: 'f',
 		describe: 'Try fix some rules',
