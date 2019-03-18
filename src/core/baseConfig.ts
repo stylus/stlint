@@ -25,12 +25,12 @@ export class BaseConfig {
 					if (this.extraRules) {
 						const
 							dir = dirname(configFile),
-							normaliePath = (extra: string): string => resolve(dir, extra);
+							normalizePath = (extra: string): string => resolve(dir, extra);
 
 						if (Array.isArray(this.extraRules)) {
-							this.extraRules = this.extraRules.map(normaliePath);
+							this.extraRules = this.extraRules.map(normalizePath);
 						} else {
-							this.extraRules = normaliePath(this.extraRules);
+							this.extraRules = normalizePath(this.extraRules);
 						}
 					}
 				}
