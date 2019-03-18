@@ -200,11 +200,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var lcfirst_1 = __webpack_require__(10);
 var ast_1 = __webpack_require__(2);
 var objToHash_1 = __webpack_require__(75);
+var unwrapObject_1 = __webpack_require__(76);
 var initContext = {
     hashDeep: 0,
     inHash: false,
     inComment: false,
-    vars: {}
+    vars: {},
+    valueToVar: {}
 };
 var hashStartRe = /\$?[\w]+\s*[=:]\s*{/, hashEndRe = /}/, startMultiComment = /\/\*/, endMultiComment = /\*\//;
 var Rule = /** @class */ (function () {
@@ -254,12 +256,12 @@ var Rule = /** @class */ (function () {
     Rule.beforeCheckNode = function (node) {
         if (node instanceof ast_1.Ident && node.value instanceof ast_1.Value) {
             if (node.value.nodes && node.value.nodes.length && node.value.nodes[0] instanceof ast_1.Obj) {
-                var key = node.key;
-                Rule.context.vars[key] = objToHash_1.objTohash(node.value.nodes[0]);
+                this.context.vars[node.key] = objToHash_1.objTohash(node.value.nodes[0]);
             }
             else {
-                Rule.context.vars[node.key] = node.value.nodes[0].toString();
+                this.context.vars[node.key] = node.value.nodes[0].toString();
             }
+            this.context.valueToVar = __assign({}, this.context.valueToVar, unwrapObject_1.unwrapObject(this.context.vars));
         }
     };
     /**
@@ -2556,7 +2558,6 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var rule_1 = __webpack_require__(1);
-var ast_1 = __webpack_require__(2);
 var Color = /** @class */ (function (_super) {
     __extends(Color, _super);
     function Color() {
@@ -2566,15 +2567,11 @@ var Color = /** @class */ (function (_super) {
     }
     Color.prototype.checkNode = function (node) {
         var checkReg = this.state.conf !== 'lowercase' ? /[a-z]/ : /[A-Z]/;
-        if (this.state.allowOnlyInVar) {
-            var elm = node.parent;
-            while (elm) {
-                if (elm instanceof ast_1.Block) {
-                    this.msg("Set color only in variable", node.lineno, node.column, node.column + node.value.length - 1);
-                    break;
-                }
-                elm = elm.parent;
-            }
+        if (this.state.allowOnlyInVar && node.closest('block')) {
+            var fix = this.context.valueToVar[node.value] ||
+                this.context.valueToVar[node.value.toLowerCase()] ||
+                this.context.valueToVar[node.value.toUpperCase()];
+            this.msg("Set color only in variable" + (fix ? "(" + fix + ")" : ''), node.lineno, node.column, node.column + node.value.length - 1, fix || null);
         }
         if (node.value && typeof node.value === 'string' && checkReg.test(node.value)) {
             var fix = node.value.toString();
@@ -3809,6 +3806,46 @@ exports.objTohash = function (node) {
                     result[subkey] = prop.value.toString();
                 }
             }
+        }
+    });
+    return result;
+};
+
+
+/***/ }),
+/* 76 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var isPlainObject_1 = __webpack_require__(68);
+exports.unwrapObject = function (obj, prefix) {
+    if (prefix === void 0) { prefix = []; }
+    var result = {};
+    Object.keys(obj).forEach(function (_key) {
+        var key = prefix.concat([_key]).join('.'), item = obj[_key];
+        if (Array.isArray(item)) {
+            item.forEach(function (value, index) {
+                result[value] = key + "[" + index + "]";
+            });
+        }
+        else if (isPlainObject_1.isPlainObject(item)) {
+            result = __assign({}, result, exports.unwrapObject(item, prefix.concat([_key])));
+        }
+        else {
+            result[item] = key;
         }
     });
     return result;

@@ -3,4 +3,5 @@ export interface IContext {
 	inHash: boolean
 	inComment: boolean
 	vars: Dictionary
+	valueToVar: Dictionary
 }

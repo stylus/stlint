@@ -6,12 +6,14 @@ import { IContext } from "./types/context";
 import { INode } from "./types/ast/node";
 import { Ident, Obj, Value } from "./ast";
 import { objTohash } from "./helpers/objToHash";
+import { unwrapObject } from "./helpers/unwrapObject";
 
 const initContext: IContext  = {
 	hashDeep: 0,
 	inHash: false,
 	inComment: false,
-	vars: {}
+	vars: {},
+	valueToVar: {}
 };
 
 const
@@ -66,11 +68,12 @@ export class Rule<T extends IState = IState> implements IRule<T> {
 	static beforeCheckNode(node: INode) {
 		if (node instanceof Ident && node.value instanceof Value) {
 			if (node.value.nodes && node.value.nodes.length && node.value.nodes[0] instanceof Obj) {
-				const key = node.key;
-				Rule.context.vars[key] = objTohash(node.value.nodes[0]);
+				this.context.vars[node.key] = objTohash(node.value.nodes[0]);
 			} else {
-				Rule.context.vars[node.key] = node.value.nodes[0].toString();
+				this.context.vars[node.key] = node.value.nodes[0].toString();
 			}
+
+			this.context.valueToVar = {...this.context.valueToVar, ...unwrapObject(this.context.vars)}
 		}
 	}
 

@@ -12,20 +12,17 @@ export class Color extends Rule<IColorState> {
 	checkNode(node: RGB) {
 		const checkReg = this.state.conf !== 'lowercase' ? /[a-z]/ : /[A-Z]/;
 
-		if (this.state.allowOnlyInVar) {
-			let elm = node.parent;
+		if (this.state.allowOnlyInVar && node.closest('block')) {
+			const fix = this.context.valueToVar[node.value] ||
+				this.context.valueToVar[node.value.toLowerCase()] ||
+				this.context.valueToVar[node.value.toUpperCase()];
 
-			while (elm) {
-				if (elm instanceof Block) {
-					this.msg(`Set color only in variable`, node.lineno, node.column, node.column + node.value.length - 1);
-					break;
-				}
-				elm = elm.parent;
-			}
+			this.msg(`Set color only in variable` + (fix ? `(${fix})` : ''), node.lineno, node.column, node.column + node.value.length - 1, fix || null);
 		}
 
 		if (node.value && typeof node.value === 'string' && checkReg.test(node.value)) {
 			const fix = node.value.toString();
+
 			this.msg(
 				`Only ${ this.state.conf } HEX format`,
 				node.lineno,
@@ -33,6 +30,7 @@ export class Color extends Rule<IColorState> {
 				node.column + node.value.length - 1,
 				this.state.conf === 'uppercase' ? fix.toUpperCase() : fix.toLowerCase()
 			);
+
 			return true;
 		}
 

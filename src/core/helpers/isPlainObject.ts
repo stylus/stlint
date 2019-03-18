@@ -3,7 +3,7 @@
  *
  * @param obj
  */
-export const isPlainObject = (obj: unknown): boolean => {
+export const isPlainObject = (obj: unknown): obj is object => {
 	if (typeof obj !== 'object') {
 		return false;
 	}
