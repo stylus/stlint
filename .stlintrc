@@ -1,6 +1,3 @@
 {
-	"watch": false,
-	"debug": true,
-	"path": "./test.styl",
-	"extends": ["stlint-v4fire"]
+
 }
