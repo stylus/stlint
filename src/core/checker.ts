@@ -142,12 +142,14 @@ export class Checker {
 		}
 	}
 
-	private check = (root: INode) => {
-		const type = root.nodeName;
+	private check = (node: INode) => {
+		const type = node.nodeName;
+
+		Rule.beforeCheckNode(node);
 
 		this.rulesListForNodes.forEach((rule: IRule) => {
 			if (rule.checkNode && rule.isMatchType(type)) {
-				rule.checkNode(<INode>root);
+				rule.checkNode(<INode>node);
 			}
 		})
 	};

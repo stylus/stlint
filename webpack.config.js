@@ -33,5 +33,8 @@ module.exports = {
 		path: path.resolve(__dirname, './')
 	},
 
-	mode: 'development'
+	mode: 'production',
+	optimization: {
+		minimize: false
+	}
 };

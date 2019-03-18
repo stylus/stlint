@@ -30,8 +30,16 @@ export class Node implements INode {
 	}
 
 	value: string | INode | null = '';
+
+	/**
+	 * Use stylus source
+	 */
 	toString() {
-		return this.value ? this.value.toString() : '';
+		if (this.source) {
+			return this.source.toString();
+		}
+
+		return this.value ? this.value.toString() : ' ';
 	}
 
 

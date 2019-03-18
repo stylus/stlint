@@ -1,62 +1,18 @@
 @import "blocks/i-block/i-block.interface.styl"
 
 $p = {
-	width: basis(10),
+	colors: #ccc #ddd #eee
+	width: basis(10, 20px, #ccc) 1px solid,
+	color: {
+		fff: black red
+	},
 	background: $colors.white[0],
 	offersShopsText: $colors.grey[2],
 	discountBgColor: $colors.base.third
 }
 
+color = #ccc
+
 b-retailer extends i-block
 	overflow hidden
 	border $p.border
-
-	&__root
-		max-width basis(23)
-
-	&__header
-		border-bottom $p.border
-		overflow hidden
-
-	&_empty_true &__header
-		filter grayscale(1)
-		opacity 0.5
-
-	&__logo
-		display block
-		width basis(13)
-		height @width
-		margin basis(5) auto
-
-	&__retailer-info
-		padding basis(3)
-		font-size 0
-
-	&__offers, &__shops
-		display flex
-		font-line 13px
-
-	&_empty_false &__offers,
-	&_empty_false &__shops
-		overflow ellipsis
-
-	&__offers-text, &__shops-text
-		color $p.offersShopsText
-
-	&_empty_false &__offers-text,
-	&_empty_false &__shops-text
-		overflow ellipsis
-
-	&__discount
-		background $p.discountBgColor
-		border-radius $p.cornerRadius
-
-		font-size 13px
-		height 10px
-		line-height @height
-		user-select all
-		overflow ellipsis
-
-		&_text_true
-			display block
-			text-align center

@@ -2,6 +2,7 @@
   "mixedSpaces": {
     "indentPref": "tab"
   },
+
   "prefixVarsWithDollar": {
     "conf": "always",
     "prefix": "$"
@@ -14,20 +15,27 @@
   "depthControl": {
     "indentPref": "tab"
   },
+
   "quotePref": ["double"],
+
   "semicolons": ["never"],
+
   "colons": ["never"],
+
   "color": 	{
     "conf": "uppercase",
     "enabled": true,
     "allowOnlyInVar": true
   },
+
   "leadingZero": ["always"],
+
   "useMixinInsteadUnit": {
     "conf": "always",
     "mixin": "basis",
     "unitType": "px"
   },
+
   "sortOrder": {
     "conf": "grouped",
     "startGroupChecking": 6,

@@ -8,7 +8,8 @@ export class Value extends Node {
 
 		return '';
 	}
+
 	toString() {
-		return this.nodes.join('');
+		return this.nodes.join(' ');
 	}
 }

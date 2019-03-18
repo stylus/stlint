@@ -198,7 +198,7 @@ export class Translator extends  Visitor<ISNode, INode> {
 					}
 					const
 						property = new Property(vals[key], node),
-						keyItem = new Ident(keys[key], property),
+						keyItem = <Ident>this.visit(keys[key], property),
 						ret = this.visit(vals[key], property);
 
 					property.key = keyItem;
@@ -262,12 +262,12 @@ export class Translator extends  Visitor<ISNode, INode> {
 		const node = new Member(block, parent);
 
 		if (block.left) {
-			node.left = new Ident(block.left, node);
+			node.left = this.visit(block.left, node);
 			node.left.key = block.name || '';
 		}
 
 		if (block.right) {
-			node.right = new Ident(block.right, node);
+			node.right =this.visit(block.right, node);
 			node.right.key = block.name || '';
 		}
 
@@ -283,11 +283,11 @@ export class Translator extends  Visitor<ISNode, INode> {
 		const node = new BinOp(block, parent);
 
 		if (block.left) {
-			node.left = new Ident(block.left, node);
+			node.left = this.visit(block.left, node);
 		}
 
 		if (block.right) {
-			node.right = new Ident(block.right, node);
+			node.right = this.visit(block.right, node);
 		}
 
 		return node;
@@ -392,11 +392,11 @@ export class Translator extends  Visitor<ISNode, INode> {
 		const node = new UnaryOp(block, parent);
 
 		if (block.left) {
-			node.left = new Ident(block.left, node);
+			node.left = this.visit(block.left, node);
 		}
 
 		if (block.right) {
-			node.right = new Ident(block.right, node);
+			node.right = this.visit(block.right, node);
 		}
 
 		return node;
