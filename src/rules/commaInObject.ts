@@ -20,7 +20,8 @@ export class CommaInObject extends Rule {
 		}
 
 		if (hasComma && this.state.conf === 'never') {
-			this.msg('Remove comma from object hash', line.lineno, match ? match.index + 1 : 0);
+			this.msg('Remove comma from object hash', line.lineno, match ? match.index + 1 : 0, match ? match.index + 1 : 0, '');
+
 		} else if (!hasComma && this.state.conf === 'always') {
 			const next = line.next();
 

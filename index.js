@@ -2749,12 +2749,12 @@ var useMixinInsteadUnit = /** @class */ (function (_super) {
             if (node.value && typeof node.value === 'string') {
                 var unit = RegExp('([\\d]+)' + this.state.unitType).exec(node.value);
                 if (unit) {
-                    var extraInfo = '';
+                    var fix = '';
                     if (this.state.mixin === 'basis') {
                         var unitSize = Number(unit[1]), basis = (unitSize / 8);
-                        extraInfo = " (basis(" + basis + "))";
+                        fix = "basis(" + basis + ")";
                     }
-                    this.msg("Use \"" + this.state.mixin + "\" mixin instead \"" + this.state.unitType + "\"" + extraInfo, node.lineno, node.column, node.column + node.value.length - 1);
+                    this.msg("Use \"" + this.state.mixin + "\" mixin instead \"" + this.state.unitType + "\"", node.lineno, node.column, node.column + node.value.trimRight().length - 1, fix || null);
                     return true;
                 }
             }
@@ -3165,7 +3165,7 @@ var CommaInObject = /** @class */ (function (_super) {
             hasComma = true;
         }
         if (hasComma && this.state.conf === 'never') {
-            this.msg('Remove comma from object hash', line.lineno, match ? match.index + 1 : 0);
+            this.msg('Remove comma from object hash', line.lineno, match ? match.index + 1 : 0, match ? match.index + 1 : 0, '');
         }
         else if (!hasComma && this.state.conf === 'always') {
             var next = line.next();

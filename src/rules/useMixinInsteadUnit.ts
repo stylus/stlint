@@ -19,17 +19,17 @@ export class useMixinInsteadUnit extends Rule<IUseMixinInsteadunitState> {
 
 				if (unit) {
 					let
-						extraInfo = '';
+						fix = '';
 
 					if (this.state.mixin === 'basis') {
 						const
 							unitSize: number = Number(unit[1]),
 							basis = (unitSize / 8);
 
-						extraInfo = ` (basis(${basis}))`;
+						fix = `basis(${basis})`;
 					}
 
-					this.msg(`Use "${this.state.mixin}" mixin instead "${this.state.unitType}"${extraInfo}`, node.lineno, node.column, node.column + node.value.length - 1);
+					this.msg(`Use "${this.state.mixin}" mixin instead "${this.state.unitType}"`, node.lineno, node.column, node.column + node.value.trimRight().length - 1, fix || null);
 					return true;
 				}
 			}
