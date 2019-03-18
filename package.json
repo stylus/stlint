@@ -1,6 +1,6 @@
 {
   "name": "stlint",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "Stylus Linter",
   "main": "index.js",
   "bin": {
@@ -22,7 +22,7 @@
     "newversion": "npm test && npm version patch --no-git-tag-version && npm run build && npm run newversiongit && npm publish ./",
     "newversiongit": "git add --all  && git commit -m \"New version $npm_package_version. Read more https://github.com/stylus/stlint/releases/tag/$npm_package_version \" && git tag $npm_package_version && git push --tags origin HEAD:master",
     "start": "webpack --watch",
-    "build": "webpack --mode production",
+    "build": "webpack",
     "test2": "./bin/stlint ./test.styl",
     "test": "mocha tests/**/**.ts tests/**.ts"
   },
