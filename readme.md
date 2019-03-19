@@ -71,26 +71,26 @@ const stlint = StylusLinter('path/to/stylus/', {
 Create `.stlintrc` file in project root
 ```json
 {
-	"reporter": "raw",
-	"watch": false,
-	"extends": ["stlint-v4fire", "./test/.myfileconfig.json"],
-	"extraRules": "./my-rules/",
-	"rules": {
-		"color": false,
-		"colons": ["always"],
-		"depthControl": {
-			"indentPref": 4
-		}
-	},
-	"path": "./src",
-	"excludes": ["node_modules/"],
-	"stylusParserOptions": {},
-	"reportOptions": {
-		"columnSplitter": " | ",
-		"maxWidth": 70,
-		"minWidth": 70,
-		"trancate": false
-	}
+  "reporter": "raw",
+  "watch": false,
+  "extends": ["stlint-v4fire", "./test/.myfileconfig.json"],
+  "extraRules": "./my-rules/",
+  "rules": {
+    "color": false,
+    "colons": ["always"],
+    "depthControl": {
+      "indentPref": 4
+    }
+  },
+  "path": "./src",
+  "excludes": ["node_modules/"],
+  "stylusParserOptions": {},
+  "reportOptions": {
+    "columnSplitter": " | ",
+    "maxWidth": 70,
+    "minWidth": 70,
+    "trancate": false
+  }
 }
 ```
 ## As Part of Your Workflow
