@@ -1,6 +1,5 @@
-# Stylus Linter
+# Stylus Linter [![Build Status](https://travis-ci.org/stylus/stlint.svg?branch=master)](https://travis-ci.org/stylus/stlint)
 
-[![Build Status](https://travis-ci.org/stylus/stlint.svg?branch=master)](https://travis-ci.org/stylus/stlint)
 [![NPM](https://nodei.co/npm/stlint.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/stlint/)
 
 * [issues](https://github.com/stylus/stlint/issues)
