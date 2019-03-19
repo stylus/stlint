@@ -8,6 +8,18 @@ interface IColorState extends IState {
 
 /**
  * Process all color values. Allow or deny use it not in variable and use uppercase or lowercase statements
+ * For example this code has error - because we use only color in `uppercase`
+ * ```stylus
+ * .test
+ * 	color #ccc
+ * ```
+ * If `allowOnlyInVar` === true code above also has error - no use color without variable
+ * Fixed code
+ * ```stylus
+ * $color = #CCC
+ * .test
+ * 	color $color
+ * ```
  */
 export class Color extends Rule<IColorState> {
 	nodesFilter = ['rgb'];

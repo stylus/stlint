@@ -25,13 +25,22 @@ export const doc = () => {
 		function delintNode(node: ts.Node) {
 			switch (node.kind) {
 				case ts.SyntaxKind.ClassDeclaration: {
-					const
-						ruleName = lcfirst(node.name.escapedText);
+					let
+						name = lcfirst(node.name.escapedText),
+						description = (node.jsDoc && node.jsDoc[0]) ? node.jsDoc[0].comment : '';
+
+					description = description.replace(/(```stylus)(.*)(```)/s, (...match: string[]) => {
+						match[2] = match[2]
+							.split('\n')
+							.map(line => line.replace(/^[ \t]+\*/g, ''))
+							.join('\n');
+						return `${match[1]}${match[2]}${match[3]}`
+					});
 
 					result.push({
-						name: ruleName,
-						description: (node.jsDoc && node.jsDoc[0]) ? node.jsDoc[0].comment : '',
-						default: config.defaultRules[ruleName]
+						name,
+						description,
+						default: config.defaultRules[name]
 					});
 
 					break;

@@ -3,7 +3,6 @@
 [![NPM](https://nodei.co/npm/stlint.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/stlint/)
 
 * [issues](https://github.com/stylus/stlint/issues)
-* [IDE WebStorm/PHPStorm plugin](https://github.com/stylus/stlint-idea-plugin)
 
 ## Installation
 
@@ -91,6 +90,11 @@ Create `.stlintrc` file in project root
 	}
 }
 ```
+## As Part of Your Workflow
+Stlint integrations with IDEs are available.
+
+* [WebStorm / PhpStorm / IntelliJ IDEA](https://github.com/stylus/stlint-idea-plugin)
+* VSCode - coming soon
 
 
 ## Rules
@@ -108,6 +112,18 @@ Use/Do not use colons after property
 
 ### color
 Process all color values. Allow or deny use it not in variable and use uppercase or lowercase statements
+For example this code has error - because we use only color in `uppercase`
+```stylus
+ .test
+ 	color #ccc
+ ```
+If `allowOnlyInVar` === true code above also has error - no use color without variable
+Fixed code
+```stylus
+ $color = #CCC
+ .test
+ 	color $color
+ ```
 
 **Default value**
 ```json

@@ -2394,11 +2394,18 @@ exports.doc = () => {
         function delintNode(node) {
             switch (node.kind) {
                 case ts.SyntaxKind.ClassDeclaration: {
-                    const ruleName = lcfirst_1.lcfirst(node.name.escapedText);
+                    let name = lcfirst_1.lcfirst(node.name.escapedText), description = (node.jsDoc && node.jsDoc[0]) ? node.jsDoc[0].comment : '';
+                    description = description.replace(/(```stylus)(.*)(```)/s, (...match) => {
+                        match[2] = match[2]
+                            .split('\n')
+                            .map(line => line.replace(/^[ \t]+\*/g, ''))
+                            .join('\n');
+                        return `${match[1]}${match[2]}${match[3]}`;
+                    });
                     result.push({
-                        name: ruleName,
-                        description: (node.jsDoc && node.jsDoc[0]) ? node.jsDoc[0].comment : '',
-                        default: config.defaultRules[ruleName]
+                        name,
+                        description,
+                        default: config.defaultRules[name]
                     });
                     break;
                 }
@@ -2597,6 +2604,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
 /**
  * Process all color values. Allow or deny use it not in variable and use uppercase or lowercase statements
+ * For example this code has error - because we use only color in `uppercase`
+ * ```stylus
+ * .test
+ * 	color #ccc
+ * ```
+ * If `allowOnlyInVar` === true code above also has error - no use color without variable
+ * Fixed code
+ * ```stylus
+ * $color = #CCC
+ * .test
+ * 	color $color
+ * ```
  */
 class Color extends rule_1.Rule {
     constructor() {
