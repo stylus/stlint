@@ -1,14 +1,14 @@
-import { Reporter } from "../reporter";
+import { Reporter } from '../reporter';
 
 export class JsonReporter extends Reporter {
 	/**
 	 * @override
 	 */
-	log() {
+	log(): void {
 		if (this.response.errors) {
-			this.response.errors.forEach(error => error.message.forEach(message => {
-				message.descr = message.rule + ': ' + message.descr;
-			}))
+			this.response.errors.forEach((error) => error.message.forEach((message) => {
+				message.descr = `${message.rule}: ${message.descr}`;
+			}));
 		}
 
 		console.clear();

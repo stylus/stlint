@@ -1,4 +1,4 @@
-import { Node } from "./node";
+import { Node } from './node';
 
 export class Value extends Node {
 	get key(): string {
@@ -9,7 +9,7 @@ export class Value extends Node {
 		return '';
 	}
 
-	toString() {
+	toString(): string {
 		return this.nodes.join(' ');
 	}
 }

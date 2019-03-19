@@ -1,10 +1,10 @@
-import { State } from "./core/types/state";
-import data = require("./defaultRules.json");
-import { BaseConfig } from "./core/baseConfig";
-import { ReporterType } from "./core/types/reporter";
-import { IConfig } from "./core/types/config";
-import chalk from "chalk";
-import { resolve } from "path";
+import { State } from './core/types/state';
+import data = require('./defaultRules.json');
+import { BaseConfig } from './core/baseConfig';
+import { ReporterType } from './core/types/reporter';
+import { IConfig } from './core/types/config';
+import chalk from 'chalk';
+import { resolve } from 'path';
 
 export class Config extends BaseConfig implements IConfig {
 	debug: boolean = false;
@@ -24,14 +24,13 @@ export class Config extends BaseConfig implements IConfig {
 
 	extends: string | string[] = '';
 
-	reportOptions = {
+	reportOptions: Dictionary = {
 		columnSplitter: ' | ',
-		headingTransform: (heading: string) => {
-			return chalk.yellow(heading.toUpperCase())
-		},
+		headingTransform: (heading: string) =>
+			chalk.yellow(heading.toUpperCase()),
 		maxWidth: 70,
 		minWidth: 10,
-		truncate: false,
+		truncate: false
 	};
 
 	constructor(options: Dictionary) {
@@ -47,7 +46,7 @@ export class Config extends BaseConfig implements IConfig {
 
 		if (this.extends) {
 			if (Array.isArray(this.extends)) {
-				this.extends.forEach(this.extendsByPath.bind(this))
+				this.extends.forEach(this.extendsByPath.bind(this));
 			} else {
 				this.extendsByPath(this.extends);
 			}

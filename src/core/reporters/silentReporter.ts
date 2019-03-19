@@ -1,6 +1,10 @@
-import { Reporter } from "../reporter";
+import { Reporter } from '../reporter';
 
 export class SilentReporter extends Reporter {
-	log() {}
-	reset() {}
+	log(): void {
+		// ignore
+	}
+	reset(): void {
+		// ignore
+	}
 }

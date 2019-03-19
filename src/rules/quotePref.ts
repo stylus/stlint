@@ -1,5 +1,5 @@
-import { Rule } from "../core/rule";
-import { ILine } from "../core/types/line";
+import { Rule } from '../core/rule';
+import { ILine } from '../core/types/line';
 
 const stringRe = /(?=["'])(?:"[^"\\]*(?:\\[\s\S][^"\\]*)*"|'[^'\\]*(?:\\[\s\S][^'\\]*)*')/g;
 
@@ -16,10 +16,10 @@ export class QuotePref extends Rule {
 
 			let badQuotes = false;
 			let hasInnerQuote = true;
-			let match;
+			let match = stringRe.exec(line.line);
 
-			while ((match = stringRe.exec(line.line)) !== null) {
-				let content = match[0].slice( 1, -1 );
+			while (match !== null) {
+				const content = match[0].slice(1, -1);
 
 				if (this.state.conf === 'single' && match[0].indexOf('"') === 0) {
 					hasInnerQuote = content.indexOf("'") !== -1;
@@ -27,11 +27,11 @@ export class QuotePref extends Rule {
 					if (!hasInnerQuote) {
 						badQuotes = true;
 						this.msg(
-							'preferred quote style is ' + this.state.conf + ' quotes',
+							`Preferred quote style is ${this.state.conf} quotes`,
 							line.lineno,
 							match.index + 1,
 							match[0].length + match.index,
-							match[0].replace(/^"/g, '\'').replace(/'$/g, '\''),
+							match[0].replace(/^"/g, '\'').replace(/'$/g, '\'')
 						);
 					}
 
@@ -42,13 +42,15 @@ export class QuotePref extends Rule {
 						badQuotes = true;
 
 						this.msg(
-							'preferred quote style is ' + this.state.conf + ' quotes',
+							`Preferred quote style is ${this.state.conf} quotes`,
 							line.lineno,
 							match.index + 1,
 							match[0].length + match.index,
 							match[0].replace(/^'/g, '"').replace(/'$/g, '"')
-						);}
+						); }
 				}
+
+				match = stringRe.exec(line.line);
 			}
 
 			return badQuotes;

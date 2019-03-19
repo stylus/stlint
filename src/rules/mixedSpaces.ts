@@ -1,5 +1,5 @@
-import { Rule } from "../core/rule";
-import { ILine } from "../core/types/line";
+import { Rule } from '../core/rule';
+import { ILine } from '../core/types/line';
 
 /**
  * check for mixed spaces and tabs
@@ -11,9 +11,9 @@ export class MixedSpaces extends Rule {
 			isMixed = mixed !== null;
 
 		if (isMixed && mixed && !this.context.inComment) {
-			this.msg( 'mixed spaces and tabs', line.lineno, mixed.index, mixed.index + mixed[0].length);
+			this.msg('mixed spaces and tabs', line.lineno, mixed.index, mixed.index + mixed[0].length);
 		}
 
-		return isMixed
+		return isMixed;
 	}
 }

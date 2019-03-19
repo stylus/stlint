@@ -1,9 +1,9 @@
-import { IMessagePack } from "../types/message";
-import columnify = require("columnify");
-import chalk from "chalk";
-import { Reporter } from "../reporter";
+import { IMessagePack } from '../types/message';
+import columnify = require('columnify');
+import chalk from 'chalk';
+import { Reporter } from '../reporter';
 
-type RawMessage = {
+interface RawMessage {
 	file: string
 	line: number
 	description: string
@@ -14,7 +14,7 @@ export class RawReporter extends Reporter {
 	/**
 	 * @override
 	 */
-	log() {
+	log(): void {
 		const
 			cwd = process.cwd(),
 			warningsOrErrors = [...this.errors], // TODO add warning mode
@@ -38,15 +38,19 @@ export class RawReporter extends Reporter {
 			});
 		});
 
-		const msgGrouped = Object.keys(messagesToFile).map(file =>
-			chalk.blue(file) + '\n' + columnify(messagesToFile[file], this.options) + '\n'
+		const msgGrouped = Object.keys(messagesToFile).map((file) =>
+			[
+				chalk.blue(file),
+				columnify(messagesToFile[file], this.options),
+				''
+			].join('\n')
 		);
 
 		msg.push(msgGrouped.join('\n'));
 
 		const cnt = this.errors.length;
 
-		msg.push('Stlint: ' + (cnt ? chalk.red(cnt) : chalk.green(0)) + ' Errors.');
+		msg.push(`Stlint: ${(cnt ? chalk.red(cnt) : chalk.green(0))} Errors.`);
 
 		console.log(msg.join(''));
 	}

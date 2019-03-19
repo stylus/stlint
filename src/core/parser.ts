@@ -20,7 +20,7 @@ export class StylusParser {
 		const parser = new Parser(content, this.options);
 
 		try {
-			let stylusAST: ISNode = parser.parse();
+			const stylusAST: ISNode = parser.parse();
 
 			const translator = new Translator(stylusAST, splitLines(content));
 
@@ -29,10 +29,9 @@ export class StylusParser {
 
 			err.lineno = parser.lexer.lineno || err.lineno || 1;
 			err.column = parser.lexer.column || err.column || 1;
-			err.message = 'Syntax error: ' + err.message + `(${err.lineno},${err.column})`;
+			err.message = `Syntax error: ${err.message} (${err.lineno},${err.column})`;
 
 			throw err;
 		}
 	}
 }
-

@@ -1,5 +1,9 @@
-import { Line } from "../line";
+import { Line } from '../line';
 
+/**
+ * Split line on lines
+ * @param content
+ */
 export function splitLines(content: string): Line[] {
 	const
 		lines: Line[] = [];

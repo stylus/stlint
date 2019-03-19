@@ -1,4 +1,4 @@
-import { IMessagePack } from "./message";
+import { IMessagePack } from './message';
 
 export interface IResponse {
 	passed: boolean;

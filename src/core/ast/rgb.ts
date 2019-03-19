@@ -1,3 +1,3 @@
-import { Unit } from "./unit";
+import { Unit } from './unit';
 
 export class RGB extends Unit {}

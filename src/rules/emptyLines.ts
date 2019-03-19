@@ -1,11 +1,11 @@
-import { Rule } from "../core/rule";
-import { Line } from "../core/line";
+import { Rule } from '../core/rule';
+import { Line } from '../core/line';
 
 /**
  * Check if document has several empty lines
  */
 export class EmptyLines extends Rule {
-	checkLine(line: Line) {
+	checkLine(line: Line): void {
 		if (line.isEmpty()) {
 			const prev = line.prev();
 

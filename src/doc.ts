@@ -1,12 +1,12 @@
-import { Glob } from "glob"
-import { readFileSync, readFile, writeFileSync } from "fs";
+import { Glob } from 'glob';
+import { readFileSync, readFile, writeFileSync } from 'fs';
 // @ts-ignore
-import * as ts from "typescript";
-import { Config } from "./config";
-import { lcfirst } from "./core/helpers/lcfirst";
-import { State } from "./core/types/state";
+import * as ts from 'typescript';
+import { Config } from './config';
+import { lcfirst } from './core/helpers/lcfirst';
+import { State } from './core/types/state';
 
-type RuleDocs = {
+interface RuleDocs {
 	name: string;
 	description: string;
 	default: State;
@@ -19,14 +19,15 @@ export const doc = () => {
 		config = new Config({}),
 		result: RuleDocs[] = [];
 
-	function delint(sourceFile: ts.SourceFile) {
+	function delint(sourceFile: ts.SourceFile): void {
 		delintNode(sourceFile);
 
-		function delintNode(node: ts.Node) {
+		function delintNode(node: ts.Node): void {
 			switch (node.kind) {
 				case ts.SyntaxKind.ClassDeclaration: {
+					const
+						name = lcfirst(node.name.escapedText);
 					let
-						name = lcfirst(node.name.escapedText),
 						description = (node.jsDoc && node.jsDoc[0]) ? node.jsDoc[0].comment : '';
 
 					description = description
@@ -34,13 +35,13 @@ export const doc = () => {
 						.replace(/(```stylus)(.*)(```)/s, (...match: string[]) => {
 							match[2] = match[2]
 								.split('\n')
-								.map(line =>
+								.map((line) =>
 									line
 										.replace(/^[ \t]+\*/g, '')
 										.replace(/^ /g, '')
 								)
 								.join('\n');
-							return `${match[1]}${match[2]}${match[3]}`
+							return `${match[1]}${match[2]}${match[3]}`;
 						});
 
 					result.push({
@@ -48,8 +49,6 @@ export const doc = () => {
 						description,
 						default: config.defaultRules[name]
 					});
-
-					break;
 				}
 			}
 
@@ -59,7 +58,7 @@ export const doc = () => {
 
 	new Glob('./src/rules/*.ts', {}, async (err: Error | null, files: string[]) => {
 		if (err) {
-			throw err
+			throw err;
 		}
 
 		files.forEach(async (file) => {
@@ -69,14 +68,12 @@ export const doc = () => {
 				const rule = match[1];
 				if (rule !== 'index') {
 
-
-					let sourceFile = ts.createSourceFile(
+					const sourceFile = ts.createSourceFile(
 						file,
 						readFileSync(file).toString(),
 						ts.ScriptTarget.ES2018,
 						/*setParentNodes */ true
 					);
-
 
 					delint(sourceFile);
 				}
@@ -86,26 +83,29 @@ export const doc = () => {
 		const readmeFile = process.cwd() + '/readme.md';
 		readFile(readmeFile, 'utf-8', (err, readme: string) => {
 			if (err) {
-				throw err
+				throw err;
 			}
 
-			const text = result.map((item: RuleDocs) => {
-				return `\n` +
-					`### ${item.name}\n` +
-					`${item.description}\n\n` +
-					'**Default value**\n' +
-					'```json\n' +
-					`${JSON.stringify(item.default, null, 2)}\n` +
-					'```\n' +
-					'----\n'
-					;
-			}).join('');
+			const
+				text = result.map((item: RuleDocs) =>
+						[
+							`### ${item.name}`,
+							`${item.description}\n`,
+							'**Default value**',
+							'```json',
+							`${JSON.stringify(item.default, null, 2)}`,
+							'```',
+							'----'
+						].join('\n')
+				).join('');
 
-			readme = readme.replace(/<!-- RULES START -->(.*)<!-- RULES END -->/msg, `<!-- RULES START -->${text}<!-- RULES END -->`);
+			readme = readme.replace(
+				/<!-- RULES START -->(.*)<!-- RULES END -->/msg,
+				`<!-- RULES START -->${text}<!-- RULES END -->`
+			);
 
 			writeFileSync(readmeFile, readme);
 			console.log('Documentation generator finish');
-
 		});
 	});
 };

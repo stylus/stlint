@@ -1,10 +1,10 @@
-import { isPlainObject } from "./isPlainObject";
+import { isPlainObject } from './isPlainObject';
 
 export const unwrapObject = (obj: Dictionary, prefix: string[] = []) => {
 	let result: Dictionary<string> = {};
 
 	Object.keys(obj).forEach((_key) => {
-		let
+		const
 			key = prefix.concat([_key]).join('.'),
 			item = obj[_key];
 
@@ -14,7 +14,7 @@ export const unwrapObject = (obj: Dictionary, prefix: string[] = []) => {
 			});
 
 		} else if (isPlainObject(item)) {
-			result = {...result, ...unwrapObject(item, prefix.concat([_key]))}
+			result = {...result, ...unwrapObject(item, prefix.concat([_key]))};
 
 		} else {
 			result[item] = key;

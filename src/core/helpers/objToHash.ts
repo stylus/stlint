@@ -1,4 +1,4 @@
-import { Ident, Obj, Property } from "../ast/index";
+import { Ident, Obj, Property } from '../ast/index';
 
 export const objTohash = (node: Obj) => {
 	const result: Dictionary = {};
@@ -12,7 +12,7 @@ export const objTohash = (node: Obj) => {
 
 			} else {
 				if (prop.value.nodes.length > 1) {
-					result[subkey] = prop.value.nodes.map(node => node.toString());
+					result[subkey] = prop.value.nodes.map((node) => node.toString());
 				} else {
 					result[subkey] = prop.value.toString();
 				}

@@ -5,10 +5,10 @@ declare module 'chalk';
 declare module 'node-watch';
 declare module 'native-require';
 
-declare module "*.json" {
+declare module '*.json' {
 	const value: any;
 	export default value;
 }
 
-
-type Dictionary<T = any> = {[key: string]: T};
+// @ts-ignore
+interface Dictionary<T = any> {[key: string]: T}

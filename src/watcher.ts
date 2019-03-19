@@ -1,11 +1,11 @@
-import watch from "node-watch";
+import watch from 'node-watch';
 
 export class Watcher {
-	start(path: string, callback: Function) {
+	start(path: string, callback: () => void): void {
 		watch(path, {
 			encoding : 'utf-8',
 			recursive: true,
 			filter: /\.styl$/
-		}, callback)
+		}, callback);
 	}
 }

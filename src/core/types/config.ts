@@ -1,9 +1,9 @@
-import { State } from "./state";
-import { ReporterType } from "./reporter";
+import { State } from './state';
+import { ReporterType } from './reporter';
 
 export interface IConfig {
-	extendsOption(from: Dictionary, to: Dictionary): void;
-	readConfig(path: string): void;
+
+	[key: string]: any;
 	configName: string
 	configFile: string
 
@@ -24,6 +24,6 @@ export interface IConfig {
 
 	extends: string | string[];
 	extraRules: string | string[];
-
-	[key: string]: any;
+	extendsOption(from: Dictionary, to: Dictionary): void;
+	readConfig(path: string): void;
 }

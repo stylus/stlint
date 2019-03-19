@@ -1,6 +1,6 @@
-import { Rule } from "../core/rule";
-import { INode } from "../core/types/ast/node";
-import { IState } from "../core/types/state";
+import { Rule } from '../core/rule';
+import { INode } from '../core/types/ast/node';
+import { IState } from '../core/types/state';
 
 interface IUseMixinInsteadunitState extends IState {
 	mixin: string;
@@ -11,9 +11,9 @@ interface IUseMixinInsteadunitState extends IState {
  * Allo or deny some mixin instead of unit statement
  */
 export class useMixinInsteadUnit extends Rule<IUseMixinInsteadunitState> {
-	nodesFilter = ['unit', 'call'];
+	nodesFilter: string[] = ['unit', 'call'];
 
-	checkNode(node: INode) {
+	checkNode(node: INode): void | boolean {
 
 		if (this.state.conf === 'always') {
 			if (node.value && typeof node.value === 'string') {
@@ -31,7 +31,14 @@ export class useMixinInsteadUnit extends Rule<IUseMixinInsteadunitState> {
 						fix = `basis(${basis})`;
 					}
 
-					this.msg(`Use "${this.state.mixin}" mixin instead "${this.state.unitType}"`, node.lineno, node.column, node.column + node.value.trimRight().length - 1, fix || null);
+					this.msg(
+						`Use "${this.state.mixin}" mixin instead "${this.state.unitType}"`,
+						node.lineno,
+						node.column,
+						node.column + node.value.trimRight().length - 1,
+						fix || null
+					);
+
 					return true;
 				}
 			}

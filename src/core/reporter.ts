@@ -1,22 +1,9 @@
-import { IReporter } from "./types/reporter";
-import { IMessagePack } from "./types/message";
-import { IResponse } from "./types/response";
-import { inspect } from 'util'
+import { IReporter } from './types/reporter';
+import { IMessagePack } from './types/message';
+import { IResponse } from './types/response';
+import { inspect } from 'util';
 
 export abstract class Reporter implements IReporter {
-	errors: IMessagePack[] = [];
-
-	private path: string = '';
-
-	/**
-	 * Set current working file
-	 * @param path
-	 */
-	setPath(path: string) {
-		this.path = path;
-	}
-
-	protected constructor(readonly options: Dictionary) {}
 
 	static getInstance(type: string, config: Dictionary): IReporter {
 			switch (type) {
@@ -30,6 +17,23 @@ export abstract class Reporter implements IReporter {
 					return new (require('./reporters/rawReporter').RawReporter)(config);
 			}
 	}
+	errors: IMessagePack[] = [];
+
+	response: IResponse = {
+		passed: true
+	};
+
+	private path: string = '';
+
+	protected constructor(readonly options: Dictionary) {}
+
+	/**
+	 * Set current working file
+	 * @param path
+	 */
+	setPath(path: string): void {
+		this.path = path;
+	}
 
 	/**
 	 * Add new error in message pull
@@ -40,7 +44,14 @@ export abstract class Reporter implements IReporter {
 	 * @param end
 	 * @param fix
 	 */
-	add(rule: string, message: string, line: number = 0, start: number = 0, end: number = 0, fix: string | null = null) {
+	add(
+		rule: string,
+		message: string,
+		line: number = 0,
+		start: number = 0,
+		end: number = 0,
+		fix: string | null = null
+	): void {
 		this.errors.push({
 			message: [{
 				rule,
@@ -60,14 +71,10 @@ export abstract class Reporter implements IReporter {
 	 */
 	abstract log(): void;
 
-	response: IResponse = {
-		passed: true
-	};
-
 	/**
 	 * Fill response object
 	 */
-	fillResponse() {
+	fillResponse(): void {
 		this.response.passed = !this.errors.length;
 		this.response.errors = this.errors.length ? this.errors : undefined;
 	}
@@ -76,7 +83,7 @@ export abstract class Reporter implements IReporter {
 	 * Prepare data and output result
 	 * @param exit
 	 */
-	display(exit: boolean) {
+	display(exit: boolean): void {
 		this.fillResponse();
 		this.log();
 		this.reset();
@@ -89,7 +96,7 @@ export abstract class Reporter implements IReporter {
 	/**
 	 * Reset all error stores
 	 */
-	reset() {
+	reset(): void {
 		this.errors.length = 0;
 		this.response = {
 			passed: true
@@ -100,14 +107,14 @@ export abstract class Reporter implements IReporter {
 	 * Filter messages
 	 * @param grep
 	 */
-	filterErrors(grep: string) {
+	filterErrors(grep: string): void {
 		this.errors = this.errors.filter(
-			error => {
-				error.message = error.message.filter(msg => !!msg.descr.match(grep) || !!msg.rule.match(grep));
+			(error) => {
+				error.message = error.message.filter((msg) => !!msg.descr.match(grep) || !!msg.rule.match(grep));
 
 				return error.message.length;
 			}
-		)
+		);
 	}
 }
 

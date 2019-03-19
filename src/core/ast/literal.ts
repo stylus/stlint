@@ -1,9 +1,9 @@
-import { Node } from "./node";
+import { Node } from './node';
 
 export class Literal extends Node {
 	val: string = '';
 
-	toString() {
+	toString(): string {
 		return this.val;
 	}
 }

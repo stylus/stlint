@@ -1,4 +1,4 @@
-import { ILine } from "./types/line";
+import { ILine } from './types/line';
 
 export class Line implements ILine {
 	readonly line: string;

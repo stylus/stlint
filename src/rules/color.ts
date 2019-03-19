@@ -1,6 +1,6 @@
-import { Rule } from "../core/rule";
-import { IState } from "../core/types/state";
-import { RGB } from "../core/ast/index";
+import { Rule } from '../core/rule';
+import { IState } from '../core/types/state';
+import { RGB } from '../core/ast/index';
 
 interface IColorState extends IState {
 	allowOnlyInVar?: boolean
@@ -23,9 +23,9 @@ interface IColorState extends IState {
  * ```
  */
 export class Color extends Rule<IColorState> {
-	nodesFilter = ['rgb'];
+	nodesFilter: string[] = ['rgb'];
 
-	checkNode(node: RGB) {
+	checkNode(node: RGB): void | boolean {
 		const checkReg = this.state.conf !== 'lowercase' ? /[a-z]/ : /[A-Z]/;
 
 		if (this.state.allowOnlyInVar && node.closest('block')) {
@@ -33,7 +33,12 @@ export class Color extends Rule<IColorState> {
 				this.context.valueToVar[node.value.toLowerCase()] ||
 				this.context.valueToVar[node.value.toUpperCase()];
 
-			this.msg(`Set color only in variable` + (fix ? `(${fix})` : ''), node.lineno, node.column, node.column + node.value.length - 1, fix || null);
+			this.msg(
+				'Set color only in variable' + (fix ? `(${fix})` : ''),
+				node.lineno, node.column,
+				node.column + node.value.length - 1,
+				fix || null
+			);
 		}
 
 		if (node.value && typeof node.value === 'string' && checkReg.test(node.value)) {

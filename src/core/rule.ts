@@ -1,12 +1,12 @@
-import { ErrorArray, IRule } from "./types/rule";
-import { IState } from "./types/state";
-import { lcfirst } from "./helpers/lcfirst";
-import { ILine } from "./types/line";
-import { IContext } from "./types/context";
-import { INode } from "./types/ast/node";
-import { Ident, Obj, Value } from "./ast/index";
-import { objTohash } from "./helpers/objToHash";
-import { unwrapObject } from "./helpers/unwrapObject";
+import { ErrorArray, IRule } from './types/rule';
+import { IState } from './types/state';
+import { lcfirst } from './helpers/lcfirst';
+import { ILine } from './types/line';
+import { IContext } from './types/context';
+import { INode } from './types/ast/node';
+import { Ident, Obj, Value } from './ast/index';
+import { objTohash } from './helpers/objToHash';
+import { unwrapObject } from './helpers/unwrapObject';
 
 const initContext: IContext  = {
 	hashDeep: 0,
@@ -23,41 +23,23 @@ const
 	endMultiComment = /\*\//;
 
 export class Rule<T extends IState = IState> implements IRule<T> {
-	state: T = <T>{
-		conf: 'always',
-		enabled: true
-	};
-
-	cache: Dictionary = {};
-
-	constructor(readonly conf: T) {
-		if (typeof conf !== 'boolean') {
-			if (Array.isArray(conf)) {
-				this.state.conf = conf[0];
-				this.state.enabled = conf[1] === undefined || Boolean(conf[1]);
-			} else {
-				this.state = {...this.state, ...conf};
-
-				if (conf.enabled === undefined) {
-					this.state.enabled = true;
-				}
-			}
-		} else {
-			this.state.enabled = conf;
-		}
-	}
-
-	private static context: IContext = {...initContext};
 
 	get context(): IContext {
 		return Rule.context;
 	}
 
-	static clearContext() {
+	/**
+	 * Rule name
+	 */
+	get name(): string {
+		return lcfirst(this.constructor.name);
+	}
+
+	static clearContext(): void {
 		Rule.context = {...initContext};
 	}
 
-	static getContext() {
+	static getContext(): IContext {
 		return Rule.context;
 	}
 
@@ -65,15 +47,13 @@ export class Rule<T extends IState = IState> implements IRule<T> {
 	 *
 	 * @param node
 	 */
-	static beforeCheckNode(node: INode) {
+	static beforeCheckNode(node: INode): void {
 		if (node instanceof Ident && node.value instanceof Value) {
-			if (node.value.nodes && node.value.nodes.length && node.value.nodes[0] instanceof Obj) {
-				this.context.vars[node.key] = objTohash(node.value.nodes[0]);
-			} else {
-				this.context.vars[node.key] = node.value.nodes[0].toString();
-			}
+			const isHash = node.value.nodes && node.value.nodes.length && node.value.nodes[0] instanceof Obj;
 
-			this.context.valueToVar = {...this.context.valueToVar, ...unwrapObject(this.context.vars)}
+			this.context.vars[node.key] = isHash ? objTohash(node.value.nodes[0]) : node.value.nodes[0].toString();
+
+			this.context.valueToVar = {...this.context.valueToVar, ...unwrapObject(this.context.vars)};
 		}
 	}
 
@@ -81,9 +61,9 @@ export class Rule<T extends IState = IState> implements IRule<T> {
 	 * Check hash object etc
 	 * @param line
 	 */
-	static beforeCheckLine(line: ILine) {
+	static beforeCheckLine(line: ILine): void {
 		if (hashStartRe.test(line.line)) {
-			Rule.context.hashDeep +=1;
+			Rule.context.hashDeep += 1;
 		}
 
 		Rule.context.inHash = Rule.context.hashDeep > 0;
@@ -105,24 +85,42 @@ export class Rule<T extends IState = IState> implements IRule<T> {
 		}
 	}
 
-	/**
-	 * Rule name
-	 */
-	get name(): string {
-		return lcfirst(this.constructor.name);
-	}
-
+	private static context: IContext = {...initContext};
 	nodesFilter: string[] | null = null;
+
+	state: T = <T>{
+		conf: 'always',
+		enabled: true
+	};
+
+	cache: Dictionary = {};
 
 	hashErrors: Dictionary<boolean> = {};
 	errors: ErrorArray[] = [];
 
-	clearErrors() {
+	constructor(readonly conf: T) {
+		if (typeof conf !== 'boolean') {
+			if (Array.isArray(conf)) {
+				this.state.conf = conf[0];
+				this.state.enabled = conf[1] === undefined || Boolean(conf[1]);
+			} else {
+				this.state = {...this.state, ...conf};
+
+				if (conf.enabled === undefined) {
+					this.state.enabled = true;
+				}
+			}
+		} else {
+			this.state.enabled = conf;
+		}
+	}
+
+	clearErrors(): void {
 		this.errors.length = 0;
 		this.hashErrors = {};
 	}
 
-	clearContext() {
+	clearContext(): void {
 		Rule.clearContext();
 	}
 
@@ -135,7 +133,7 @@ export class Rule<T extends IState = IState> implements IRule<T> {
 	 * @param end
 	 * @param fix
 	 */
-	msg(message: string, line: number = 1, start: number = 1, end: number = 1, fix: null | string = null) {
+	msg(message: string, line: number = 1, start: number = 1, end: number = 1, fix: null | string = null): void {
 		const
 			error: ErrorArray = [this.name, message, line, start, end, fix],
 			hash = error.join('&');

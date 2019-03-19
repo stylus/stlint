@@ -1,16 +1,18 @@
-import { ISNode } from "./types/ast/snode";
-import { INode } from "./types/ast/node";
+import { ISNode } from './types/ast/snode';
+import { INode } from './types/ast/node';
 
 export abstract class Visitor<In = ISNode, Out = INode> {
 	root: In;
 
-	constructor(root: In) {
+	protected constructor(root: In) {
 		this.root = root;
 	}
 
 	abstract visitNode(node: In, parent: Out | null): Out;
 
-	methodNotExists(method: string, node: In) {}
+	methodNotExists(method: string, node: In): void {
+		// ignore
+	}
 
 	visit(node: In, parent: Out | null): Out {
 		const method = 'visit' + node.constructor.name;

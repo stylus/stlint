@@ -1,10 +1,10 @@
-import { Rule } from "../core/rule";
-import { ILine } from "../core/types/line";
+import { Rule } from '../core/rule';
+import { ILine } from '../core/types/line';
 
 const
 	reg = /(,)(\s)*$/,
 	keyValue = /:/,
-	hashEnd = /\}/;
+	hashEnd = /}/;
 
 /**
  * Allow or deny commas in object hash

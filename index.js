@@ -178,12 +178,10 @@ class Config extends baseConfig_1.BaseConfig {
         this.extends = '';
         this.reportOptions = {
             columnSplitter: ' | ',
-            headingTransform: (heading) => {
-                return chalk_1.default.yellow(heading.toUpperCase());
-            },
+            headingTransform: (heading) => chalk_1.default.yellow(heading.toUpperCase()),
             maxWidth: 70,
             minWidth: 10,
-            truncate: false,
+            truncate: false
         };
         this.extendsOption(options, this);
         if (!this.configFile) {
@@ -290,7 +288,7 @@ class Call extends node_1.Node {
         this.key = '';
     }
     toString() {
-        return this.key + '(' + this.nodes.map((arg) => arg.toString(), this).join(', ') + ')';
+        return `${this.key}(${this.nodes.map((arg) => arg.toString(), this).join(', ')})`;
     }
 }
 exports.Call = Call;
@@ -600,7 +598,7 @@ class Member extends node_1.Node {
         this.right = null;
     }
     toString() {
-        return (this.left && this.right) ? this.left.toString() + '.' + this.right.toString() : super.toString();
+        return (this.left && this.right) ? `${this.left.toString()}.${this.right.toString()}` : super.toString();
     }
 }
 exports.Member = Member;
@@ -676,7 +674,8 @@ class Node {
      * @param parentClass
      */
     closest(parentClass) {
-        let reg = RegExp(`^(${parentClass})$`, 'i'), node = this.parent;
+        const reg = RegExp(`^(${parentClass})$`, 'i');
+        let node = this.parent;
         while (node) {
             if (reg.test(node.nodeName)) {
                 return node;
@@ -942,7 +941,6 @@ const isPlainObject_1 = __webpack_require__(/*! ./helpers/isPlainObject */ "./sr
 const fs_1 = __webpack_require__(/*! fs */ "fs");
 const strip_json_comments_1 = __webpack_require__(/*! strip-json-comments */ "strip-json-comments");
 const path_1 = __webpack_require__(/*! path */ "path");
-const fs_2 = __webpack_require__(/*! fs */ "fs");
 class BaseConfig {
     constructor() {
         this.configName = '.stlintrc';
@@ -954,7 +952,7 @@ class BaseConfig {
      * @param path
      */
     statSync(path) {
-        return fs_2.statSync(path);
+        return fs_1.statSync(path);
     }
     /**
      * Read JSON File
@@ -977,12 +975,8 @@ class BaseConfig {
             this.extendsOption(customConfig, this);
             if (this.extraRules) {
                 const dir = path_1.dirname(configFile), normalizePath = (extra) => path_1.resolve(dir, extra);
-                if (Array.isArray(this.extraRules)) {
-                    this.extraRules = this.extraRules.map(normalizePath);
-                }
-                else {
-                    this.extraRules = normalizePath(this.extraRules);
-                }
+                this.extraRules = Array.isArray(this.extraRules) ?
+                    this.extraRules.map(normalizePath) : normalizePath(this.extraRules);
             }
         }
     }
@@ -993,7 +987,7 @@ class BaseConfig {
      * @param to
      */
     extendsOption(from, to) {
-        Object.keys(from).forEach(key => {
+        Object.keys(from).forEach((key) => {
             if (isPlainObject_1.isPlainObject(from[key]) && isPlainObject_1.isPlainObject(to[key])) {
                 this.extendsOption(from[key], to[key]);
             }
@@ -1009,14 +1003,8 @@ class BaseConfig {
      * Load extra config files
      */
     extendsByPath(pathOrPackage) {
-        let path;
-        if (/^\./.test(pathOrPackage)) {
-            path = path_1.resolve(process.cwd(), pathOrPackage);
-        }
-        else {
-            path = path_1.resolve(process.cwd(), 'node_modules', pathOrPackage);
-        }
-        const stat = this.statSync(path);
+        const path = /^\./.test(pathOrPackage) ?
+            path_1.resolve(process.cwd(), pathOrPackage) : path_1.resolve(process.cwd(), 'node_modules', pathOrPackage), stat = this.statSync(path);
         if (stat.isFile()) {
             this.readConfig(path);
         }
@@ -1073,8 +1061,8 @@ class Checker {
             const extraRules = this.loadRules(this.linter.config.extraRules);
             this.rulesList = this.rulesList.concat(this.initRules(extraRules));
         }
-        this.rulesListForLines = this.rulesList.filter(rule => rule.checkLine);
-        this.rulesListForNodes = this.rulesList.filter(rule => rule.checkNode);
+        this.rulesListForLines = this.rulesList.filter((rule) => rule.checkLine);
+        this.rulesListForNodes = this.rulesList.filter((rule) => rule.checkNode);
     }
     /**
      * Load one rule or several rules
@@ -1094,8 +1082,6 @@ class Checker {
                 }
             }
             catch (e) {
-                console.log(e);
-                throw e;
                 this.linter.reporter.add('JS', e.message, 1, 1);
             }
         }
@@ -1107,7 +1093,7 @@ class Checker {
     loadRules(path) {
         let results = {};
         if (Array.isArray(path)) {
-            path.map(this.loadRules.bind(this)).forEach(rules => {
+            path.map(this.loadRules.bind(this)).forEach((rules) => {
                 results = Object.assign({}, results, rules);
             });
             return results;
@@ -1118,6 +1104,7 @@ class Checker {
         }
         else if (stat.isDirectory()) {
             fs_1.readdirSync(path).forEach((file) => {
+                // @ts-ignore
                 results = Object.assign({}, results, this.requireRule(path_1.resolve(path, file)));
             });
         }
@@ -1130,10 +1117,10 @@ class Checker {
     initRules(rulesConstructors) {
         const rulesNames = Object.keys(rulesConstructors), config = this.linter.config;
         return rulesNames
-            .filter(key => typeof rulesConstructors[key] === 'function')
-            .map(key => {
+            .filter((key) => typeof rulesConstructors[key] === 'function')
+            .map((key) => {
             if (!(rulesConstructors[key].prototype instanceof rule_1.Rule)) {
-                rulesConstructors[key].prototype = new rule_1.Rule({ "conf": "always" });
+                rulesConstructors[key].prototype = new rule_1.Rule({ conf: 'always' });
                 rulesConstructors[key].prototype.constructor = rulesConstructors[key];
             }
             return key;
@@ -1145,7 +1132,7 @@ class Checker {
             }
             return new rulesConstructors[key](options);
         })
-            .filter(rule => rule.state.enabled);
+            .filter((rule) => rule.state.enabled);
     }
     /**
      * Check whole AST
@@ -1175,7 +1162,7 @@ class Checker {
                 .forEach((line, index) => {
                 if (index) {
                     rule_1.Rule.beforeCheckLine(line);
-                    this.rulesListForLines.forEach(rule => rule.checkLine && rule.checkLine(line, index, lines));
+                    this.rulesListForLines.forEach((rule) => rule.checkLine && rule.checkLine(line, index, lines));
                 }
             });
         }
@@ -1191,8 +1178,8 @@ class Checker {
      */
     afterCheck() {
         const reporter = this.linter.reporter;
-        this.rulesList.forEach(rule => {
-            rule.errors.forEach(msg => reporter.add.apply(reporter, msg));
+        this.rulesList.forEach((rule) => {
+            rule.errors.forEach((msg) => reporter.add.apply(reporter, msg));
             rule.clearErrors();
         });
         reporter.fillResponse();
@@ -1266,7 +1253,7 @@ exports.objTohash = (node) => {
             }
             else {
                 if (prop.value.nodes.length > 1) {
-                    result[subkey] = prop.value.nodes.map(node => node.toString());
+                    result[subkey] = prop.value.nodes.map((node) => node.toString());
                 }
                 else {
                     result[subkey] = prop.value.toString();
@@ -1291,6 +1278,10 @@ exports.objTohash = (node) => {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const line_1 = __webpack_require__(/*! ../line */ "./src/core/line.ts");
+/**
+ * Split line on lines
+ * @param content
+ */
 function splitLines(content) {
     const lines = [];
     content.split(/\n/)
@@ -1318,7 +1309,7 @@ const isPlainObject_1 = __webpack_require__(/*! ./isPlainObject */ "./src/core/h
 exports.unwrapObject = (obj, prefix = []) => {
     let result = {};
     Object.keys(obj).forEach((_key) => {
-        let key = prefix.concat([_key]).join('.'), item = obj[_key];
+        const key = prefix.concat([_key]).join('.'), item = obj[_key];
         if (Array.isArray(item)) {
             item.forEach((value, index) => {
                 result[value] = `${key}[${index}]`;
@@ -1416,14 +1407,14 @@ class StylusParser {
     parse(content) {
         const parser = new Parser(content, this.options);
         try {
-            let stylusAST = parser.parse();
+            const stylusAST = parser.parse();
             const translator = new translator_1.Translator(stylusAST, splitLines_1.splitLines(content));
             return translator.transpile();
         }
         catch (err) {
             err.lineno = parser.lexer.lineno || err.lineno || 1;
             err.column = parser.lexer.column || err.column || 1;
-            err.message = 'Syntax error: ' + err.message + `(${err.lineno},${err.column})`;
+            err.message = `Syntax error: ${err.message} (${err.lineno},${err.column})`;
             throw err;
         }
     }
@@ -1491,7 +1482,7 @@ class Reader {
                     resolve();
                 }));
             }
-            return Promise.all(dir.map(path => this.read(path, callback)));
+            return Promise.all(dir.map((path) => this.read(path, callback)));
         }));
     }
     /**
@@ -1502,24 +1493,22 @@ class Reader {
      * @return Promise
      */
     readFolder(dir, callback) {
-        return new Promise((resolve) => {
-            return new glob_1.Glob(dir, {}, (err, files) => __awaiter(this, void 0, void 0, function* () {
-                if (err) {
-                    throw err;
-                }
-                if (this.config.excludes && this.config.excludes.length) {
-                    files = files.filter((file) => {
-                        const relPath = path_1.relative(dir.replace('/**/*.styl', ''), file);
-                        return !this.config.excludes.some(exclude => {
-                            const reg = new RegExp(exclude);
-                            return reg.test(relPath);
-                        });
+        return new Promise((resolve) => new glob_1.Glob(dir, {}, (err, files) => __awaiter(this, void 0, void 0, function* () {
+            if (err) {
+                throw err;
+            }
+            if (this.config.excludes && this.config.excludes.length) {
+                files = files.filter((file) => {
+                    const relPath = path_1.relative(dir.replace('/**/*.styl', ''), file);
+                    return !this.config.excludes.some((exclude) => {
+                        const reg = new RegExp(exclude);
+                        return reg.test(relPath);
                     });
-                }
-                yield this.readFiles(files, callback);
-                resolve();
-            }));
-        });
+                });
+            }
+            yield this.readFiles(files, callback);
+            resolve();
+        })));
     }
     /**
      * Read all files from array and call ReaderCallback
@@ -1566,17 +1555,10 @@ class Reporter {
     constructor(options) {
         this.options = options;
         this.errors = [];
-        this.path = '';
         this.response = {
             passed: true
         };
-    }
-    /**
-     * Set current working file
-     * @param path
-     */
-    setPath(path) {
-        this.path = path;
+        this.path = '';
     }
     static getInstance(type, config) {
         switch (type) {
@@ -1587,6 +1569,13 @@ class Reporter {
             default:
                 return new (__webpack_require__(/*! ./reporters/rawReporter */ "./src/core/reporters/rawReporter.ts").RawReporter)(config);
         }
+    }
+    /**
+     * Set current working file
+     * @param path
+     */
+    setPath(path) {
+        this.path = path;
     }
     /**
      * Add new error in message pull
@@ -1644,8 +1633,8 @@ class Reporter {
      * @param grep
      */
     filterErrors(grep) {
-        this.errors = this.errors.filter(error => {
-            error.message = error.message.filter(msg => !!msg.descr.match(grep) || !!msg.rule.match(grep));
+        this.errors = this.errors.filter((error) => {
+            error.message = error.message.filter((msg) => !!msg.descr.match(grep) || !!msg.rule.match(grep));
             return error.message.length;
         });
     }
@@ -1675,8 +1664,8 @@ class JsonReporter extends reporter_1.Reporter {
      */
     log() {
         if (this.response.errors) {
-            this.response.errors.forEach(error => error.message.forEach(message => {
-                message.descr = message.rule + ': ' + message.descr;
+            this.response.errors.forEach((error) => error.message.forEach((message) => {
+                message.descr = `${message.rule}: ${message.descr}`;
             }));
         }
         console.clear();
@@ -1722,10 +1711,14 @@ class RawReporter extends reporter_1.Reporter {
                 });
             });
         });
-        const msgGrouped = Object.keys(messagesToFile).map(file => chalk_1.default.blue(file) + '\n' + columnify(messagesToFile[file], this.options) + '\n');
+        const msgGrouped = Object.keys(messagesToFile).map((file) => [
+            chalk_1.default.blue(file),
+            columnify(messagesToFile[file], this.options),
+            ''
+        ].join('\n'));
         msg.push(msgGrouped.join('\n'));
         const cnt = this.errors.length;
-        msg.push('Stlint: ' + (cnt ? chalk_1.default.red(cnt) : chalk_1.default.green(0)) + ' Errors.');
+        msg.push(`Stlint: ${(cnt ? chalk_1.default.red(cnt) : chalk_1.default.green(0))} Errors.`);
         console.log(msg.join(''));
     }
 }
@@ -1746,8 +1739,12 @@ exports.RawReporter = RawReporter;
 Object.defineProperty(exports, "__esModule", { value: true });
 const reporter_1 = __webpack_require__(/*! ../reporter */ "./src/core/reporter.ts");
 class SilentReporter extends reporter_1.Reporter {
-    log() { }
-    reset() { }
+    log() {
+        // ignore
+    }
+    reset() {
+        // ignore
+    }
 }
 exports.SilentReporter = SilentReporter;
 
@@ -1779,12 +1776,12 @@ const hashStartRe = /\$?[\w]+\s*[=:]\s*{/, hashEndRe = /}/, startMultiComment = 
 class Rule {
     constructor(conf) {
         this.conf = conf;
+        this.nodesFilter = null;
         this.state = {
             conf: 'always',
             enabled: true
         };
         this.cache = {};
-        this.nodesFilter = null;
         this.hashErrors = {};
         this.errors = [];
         if (typeof conf !== 'boolean') {
@@ -1806,6 +1803,12 @@ class Rule {
     get context() {
         return Rule.context;
     }
+    /**
+     * Rule name
+     */
+    get name() {
+        return lcfirst_1.lcfirst(this.constructor.name);
+    }
     static clearContext() {
         Rule.context = Object.assign({}, initContext);
     }
@@ -1818,12 +1821,8 @@ class Rule {
      */
     static beforeCheckNode(node) {
         if (node instanceof index_1.Ident && node.value instanceof index_1.Value) {
-            if (node.value.nodes && node.value.nodes.length && node.value.nodes[0] instanceof index_1.Obj) {
-                this.context.vars[node.key] = objToHash_1.objTohash(node.value.nodes[0]);
-            }
-            else {
-                this.context.vars[node.key] = node.value.nodes[0].toString();
-            }
+            const isHash = node.value.nodes && node.value.nodes.length && node.value.nodes[0] instanceof index_1.Obj;
+            this.context.vars[node.key] = isHash ? objToHash_1.objTohash(node.value.nodes[0]) : node.value.nodes[0].toString();
             this.context.valueToVar = Object.assign({}, this.context.valueToVar, unwrapObject_1.unwrapObject(this.context.vars));
         }
     }
@@ -1848,12 +1847,6 @@ class Rule {
                 Rule.context.inComment = false;
             }
         }
-    }
-    /**
-     * Rule name
-     */
-    get name() {
-        return lcfirst_1.lcfirst(this.constructor.name);
     }
     clearErrors() {
         this.errors.length = 0;
@@ -1911,7 +1904,7 @@ class Runner extends visitor_1.Visitor {
     }
     visitNode(node, parent) {
         this.fn(node);
-        node.nodes.forEach(elm => this.visit(elm, parent));
+        node.nodes.forEach((elm) => this.visit(elm, parent));
         if (node.value && node.value instanceof index_1.Node) {
             this.visit(node.value, parent);
         }
@@ -1947,17 +1940,6 @@ class Translator extends visitor_1.Visitor {
     }
     transpile() {
         return this.visit(this.root, null);
-    }
-    eachVisit(list, fn, parent) {
-        if (Array.isArray(list)) {
-            for (let i = 0, len = list.length; i < len; ++i) {
-                const node = list[i];
-                const ret = this.visit(node, parent);
-                if (ret) {
-                    fn(ret);
-                }
-            }
-        }
     }
     /**
      * Root element in AST
@@ -2058,8 +2040,8 @@ class Translator extends visitor_1.Visitor {
                     if (!keys[key]) {
                         debugger;
                     }
-                    const property = new index_1.Property(vals[key], node), keyItem = this.visit(keys[key], property), ret = this.visit(vals[key], property);
-                    property.key = keyItem;
+                    const property = new index_1.Property(vals[key], node), ret = this.visit(vals[key], property);
+                    property.key = this.visit(keys[key], property);
                     property.value = ret;
                     node.append(property);
                 }
@@ -2236,7 +2218,7 @@ class Translator extends visitor_1.Visitor {
         // Hack because stylus set Media.column on end of line
         if (this.lines[node.lineno]) {
             const column = this.lines[node.lineno].line.indexOf('@media');
-            if (~column && column + 1 !== node.column) {
+            if (column !== -1 && column + 1 !== node.column) {
                 node.column = column + 1;
             }
         }
@@ -2297,6 +2279,17 @@ class Translator extends visitor_1.Visitor {
         }
         return node;
     }
+    eachVisit(list, fn, parent) {
+        if (Array.isArray(list)) {
+            for (let i = 0, len = list.length; i < len; ++i) {
+                const node = list[i];
+                const ret = this.visit(node, parent);
+                if (ret) {
+                    fn(ret);
+                }
+            }
+        }
+    }
 }
 exports.Translator = Translator;
 
@@ -2317,7 +2310,9 @@ class Visitor {
     constructor(root) {
         this.root = root;
     }
-    methodNotExists(method, node) { }
+    methodNotExists(method, node) {
+        // ignore
+    }
     visit(node, parent) {
         const method = 'visit' + node.constructor.name;
         const fn = this[method];
@@ -2387,13 +2382,14 @@ exports.doc = () => {
         function delintNode(node) {
             switch (node.kind) {
                 case ts.SyntaxKind.ClassDeclaration: {
-                    let name = lcfirst_1.lcfirst(node.name.escapedText), description = (node.jsDoc && node.jsDoc[0]) ? node.jsDoc[0].comment : '';
+                    const name = lcfirst_1.lcfirst(node.name.escapedText);
+                    let description = (node.jsDoc && node.jsDoc[0]) ? node.jsDoc[0].comment : '';
                     description = description
                         .replace(/\t/g, '  ')
                         .replace(/(```stylus)(.*)(```)/s, (...match) => {
                         match[2] = match[2]
                             .split('\n')
-                            .map(line => line
+                            .map((line) => line
                             .replace(/^[ \t]+\*/g, '')
                             .replace(/^ /g, ''))
                             .join('\n');
@@ -2404,7 +2400,6 @@ exports.doc = () => {
                         description,
                         default: config.defaultRules[name]
                     });
-                    break;
                 }
             }
             ts.forEachChild(node, delintNode);
@@ -2419,7 +2414,7 @@ exports.doc = () => {
             if (match) {
                 const rule = match[1];
                 if (rule !== 'index') {
-                    let sourceFile = ts.createSourceFile(file, fs_1.readFileSync(file).toString(), ts.ScriptTarget.ES2018, 
+                    const sourceFile = ts.createSourceFile(file, fs_1.readFileSync(file).toString(), ts.ScriptTarget.ES2018, 
                     /*setParentNodes */ true);
                     delint(sourceFile);
                 }
@@ -2430,16 +2425,15 @@ exports.doc = () => {
             if (err) {
                 throw err;
             }
-            const text = result.map((item) => {
-                return `\n` +
-                    `### ${item.name}\n` +
-                    `${item.description}\n\n` +
-                    '**Default value**\n' +
-                    '```json\n' +
-                    `${JSON.stringify(item.default, null, 2)}\n` +
-                    '```\n' +
-                    '----\n';
-            }).join('');
+            const text = result.map((item) => [
+                `### ${item.name}`,
+                `${item.description}\n`,
+                '**Default value**',
+                '```json',
+                `${JSON.stringify(item.default, null, 2)}`,
+                '```',
+                '----'
+            ].join('\n')).join('');
             readme = readme.replace(/<!-- RULES START -->(.*)<!-- RULES END -->/msg, `<!-- RULES START -->${text}<!-- RULES END -->`);
             fs_1.writeFileSync(readmeFile, readme);
             console.log('Documentation generator finish');
@@ -2556,14 +2550,13 @@ class Colons extends rule_1.Rule {
         let colon = this.state.conf === 'always';
         let hasPseudo = false;
         let hasScope = false;
-        let arr = line.line.split(/\s/);
+        const arr = line.line.split(/\s/);
         if (this.state.conf === 'always' &&
             arr.length > 1 &&
             arr[0].indexOf(':') === -1 &&
             arr[0].indexOf(',') === -1) {
             colon = false;
         }
-        // : is allowed in hashes
         else if (this.state.conf === 'never' && line.line.indexOf(':') !== -1) {
             // check for pseudo selector
             hasPseudo = validJSON.pseudo.some((val) => line.line.indexOf(val) !== -1);
@@ -2626,7 +2619,7 @@ class Color extends rule_1.Rule {
             const fix = this.context.valueToVar[node.value] ||
                 this.context.valueToVar[node.value.toLowerCase()] ||
                 this.context.valueToVar[node.value.toUpperCase()];
-            this.msg(`Set color only in variable` + (fix ? `(${fix})` : ''), node.lineno, node.column, node.column + node.value.length - 1, fix || null);
+            this.msg('Set color only in variable' + (fix ? `(${fix})` : ''), node.lineno, node.column, node.column + node.value.length - 1, fix || null);
         }
         if (node.value && typeof node.value === 'string' && checkReg.test(node.value)) {
             const fix = node.value.toString();
@@ -2652,7 +2645,7 @@ exports.Color = Color;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
-const reg = /(,)(\s)*$/, keyValue = /:/, hashEnd = /\}/;
+const reg = /(,)(\s)*$/, keyValue = /:/, hashEnd = /}/;
 /**
  * Allow or deny commas in object hash
  */
@@ -2720,8 +2713,12 @@ class DepthControl extends rule_1.Rule {
             }
             if (parentNode) {
                 if (node instanceof index_1.Block) {
-                    node.nodes.forEach(child => {
-                        if (parentNode && (child instanceof index_1.Property || child instanceof index_1.Media || child instanceof index_1.Condition) && child.column - indentPref !== parentNode.column) {
+                    node.nodes.forEach((child) => {
+                        if (parentNode &&
+                            (child instanceof index_1.Property ||
+                                child instanceof index_1.Media ||
+                                child instanceof index_1.Condition) &&
+                            child.column - indentPref !== parentNode.column) {
                             this.msg('incorrect indent', child.lineno, 0, child.column);
                         }
                     });
@@ -2745,7 +2742,7 @@ class DepthControl extends rule_1.Rule {
             const key = node.closest('ident|property');
             if (key) {
                 const parentColumn = (key instanceof index_1.Property && key.key instanceof index_1.Ident) ? key.key.column : key.column;
-                node.nodes.forEach(child => {
+                node.nodes.forEach((child) => {
                     if (child instanceof index_1.Property && child.key instanceof index_1.Ident && child.key.column - indentPref !== parentColumn) {
                         this.msg('incorrect indent', child.key.lineno, 0, child.key.column);
                     }
@@ -2908,10 +2905,10 @@ class PrefixVarsWithDollar extends rule_1.Rule {
         if (!(node.parent instanceof index_1.Tree) || (node.value instanceof index_1.Func)) {
             return;
         }
-        let hasDollar = node.key.indexOf(this.state.prefix) === 0;
+        const hasDollar = node.key.indexOf(this.state.prefix) === 0;
         if (this.state.conf === 'always' && hasDollar === false) {
             //console.log(node.key.length);
-            this.msg(`variables and parameters must be prefixed with the ${this.state.prefix} sign (${node.key})`, node.lineno, node.column, node.column + node.key.length - 1);
+            this.msg(`Variables and parameters must be prefixed with the ${this.state.prefix} sign (${node.key})`, node.lineno, node.column, node.column + node.key.length - 1);
         }
         else if (this.state.conf === 'never' && hasDollar === true) {
             this.msg(`${this.state.prefix} sign is disallowed for variables and parameters (${node.key})`, node.lineno, node.column, node.column + node.key.length - 1);
@@ -2947,23 +2944,24 @@ class QuotePref extends rule_1.Rule {
         stringRe.lastIndex = 0;
         let badQuotes = false;
         let hasInnerQuote = true;
-        let match;
-        while ((match = stringRe.exec(line.line)) !== null) {
-            let content = match[0].slice(1, -1);
+        let match = stringRe.exec(line.line);
+        while (match !== null) {
+            const content = match[0].slice(1, -1);
             if (this.state.conf === 'single' && match[0].indexOf('"') === 0) {
                 hasInnerQuote = content.indexOf("'") !== -1;
                 if (!hasInnerQuote) {
                     badQuotes = true;
-                    this.msg('preferred quote style is ' + this.state.conf + ' quotes', line.lineno, match.index + 1, match[0].length + match.index, match[0].replace(/^"/g, '\'').replace(/'$/g, '\''));
+                    this.msg(`Preferred quote style is ${this.state.conf} quotes`, line.lineno, match.index + 1, match[0].length + match.index, match[0].replace(/^"/g, '\'').replace(/'$/g, '\''));
                 }
             }
             else if (this.state.conf === 'double' && match[0].indexOf("'") === 0) {
                 hasInnerQuote = content.indexOf('"') !== -1;
                 if (!hasInnerQuote) {
                     badQuotes = true;
-                    this.msg('preferred quote style is ' + this.state.conf + ' quotes', line.lineno, match.index + 1, match[0].length + match.index, match[0].replace(/^'/g, '"').replace(/'$/g, '"'));
+                    this.msg(`Preferred quote style is ${this.state.conf} quotes`, line.lineno, match.index + 1, match[0].length + match.index, match[0].replace(/^'/g, '"').replace(/'$/g, '"'));
                 }
             }
+            match = stringRe.exec(line.line);
         }
         return badQuotes;
     }
@@ -2985,7 +2983,7 @@ exports.QuotePref = QuotePref;
 Object.defineProperty(exports, "__esModule", { value: true });
 const rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
 // we only want to check semicolons on properties/values
-const ignoreRe = /(^[*#.])|[&>/]|{|}|if|for(?!\w)|else|@block|@media|(}|{|=|,)$/igm;
+const ignoreRe = /(^[*#.])|[&>/]|{|}|if|for(?!\w)|else|@block|@media|([}{=,])$/igm;
 /**
  * Check that selector properties are sorted accordingly
  */
@@ -2994,7 +2992,8 @@ class Semicolons extends rule_1.Rule {
         if (ignoreRe.test(line.line.trim())) {
             return;
         }
-        let semicolon, index = line.line.indexOf(';');
+        let semicolon;
+        const index = line.line.indexOf(';');
         if (this.state.conf === 'never' && index !== -1) {
             semicolon = true;
         }
@@ -3066,21 +3065,21 @@ class SortOrder extends rule_1.Rule {
                     }
                     else {
                         sort.push.apply(sort, key);
-                        key.forEach(subkey => this.cache.ketToGroup[subkey] = groupIndex);
+                        key.forEach((subkey) => this.cache.ketToGroup[subkey] = groupIndex);
                         groupIndex += 1;
                     }
                     return sort;
                 }, []);
             }
             names.sort((keyA, keyB) => {
-                let values = {
+                const values = {
                     keyA,
                     keyB
                 }, index = {
                     keyA: this.cache.order.indexOf(keyA),
-                    keyB: this.cache.order.indexOf(keyB),
+                    keyB: this.cache.order.indexOf(keyB)
                 }, keys = Object.keys(index);
-                for (let key of keys) {
+                for (const key of keys) {
                     if (index[key] === -1) {
                         const parts = values[key].split('-');
                         if (parts.length > 1) {
@@ -3110,7 +3109,7 @@ class SortOrder extends rule_1.Rule {
                 const key = child.key.toString();
                 if (names[index] !== child.key) {
                     const needIndex = names.indexOf(key);
-                    this.msg('Property must be ' + (needIndex < index ? 'higher' : 'lower') + ' - ' + names.join(', '), child.lineno, child.column, child.column + key.trimRight().length - 1);
+                    this.msg(`Property must be ${(needIndex < index ? 'higher' : 'lower')} -  ${names.join(', ')}`, child.lineno, child.column, child.column + key.trimRight().length - 1);
                 }
                 index += 1;
             }
@@ -3121,7 +3120,8 @@ class SortOrder extends rule_1.Rule {
             let lastGroup = null;
             node.nodes.forEach((node) => {
                 if (node instanceof index_1.Property) {
-                    let key = node.key.toString(), group = this.cache.ketToGroup[key];
+                    const key = node.key.toString();
+                    let group = this.cache.ketToGroup[key];
                     if (group === undefined) {
                         const parts = key.split('-');
                         if (parts.length > 1) {

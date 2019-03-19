@@ -1,8 +1,8 @@
-import { Rule } from "../core/rule";
-import { ILine } from "../core/types/line";
+import { Rule } from '../core/rule';
+import { ILine } from '../core/types/line';
 
 // we only want to check semicolons on properties/values
-const ignoreRe = /(^[*#.])|[&>/]|{|}|if|for(?!\w)|else|@block|@media|(}|{|=|,)$/igm
+const ignoreRe = /(^[*#.])|[&>/]|{|}|if|for(?!\w)|else|@block|@media|([}{=,])$/igm;
 
 /**
  * Check that selector properties are sorted accordingly
@@ -14,11 +14,12 @@ export class Semicolons extends Rule {
 		}
 
 		let
-			semicolon,
+			semicolon;
+		const
 			index = line.line.indexOf(';');
 
 		if (this.state.conf === 'never' && index !== -1) {
-			semicolon = true
+			semicolon = true;
 		}
 
 		// for reasons that perplex me, even when the first use
@@ -26,17 +27,16 @@ export class Semicolons extends Rule {
 		// still runs, so we add this second ignoreCheck here to catch it
 		if (this.state.conf === 'always' && !ignoreRe.test(line.line.trim())) {
 			if (index === -1 &&
-				line.line.indexOf( '}' ) === -1 &&
-				line.line.indexOf( '{' ) === -1 ) {
-				semicolon = false
+				line.line.indexOf('}') === -1 &&
+				line.line.indexOf('{') === -1) {
+				semicolon = false;
 			}
 		}
 
 		if (this.state.conf === 'never' && semicolon === true) {
-			this.msg( 'unnecessary semicolon found', line.lineno, index);
-		}
-		else if (this.state.conf === 'always' && semicolon === false) {
-			this.msg( 'missing semicolon', line.lineno, line.line.length);
+			this.msg('unnecessary semicolon found', line.lineno, index);
+		} else if (this.state.conf === 'always' && semicolon === false) {
+			this.msg('missing semicolon', line.lineno, line.line.length);
 		}
 
 		return semicolon;

@@ -1,12 +1,19 @@
-import { INode } from "../types/ast/node";
-import { ISNode } from "../types/ast/snode";
+import { INode } from '../types/ast/node';
+import { ISNode } from '../types/ast/snode';
 
 export class Node implements INode {
+
+	get nodeName(): string {
+		return this.constructor.name.toLowerCase();
+	}
+
 	parent: INode | null = null;
-	lineno = 0;
-	column = 0;
+	lineno: number = 0;
+	column: number = 0;
 	nodes: INode[] = [];
 	source: ISNode | null = null;
+
+	value: string | INode | null = '';
 
 	constructor(block: ISNode, parent: INode | null) {
 		this.lineno = block.lineno;
@@ -15,11 +22,7 @@ export class Node implements INode {
 		this.parent = parent;
 	}
 
-	get nodeName(): string {
-		return this.constructor.name.toLowerCase();
-	}
-
-	append<T extends INode>(node: T, listField: keyof T = 'nodes') {
+	append<T extends INode>(node: T, listField: keyof T = 'nodes'): void {
 		const list = (<any>this)[listField];
 
 		if (list && Array.isArray(list) && node instanceof Node) {
@@ -29,12 +32,10 @@ export class Node implements INode {
 		node.parent = this;
 	}
 
-	value: string | INode | null = '';
-
 	/**
 	 * Use stylus source
 	 */
-	toString() {
+	toString(): string {
 		if (this.source) {
 			return this.source.toString();
 		}
@@ -42,13 +43,12 @@ export class Node implements INode {
 		return this.value ? this.value.toString() : ' ';
 	}
 
-
 	getSibling(next: boolean = false): null | INode {
 		if (this.parent && this.parent.nodes.length) {
 			const index = this.parent.nodes.indexOf(this);
 
 			if (index !== -1 && ((!next && index > 0) || (next && index < this.parent.nodes.length - 2))) {
-				return this.parent.nodes[index + (next ? 1: -1)];
+				return this.parent.nodes[index + (next ? 1 : -1)];
 			}
 		}
 
@@ -74,8 +74,10 @@ export class Node implements INode {
 	 * @param parentClass
 	 */
 	closest<T extends Node>(parentClass: string): null | T {
+		const
+			reg = RegExp(`^(${parentClass})$`, 'i');
+
 		let
-			reg = RegExp(`^(${parentClass})$`, 'i'),
 			node = this.parent;
 
 		while (node) {

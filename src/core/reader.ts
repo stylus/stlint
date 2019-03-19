@@ -1,8 +1,8 @@
-import { Glob } from "glob"
-import { relative } from "path";
-import { map } from "async";
-import { readFile, stat } from "fs";
-import { IConfig } from "./types/config";
+import { Glob } from 'glob';
+import { relative } from 'path';
+import { map } from 'async';
+import { readFile, stat } from 'fs';
+import { IConfig } from './types/config';
 
 type ReaderCallback = (file: string, content: string) => void;
 
@@ -19,7 +19,7 @@ export class Reader {
 	read(dir: string | string[], callback: ReaderCallback): Promise<void> {
 		return new Promise(async (resolve) => {
 			if (typeof dir !== 'string' && !(dir instanceof Array)) {
-				throw new TypeError( 'getFiles err. Expected string or array, but received: ' + typeof dir )
+				throw new TypeError('getFiles err. Expected string or array, but received: ' + typeof dir);
 			}
 
 			if (typeof dir === 'string') {
@@ -32,7 +32,7 @@ export class Reader {
 
 				return stat(dir, async (err, stats) => {
 					if (!stats || err) {
-						throw Error( 'Stlint Error: No such file or dir exists!' )
+						throw Error('Stlint Error: No such file or dir exists!');
 					}
 
 					if (stats.isFile()) {
@@ -45,7 +45,7 @@ export class Reader {
 				});
 			}
 
-			return Promise.all(dir.map(path => this.read(path, callback)));
+			return Promise.all(dir.map((path) => this.read(path, callback)));
 		});
 	}
 
@@ -57,18 +57,18 @@ export class Reader {
 	 * @return Promise
 	 */
 	readFolder(dir: string, callback: ReaderCallback): Promise<void> {
-		return new Promise((resolve) => {
-			return new Glob(dir, {}, async (err: Error | null, files: string[]) => {
+		return new Promise((resolve) =>
+			new Glob(dir, {}, async (err: Error | null, files: string[]) => {
 				if (err) {
-					throw err
+					throw err;
 				}
 
 				if (this.config.excludes && this.config.excludes.length) {
 					files = files.filter((file) => {
 						const
-							relPath = relative(dir.replace( '/**/*.styl', '' ), file);
+							relPath = relative(dir.replace('/**/*.styl', ''), file);
 
-						return !this.config.excludes.some(exclude => {
+						return !this.config.excludes.some((exclude) => {
 							const reg = new RegExp(exclude);
 
 							return reg.test(relPath);
@@ -79,8 +79,7 @@ export class Reader {
 				await this.readFiles(files, callback);
 
 				resolve();
-			})
-		})
+			}));
 	}
 
 	/**
@@ -94,7 +93,7 @@ export class Reader {
 		return new Promise((resolve) => {
 			map(files, readFile, (error: Error | null | void, buffer: (Buffer | void)[] | void) => {
 				if (error) {
-					throw error
+					throw error;
 				}
 
 				if (buffer) {
@@ -106,7 +105,7 @@ export class Reader {
 						}
 					});
 				}
-			})
+			});
 		});
 	}
 }

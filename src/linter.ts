@@ -1,13 +1,12 @@
-import { Reporter } from "./core/reporter";
-import { StylusParser } from "./core/parser";
-import { Checker } from "./core/checker";
-import { existsSync, readFileSync } from "fs";
-import { resolve } from "path";
-import { IReporter } from "./core/types/reporter";
-import { Rule } from "./core/rule";
-import { IConfig } from "./core/types/config";
-import { Config } from "./config";
-
+import { Reporter } from './core/reporter';
+import { StylusParser } from './core/parser';
+import { Checker } from './core/checker';
+import { existsSync, readFileSync } from 'fs';
+import { resolve } from 'path';
+import { IReporter } from './core/types/reporter';
+import { Rule } from './core/rule';
+import { IConfig } from './core/types/config';
+import { Config } from './config';
 
 export class Linter {
 	options: Dictionary = {};
@@ -64,7 +63,6 @@ export class Linter {
 			this.checker.checkLineRules(content);
 		} catch (e) {
 
-
 			if (this.config.debug) {
 				throw e;
 			}
@@ -74,7 +72,7 @@ export class Linter {
 	/**
 	 * Print all errors or warnings
 	 */
-	display(exit: boolean = true) {
+	display(exit: boolean = true): void {
 		if (this.config.grep) {
 			this.reporter.filterErrors(this.config.grep);
 		}

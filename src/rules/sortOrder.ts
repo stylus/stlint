@@ -1,6 +1,6 @@
-import { Rule } from "../core/rule";
-import { Block, Property, Value } from "../core/ast/index";
-import { IState } from "../core/types/state";
+import { Rule } from '../core/rule';
+import { Block, Property, Value } from '../core/ast/index';
+import { IState } from '../core/types/state';
 
 interface IOrderState extends IState {
 	order?: Array<string[] | string>,
@@ -11,7 +11,7 @@ interface IOrderState extends IState {
  * Rule for checking properties order. Can use alphabetical order or order from grouped array
  */
 export class SortOrder extends Rule<IOrderState> {
-	nodesFilter = ['block'];
+	nodesFilter: string[] = ['block'];
 
 	checkNode(node: Block): void {
 		const
@@ -39,30 +39,29 @@ export class SortOrder extends Rule<IOrderState> {
 
 				this.cache.order = order.reduce<string[]>((sort, key) => {
 					if (typeof key === 'string') {
-						sort.push(key)
+						sort.push(key);
 					} else {
 						sort.push.apply(sort, key);
-						key.forEach(subkey => this.cache.ketToGroup[subkey] = groupIndex);
+						key.forEach((subkey) => this.cache.ketToGroup[subkey] = groupIndex);
 						groupIndex += 1;
 					}
 					return sort;
 				}, []);
 			}
 
-
 			names.sort((keyA, keyB) => {
-				let
+				const
 					values = <Dictionary<string>>{
 						keyA,
 						keyB
 					},
 					index = <Dictionary<number>>{
 						keyA: this.cache.order.indexOf(keyA),
-						keyB: this.cache.order.indexOf(keyB),
+						keyB: this.cache.order.indexOf(keyB)
 					},
 					keys = Object.keys(index);
 
-				for (let key of keys) {
+				for (const key of keys) {
 					if (index[key] === -1) {
 						const parts = values[key].split('-');
 
@@ -101,7 +100,7 @@ export class SortOrder extends Rule<IOrderState> {
 					const needIndex = names.indexOf(key);
 
 					this.msg(
-						'Property must be ' + (needIndex < index ? 'higher' : 'lower') + ' - ' + names.join(', '),
+						`Property must be ${(needIndex < index ? 'higher' : 'lower')} -  ${names.join(', ')}`,
 						child.lineno,
 						child.column,
 						child.column + key.trimRight().length - 1
@@ -122,8 +121,10 @@ export class SortOrder extends Rule<IOrderState> {
 
 			node.nodes.forEach((node) => {
 				if (node instanceof Property) {
+					const
+						key = node.key.toString();
+
 					let
-						key = node.key.toString(),
 						group = this.cache.ketToGroup[key];
 
 					if (group === undefined) {
