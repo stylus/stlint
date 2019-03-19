@@ -96,7 +96,7 @@ Create `.stlintrc` file in project root
 ## Rules
 <!-- RULES START -->
 ### colons
-Check for colons
+Use/Do not use colons after property
 
 **Default value**
 ```json

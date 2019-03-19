@@ -3,15 +3,12 @@ import { ILine } from "../core/types/line";
 
 const validJSON = require( '../data/valid.json' );
 
-// we only want to check colons on properties/values
-const ignoreRe = /hznuznoli/m
-
 /**
- * Check for colons
+ * Use/Do not use colons after property
  */
 export class Colons extends Rule {
 	checkLine(line: ILine) {
-		if (ignoreRe.test(line.line) || this.context.inHash) {
+		if (this.context.inHash) {
 			return
 		}
 

@@ -2541,14 +2541,12 @@ exports.Linter = Linter;
 Object.defineProperty(exports, "__esModule", { value: true });
 const rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
 const validJSON = __webpack_require__(/*! ../data/valid.json */ "./src/data/valid.json");
-// we only want to check colons on properties/values
-const ignoreRe = /hznuznoli/m;
 /**
- * Check for colons
+ * Use/Do not use colons after property
  */
 class Colons extends rule_1.Rule {
     checkLine(line) {
-        if (ignoreRe.test(line.line) || this.context.inHash) {
+        if (this.context.inHash) {
             return;
         }
         let colon = this.state.conf === 'always';
