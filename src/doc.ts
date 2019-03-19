@@ -29,13 +29,15 @@ export const doc = () => {
 						name = lcfirst(node.name.escapedText),
 						description = (node.jsDoc && node.jsDoc[0]) ? node.jsDoc[0].comment : '';
 
-					description = description.replace(/(```stylus)(.*)(```)/s, (...match: string[]) => {
-						match[2] = match[2]
-							.split('\n')
-							.map(line => line.replace(/^[ \t]+\*/g, ''))
-							.join('\n');
-						return `${match[1]}${match[2]}${match[3]}`
-					});
+					description = description
+						.replace(/\t/g, '  ')
+						.replace(/(```stylus)(.*)(```)/s, (...match: string[]) => {
+							match[2] = match[2]
+								.split('\n')
+								.map(line => line.replace(/^[ \t]+\*/g, ''))
+								.join('\n');
+							return `${match[1]}${match[2]}${match[3]}`
+						});
 
 					result.push({
 						name,
