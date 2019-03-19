@@ -84,7 +84,7 @@ Create `.stlintrc` file
 	"excludes": ["node_modules/"],
 	"stylusParserOptions": {},
 	"reportOptions": {
-		"columnSplitter": ' | ',
+		"columnSplitter": " | ",
 		"maxWidth": 70,
 		"minWidth": 70,
 		"trancate": false
