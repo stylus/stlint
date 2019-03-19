@@ -1,21 +1,21 @@
 # Stylus Linter
-### Install
+## Install
 ```bash
 npm i stlint -D
 ```
-### Use
+## Use
 ```bash
 npx stlint ./src/file.styl
 npx stlint ./
 npx stlint ./ -w
 ```
 
-### Rules
+## Rules
 <!-- RULES START -->
 -----
-#### colons
+### colons
 Check for colons
-##### Default value
+** Default value **
 ```json
 [
   "never"
@@ -23,9 +23,9 @@ Check for colons
 ```
 
 -----
-#### color
+### color
 Process all color values. Allow or deny use it not in variable and use uppercase or lowercase statements
-##### Default value
+** Default value **
 ```json
 {
   "conf": "uppercase",
@@ -35,9 +35,9 @@ Process all color values. Allow or deny use it not in variable and use uppercase
 ```
 
 -----
-#### commaInObject
+### commaInObject
 Allow or deny commas in object hash
-##### Default value
+** Default value **
 ```json
 [
   "never"
@@ -45,9 +45,9 @@ Allow or deny commas in object hash
 ```
 
 -----
-#### depthControl
+### depthControl
 Control depth spaces or tab
-##### Default value
+** Default value **
 ```json
 {
   "indentPref": "tab"
@@ -55,17 +55,17 @@ Control depth spaces or tab
 ```
 
 -----
-#### emptyLines
+### emptyLines
 Check if document has several empty lines
-##### Default value
+** Default value **
 ```json
 true
 ```
 
 -----
-#### leadingZero
+### leadingZero
 Check for leading 0 on numbers ( 0.5 )
-##### Default value
+** Default value **
 ```json
 [
   "always"
@@ -73,9 +73,9 @@ Check for leading 0 on numbers ( 0.5 )
 ```
 
 -----
-#### mixedSpaces
+### mixedSpaces
 check for mixed spaces and tabs
-##### Default value
+** Default value **
 ```json
 {
   "indentPref": "tab"
@@ -83,9 +83,9 @@ check for mixed spaces and tabs
 ```
 
 -----
-#### prefixVarsWithDollar
+### prefixVarsWithDollar
 Check that $ is used when declaring vars
-##### Default value
+** Default value **
 ```json
 {
   "conf": "always",
@@ -94,9 +94,9 @@ Check that $ is used when declaring vars
 ```
 
 -----
-#### quotePref
+### quotePref
 Check that quote style is consistent with config
-##### Default value
+** Default value **
 ```json
 [
   "double"
@@ -104,9 +104,9 @@ Check that quote style is consistent with config
 ```
 
 -----
-#### semicolons
+### semicolons
 Check that selector properties are sorted accordingly
-##### Default value
+** Default value **
 ```json
 [
   "never"
@@ -114,9 +114,9 @@ Check that selector properties are sorted accordingly
 ```
 
 -----
-#### sortOrder
+### sortOrder
 Rule for checking properties order. Can use alphabetical order or order from grouped array
-##### Default value
+** Default value **
 ```json
 {
   "conf": "grouped",
@@ -288,9 +288,9 @@ Rule for checking properties order. Can use alphabetical order or order from gro
 ```
 
 -----
-#### useMixinInsteadUnit
+### useMixinInsteadUnit
 Allo or deny some mixin instead of unit statement
-##### Default value
+** Default value **
 ```json
 {
   "conf": "always",
