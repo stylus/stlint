@@ -3,6 +3,7 @@
 [![NPM](https://nodei.co/npm/stlint.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/stlint/)
 
 * [issues](https://github.com/stylus/stlint/issues)
+* [IDE WebStorm/PHPStorm plugin](https://github.com/stylus/stlint-idea-plugin)
 
 ## Installation
 
