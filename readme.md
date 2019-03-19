@@ -14,6 +14,7 @@ npx stlint ./ -w
 <!-- RULES START -->
 ### colons
 Check for colons
+
 ** Default value **
 ```json
 [
@@ -24,6 +25,7 @@ Check for colons
 
 ### color
 Process all color values. Allow or deny use it not in variable and use uppercase or lowercase statements
+
 ** Default value **
 ```json
 {
@@ -36,6 +38,7 @@ Process all color values. Allow or deny use it not in variable and use uppercase
 
 ### commaInObject
 Allow or deny commas in object hash
+
 ** Default value **
 ```json
 [
@@ -46,6 +49,7 @@ Allow or deny commas in object hash
 
 ### depthControl
 Control depth spaces or tab
+
 ** Default value **
 ```json
 {
@@ -56,6 +60,7 @@ Control depth spaces or tab
 
 ### emptyLines
 Check if document has several empty lines
+
 ** Default value **
 ```json
 true
@@ -64,6 +69,7 @@ true
 
 ### leadingZero
 Check for leading 0 on numbers ( 0.5 )
+
 ** Default value **
 ```json
 [
@@ -74,6 +80,7 @@ Check for leading 0 on numbers ( 0.5 )
 
 ### mixedSpaces
 check for mixed spaces and tabs
+
 ** Default value **
 ```json
 {
@@ -84,6 +91,7 @@ check for mixed spaces and tabs
 
 ### prefixVarsWithDollar
 Check that $ is used when declaring vars
+
 ** Default value **
 ```json
 {
@@ -95,6 +103,7 @@ Check that $ is used when declaring vars
 
 ### quotePref
 Check that quote style is consistent with config
+
 ** Default value **
 ```json
 [
@@ -105,6 +114,7 @@ Check that quote style is consistent with config
 
 ### semicolons
 Check that selector properties are sorted accordingly
+
 ** Default value **
 ```json
 [
@@ -115,6 +125,7 @@ Check that selector properties are sorted accordingly
 
 ### sortOrder
 Rule for checking properties order. Can use alphabetical order or order from grouped array
+
 ** Default value **
 ```json
 {
@@ -289,6 +300,7 @@ Rule for checking properties order. Can use alphabetical order or order from gro
 
 ### useMixinInsteadUnit
 Allo or deny some mixin instead of unit statement
+
 ** Default value **
 ```json
 {
