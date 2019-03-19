@@ -2427,7 +2427,7 @@ exports.doc = () => {
                 throw err;
             }
             const text = result.map((item) => {
-                return `\n----\n` +
+                return `\n-----\n` +
                     `#### ${item.name}\n` +
                     `${item.description}\n` +
                     '##### Default value\n' +

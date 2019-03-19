@@ -75,7 +75,7 @@ export const doc = () => {
 			}
 
 			const text = result.map((item: RuleDocs) => {
-				return `\n----\n` +
+				return `\n-----\n` +
 					`#### ${item.name}\n` +
 					`${item.description}\n` +
 					'##### Default value\n' +

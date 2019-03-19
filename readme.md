@@ -12,7 +12,7 @@ npx stlint ./ -w
 
 ### Rules
 <!-- RULES START -->
-----
+-----
 #### colons
 Check for colons
 ##### Default value
@@ -22,7 +22,7 @@ Check for colons
 ]
 ```
 
-----
+-----
 #### color
 Process all color values. Allow or deny use it not in variable and use uppercase or lowercase statements
 ##### Default value
@@ -34,7 +34,7 @@ Process all color values. Allow or deny use it not in variable and use uppercase
 }
 ```
 
-----
+-----
 #### commaInObject
 Allow or deny commas in object hash
 ##### Default value
@@ -44,7 +44,7 @@ Allow or deny commas in object hash
 ]
 ```
 
-----
+-----
 #### depthControl
 Control depth spaces or tab
 ##### Default value
@@ -54,7 +54,7 @@ Control depth spaces or tab
 }
 ```
 
-----
+-----
 #### emptyLines
 Check if document has several empty lines
 ##### Default value
@@ -62,7 +62,7 @@ Check if document has several empty lines
 true
 ```
 
-----
+-----
 #### leadingZero
 Check for leading 0 on numbers ( 0.5 )
 ##### Default value
@@ -72,7 +72,7 @@ Check for leading 0 on numbers ( 0.5 )
 ]
 ```
 
-----
+-----
 #### mixedSpaces
 check for mixed spaces and tabs
 ##### Default value
@@ -82,7 +82,7 @@ check for mixed spaces and tabs
 }
 ```
 
-----
+-----
 #### prefixVarsWithDollar
 Check that $ is used when declaring vars
 ##### Default value
@@ -93,7 +93,7 @@ Check that $ is used when declaring vars
 }
 ```
 
-----
+-----
 #### quotePref
 Check that quote style is consistent with config
 ##### Default value
@@ -103,7 +103,7 @@ Check that quote style is consistent with config
 ]
 ```
 
-----
+-----
 #### semicolons
 Check that selector properties are sorted accordingly
 ##### Default value
@@ -113,7 +113,7 @@ Check that selector properties are sorted accordingly
 ]
 ```
 
-----
+-----
 #### sortOrder
 Rule for checking properties order. Can use alphabetical order or order from grouped array
 ##### Default value
@@ -287,7 +287,7 @@ Rule for checking properties order. Can use alphabetical order or order from gro
 }
 ```
 
-----
+-----
 #### useMixinInsteadUnit
 Allo or deny some mixin instead of unit statement
 ##### Default value
