@@ -15,7 +15,7 @@ npx stlint ./ -w
 ### colons
 Check for colons
 
-** Default value **
+**Default value**
 ```json
 [
   "never"
@@ -26,7 +26,7 @@ Check for colons
 ### color
 Process all color values. Allow or deny use it not in variable and use uppercase or lowercase statements
 
-** Default value **
+**Default value**
 ```json
 {
   "conf": "uppercase",
@@ -39,7 +39,7 @@ Process all color values. Allow or deny use it not in variable and use uppercase
 ### commaInObject
 Allow or deny commas in object hash
 
-** Default value **
+**Default value**
 ```json
 [
   "never"
@@ -50,7 +50,7 @@ Allow or deny commas in object hash
 ### depthControl
 Control depth spaces or tab
 
-** Default value **
+**Default value**
 ```json
 {
   "indentPref": "tab"
@@ -61,7 +61,7 @@ Control depth spaces or tab
 ### emptyLines
 Check if document has several empty lines
 
-** Default value **
+**Default value**
 ```json
 true
 ```
@@ -70,7 +70,7 @@ true
 ### leadingZero
 Check for leading 0 on numbers ( 0.5 )
 
-** Default value **
+**Default value**
 ```json
 [
   "always"
@@ -81,7 +81,7 @@ Check for leading 0 on numbers ( 0.5 )
 ### mixedSpaces
 check for mixed spaces and tabs
 
-** Default value **
+**Default value**
 ```json
 {
   "indentPref": "tab"
@@ -92,7 +92,7 @@ check for mixed spaces and tabs
 ### prefixVarsWithDollar
 Check that $ is used when declaring vars
 
-** Default value **
+**Default value**
 ```json
 {
   "conf": "always",
@@ -104,7 +104,7 @@ Check that $ is used when declaring vars
 ### quotePref
 Check that quote style is consistent with config
 
-** Default value **
+**Default value**
 ```json
 [
   "double"
@@ -115,7 +115,7 @@ Check that quote style is consistent with config
 ### semicolons
 Check that selector properties are sorted accordingly
 
-** Default value **
+**Default value**
 ```json
 [
   "never"
@@ -126,7 +126,7 @@ Check that selector properties are sorted accordingly
 ### sortOrder
 Rule for checking properties order. Can use alphabetical order or order from grouped array
 
-** Default value **
+**Default value**
 ```json
 {
   "conf": "grouped",
@@ -301,7 +301,7 @@ Rule for checking properties order. Can use alphabetical order or order from gro
 ### useMixinInsteadUnit
 Allo or deny some mixin instead of unit statement
 
-** Default value **
+**Default value**
 ```json
 {
   "conf": "always",
