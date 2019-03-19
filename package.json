@@ -6,18 +6,22 @@
   "bin": {
     "stlint": "./bin/stlint"
   },
+
   "files": [
     "bin/",
     "index.js",
     "src/"
   ],
+
   "repository": {
     "type": "git",
     "url": "https://github.com/stylus/stlint"
   },
+
   "bugs": {
     "url": "https://github.com/stylus/stlint/issues"
   },
+
   "scripts": {
     "newversion": "npm test && npm version patch --no-git-tag-version && npm run build && npm run newversiongit && npm publish ./",
     "newversiongit": "git add --all  && git commit -m \"New version $npm_package_version. Read more https://github.com/stylus/stlint/releases/tag/$npm_package_version \" && git tag $npm_package_version && git push --tags origin HEAD:master",
@@ -26,6 +30,7 @@
     "test2": "./bin/stlint ./test.styl",
     "test": "mocha tests/**/**.ts tests/**.ts"
   },
+
   "keywords": [
     "lint",
     "linter",
@@ -33,8 +38,10 @@
     "stylus-linter",
     "stlint"
   ],
+
   "author": "Chupurnov Valeriy<chupurnov@gmail.com>",
   "license": "MIT",
+
   "dependencies": {
     "async": "^2.6.2",
     "chalk": "^2.4.2",
