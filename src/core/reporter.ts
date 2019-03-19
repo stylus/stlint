@@ -76,10 +76,8 @@ export abstract class Reporter implements IReporter {
 	 * Fill response object
 	 */
 	fillResponse() {
-		if (this.errors.length) {
-			this.response.passed = false;
-			this.response.errors = this.errors;
-		}
+		this.response.passed = !this.errors.length;
+		this.response.errors = this.errors;
 	}
 
 	/**
@@ -90,6 +88,7 @@ export abstract class Reporter implements IReporter {
 		this.fillResponse();
 		this.log();
 		this.reset();
+
 		if (exit) {
 			process.exit(this.response.passed ? 0 : 1);
 		}
@@ -112,7 +111,8 @@ export abstract class Reporter implements IReporter {
 	filterErrors(grep: string) {
 		this.errors = this.errors.filter(
 			error => {
-				error.message = error.message.filter(msg => ~msg.descr.indexOf(grep) || ~msg.rule.indexOf(grep));
+				error.message = error.message.filter(msg => !!msg.descr.match(grep) || !!msg.rule.match(grep));
+
 				return error.message.length;
 			}
 		)

@@ -1620,10 +1620,8 @@ class Reporter {
      * Fill response object
      */
     fillResponse() {
-        if (this.errors.length) {
-            this.response.passed = false;
-            this.response.errors = this.errors;
-        }
+        this.response.passed = !this.errors.length;
+        this.response.errors = this.errors;
     }
     /**
      * Prepare data and output result
@@ -1652,7 +1650,7 @@ class Reporter {
      */
     filterErrors(grep) {
         this.errors = this.errors.filter(error => {
-            error.message = error.message.filter(msg => ~msg.descr.indexOf(grep) || ~msg.rule.indexOf(grep));
+            error.message = error.message.filter(msg => !!msg.descr.match(grep) || !!msg.rule.match(grep));
             return error.message.length;
         });
     }
@@ -1676,6 +1674,7 @@ exports.log = (val) => console.log(util_1.inspect(val, {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+const reporter_1 = __webpack_require__(/*! ../reporter */ "./src/core/reporter.ts");
 class JsonReporter extends reporter_1.Reporter {
     /**
      * @override
@@ -1691,7 +1690,6 @@ class JsonReporter extends reporter_1.Reporter {
     }
 }
 exports.JsonReporter = JsonReporter;
-const reporter_1 = __webpack_require__(/*! ../reporter */ "./src/core/reporter.ts");
 
 
 /***/ }),
@@ -1752,11 +1750,12 @@ exports.RawReporter = RawReporter;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+const reporter_1 = __webpack_require__(/*! ../reporter */ "./src/core/reporter.ts");
 class SilentReporter extends reporter_1.Reporter {
     log() { }
+    reset() { }
 }
 exports.SilentReporter = SilentReporter;
-const reporter_1 = __webpack_require__(/*! ../reporter */ "./src/core/reporter.ts");
 
 
 /***/ }),
