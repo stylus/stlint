@@ -416,4 +416,5 @@ Allo or deny some mixin instead of unit statement
 <!-- RULES END -->
 
 ### License
-MIT
+
+[The MIT License](https://raw.githubusercontent.com/stylus/stlint/master/LICENSE).
