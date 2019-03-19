@@ -2393,7 +2393,9 @@ exports.doc = () => {
                         .replace(/(```stylus)(.*)(```)/s, (...match) => {
                         match[2] = match[2]
                             .split('\n')
-                            .map(line => line.replace(/^[ \t]+\*/g, ''))
+                            .map(line => line
+                            .replace(/^[ \t]+\*/g, '')
+                            .replace(/^ /g, ''))
                             .join('\n');
                         return `${match[1]}${match[2]}${match[3]}`;
                     });
