@@ -1,14 +1,97 @@
 # Stylus Linter
-## Install
+
+[![Build Status](https://travis-ci.org/stylus/stlint.svg?branch=master)](https://travis-ci.org/stylus/stlint)
+[![NPM](https://nodei.co/npm/stlint.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/stlint/)
+
+* [issues](https://github.com/stylus/stlint/issues)
+
+## Installation
+
+As part of your project
 ```bash
 npm i stlint -D
 ```
+
+As a cli tool: 
+```bash
+npm install stlint -g
+```
+
 ## Use
 ```bash
 npx stlint ./src/file.styl
 npx stlint ./
 npx stlint ./ -w
 ```
+
+## CLI
+`-h` or `--help`    Display list of commands
+
+`-w` or `--watch`   Watch file or directory and run lint on change
+
+`-c` or `--config`  Pass in location of custom config file
+
+`-v` or `--version` Display current version
+
+`-g` or `--grep` Only run rules matching this string or regexp
+
+`-f` or `--fix` Try fix some issues
+
+`-r` or `--reporter` Reporter "raw", "json" or "silent"
+
+All another options from [config](#Config file) 
+
+## Example cli Usage:
+`stlint` Run stlint on cwd
+
+`stlint path/to/filename.styl` Run stlint on a file
+
+`stlint path/to/dir --watch` Watch dir, run stlint on file change
+
+`stlint --help` Get list of commands
+
+`stlint --version` Get version number
+
+`stlint --config path/to/config/.configrc` Run stlint with custom config settings
+
+`stlint styl/ --watch -c path/to/config/.configrc` Watch dir, use custom config
+
+
+## Non CLI Usage
+```javascript
+const StylusLinter = require('stlint').StylusLinter;
+const stlint = StylusLinter('path/to/stylus/', {
+	...options
+});
+```
+
+## Config file
+Create `.stlintrc` file 
+```json
+{
+	"reporter": "raw",
+	"watch": false,
+	"extends": ["stlint-v4fire", "./test/.myfileconfig.json"],
+	"extraRules": "./my-rules/",
+	"rules": {
+		"color": false,
+		"colons": ["always"],
+		"depthControl": {
+			"indentPref": 4
+		}
+	},
+	"path": "./src",
+	"excludes": ["node_modules/"],
+	"stylusParserOptions": {},
+	"reportOptions": {
+		"columnSplitter": ' | ',
+		"maxWidth": 70,
+		"minWidth": 70,
+		"trancate": false
+	}
+}
+```
+
 
 ## Rules
 <!-- RULES START -->
