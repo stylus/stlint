@@ -12,7 +12,6 @@ npx stlint ./ -w
 
 ## Rules
 <!-- RULES START -->
------
 ### colons
 Check for colons
 ** Default value **
@@ -21,8 +20,8 @@ Check for colons
   "never"
 ]
 ```
+----
 
------
 ### color
 Process all color values. Allow or deny use it not in variable and use uppercase or lowercase statements
 ** Default value **
@@ -33,8 +32,8 @@ Process all color values. Allow or deny use it not in variable and use uppercase
   "allowOnlyInVar": true
 }
 ```
+----
 
------
 ### commaInObject
 Allow or deny commas in object hash
 ** Default value **
@@ -43,8 +42,8 @@ Allow or deny commas in object hash
   "never"
 ]
 ```
+----
 
------
 ### depthControl
 Control depth spaces or tab
 ** Default value **
@@ -53,16 +52,16 @@ Control depth spaces or tab
   "indentPref": "tab"
 }
 ```
+----
 
------
 ### emptyLines
 Check if document has several empty lines
 ** Default value **
 ```json
 true
 ```
+----
 
------
 ### leadingZero
 Check for leading 0 on numbers ( 0.5 )
 ** Default value **
@@ -71,8 +70,8 @@ Check for leading 0 on numbers ( 0.5 )
   "always"
 ]
 ```
+----
 
------
 ### mixedSpaces
 check for mixed spaces and tabs
 ** Default value **
@@ -81,8 +80,8 @@ check for mixed spaces and tabs
   "indentPref": "tab"
 }
 ```
+----
 
------
 ### prefixVarsWithDollar
 Check that $ is used when declaring vars
 ** Default value **
@@ -92,8 +91,8 @@ Check that $ is used when declaring vars
   "prefix": "$"
 }
 ```
+----
 
------
 ### quotePref
 Check that quote style is consistent with config
 ** Default value **
@@ -102,8 +101,8 @@ Check that quote style is consistent with config
   "double"
 ]
 ```
+----
 
------
 ### semicolons
 Check that selector properties are sorted accordingly
 ** Default value **
@@ -112,8 +111,8 @@ Check that selector properties are sorted accordingly
   "never"
 ]
 ```
+----
 
------
 ### sortOrder
 Rule for checking properties order. Can use alphabetical order or order from grouped array
 ** Default value **
@@ -286,8 +285,8 @@ Rule for checking properties order. Can use alphabetical order or order from gro
   ]
 }
 ```
+----
 
------
 ### useMixinInsteadUnit
 Allo or deny some mixin instead of unit statement
 ** Default value **
@@ -298,6 +297,7 @@ Allo or deny some mixin instead of unit statement
   "unitType": "px"
 }
 ```
+----
 <!-- RULES END -->
 
 ### License
