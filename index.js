@@ -2610,6 +2610,7 @@ const rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
  * 	color #ccc
  * ```
  * If `allowOnlyInVar` === true code above also has error - no use color without variable
+ *
  * Fixed code
  * ```stylus
  * $color = #CCC

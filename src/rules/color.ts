@@ -14,6 +14,7 @@ interface IColorState extends IState {
  * 	color #ccc
  * ```
  * If `allowOnlyInVar` === true code above also has error - no use color without variable
+ *
  * Fixed code
  * ```stylus
  * $color = #CCC
