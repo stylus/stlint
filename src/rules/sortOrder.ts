@@ -7,6 +7,9 @@ interface IOrderState extends IState {
 	startGroupChecking?: number
 }
 
+/**
+ * Rule for checking properties order. Can use alphabetical order or order from grouped array
+ */
 export class SortOrder extends Rule<IOrderState> {
 	nodesFilter = ['block'];
 

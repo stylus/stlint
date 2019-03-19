@@ -2381,9 +2381,31 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const glob_1 = __webpack_require__(/*! glob */ "glob");
-const _require = __webpack_require__(/*! native-require */ "native-require");
+const fs_1 = __webpack_require__(/*! fs */ "fs");
+// @ts-ignore
+const ts = __webpack_require__(/*! typescript */ "typescript");
+const config_1 = __webpack_require__(/*! ./config */ "./src/config.ts");
+const lcfirst_1 = __webpack_require__(/*! ./core/helpers/lcfirst */ "./src/core/helpers/lcfirst.ts");
 exports.doc = () => {
-    console.log('Documentation generator');
+    console.log('Documentation generator start');
+    const config = new config_1.Config({}), result = [];
+    function delint(sourceFile) {
+        delintNode(sourceFile);
+        function delintNode(node) {
+            switch (node.kind) {
+                case ts.SyntaxKind.ClassDeclaration: {
+                    const ruleName = lcfirst_1.lcfirst(node.name.escapedText);
+                    result.push({
+                        name: ruleName,
+                        description: (node.jsDoc && node.jsDoc[0]) ? node.jsDoc[0].comment : '',
+                        default: config.defaultRules[ruleName]
+                    });
+                    break;
+                }
+            }
+            ts.forEachChild(node, delintNode);
+        }
+    }
     new glob_1.Glob('./src/rules/*.ts', {}, (err, files) => __awaiter(this, void 0, void 0, function* () {
         if (err) {
             throw err;
@@ -2393,11 +2415,29 @@ exports.doc = () => {
             if (match) {
                 const rule = match[1];
                 if (rule !== 'index') {
-                    console.log(__dirname);
-                    console.log(_require(file));
+                    let sourceFile = ts.createSourceFile(file, fs_1.readFileSync(file).toString(), ts.ScriptTarget.ES2018, 
+                    /*setParentNodes */ true);
+                    delint(sourceFile);
                 }
             }
         }));
+        const readmeFile = process.cwd() + '/readme.md';
+        fs_1.readFile(readmeFile, 'utf-8', (err, readme) => {
+            if (err) {
+                throw err;
+            }
+            const text = result.map((item) => {
+                return `###${item.name}\n` +
+                    `${item.description}\n` +
+                    '####Default value\n' +
+                    '```json\n' +
+                    `${JSON.stringify(item.default)}\n` +
+                    '```\n';
+            }).join('');
+            readme = readme.replace(/<!-- RULES START -->(.*)<!-- RULES END -->/msg, `<!-- RULES START -->${text}<!-- RULES END -->`);
+            fs_1.writeFileSync(readmeFile, readme);
+            console.log('Documentation generator finish');
+        });
     }));
 };
 
@@ -2502,9 +2542,7 @@ const validJSON = __webpack_require__(/*! ../data/valid.json */ "./src/data/vali
 // we only want to check colons on properties/values
 const ignoreRe = /hznuznoli/m;
 /**
- * @description check for colons
- * @param {string} [line] curr line being linted
- * @returns {boolean} true if colon found, false if not
+ * Check for colons
  */
 class Colons extends rule_1.Rule {
     checkLine(line) {
@@ -2557,6 +2595,9 @@ exports.Colons = Colons;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
+/**
+ * Process all color values. Allow or deny use it not in variable and use uppercase or lowercase statements
+ */
 class Color extends rule_1.Rule {
     constructor() {
         super(...arguments);
@@ -2595,6 +2636,9 @@ exports.Color = Color;
 Object.defineProperty(exports, "__esModule", { value: true });
 const rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
 const reg = /(,)(\s)*$/, keyValue = /:/, hashEnd = /\}/;
+/**
+ * Allow or deny commas in object hash
+ */
 class CommaInObject extends rule_1.Rule {
     checkLine(line) {
         if (!this.context.inHash) {
@@ -2634,6 +2678,9 @@ exports.CommaInObject = CommaInObject;
 Object.defineProperty(exports, "__esModule", { value: true });
 const rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
 const index_1 = __webpack_require__(/*! ../core/ast/index */ "./src/core/ast/index.ts");
+/**
+ * Control depth spaces or tab
+ */
 class DepthControl extends rule_1.Rule {
     constructor() {
         super(...arguments);
@@ -2769,9 +2816,7 @@ const decimalRe = /[^\d+](0+\.\d+)|[\s,(:](\.\d+)/i;
 const leadZeroRe = /[^\d+](0+\.\d+)/;
 const nonZeroRe = /[\s,(:](\.\d+)/;
 /**
- * @description check for leading 0 on numbers ( 0.5 )
- * @param {string} [line] curr line being linted
- * @returns {boolean|undefined} true if mixed, false if not
+ * Check for leading 0 on numbers ( 0.5 )
  */
 class LeadingZero extends rule_1.Rule {
     checkLine(line) {
@@ -2925,9 +2970,7 @@ const rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
 // we only want to check semicolons on properties/values
 const ignoreRe = /(^[*#.])|[&>/]|{|}|if|for(?!\w)|else|@block|@media|(}|{|=|,)$/igm;
 /**
- * @description check that selector properties are sorted accordingly
- * @param  {string} [line] curr line being linted
- * @return {boolean} true if in order, false if not
+ * Check that selector properties are sorted accordingly
  */
 class Semicolons extends rule_1.Rule {
     checkLine(line) {
@@ -2974,6 +3017,9 @@ exports.Semicolons = Semicolons;
 Object.defineProperty(exports, "__esModule", { value: true });
 const rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
 const index_1 = __webpack_require__(/*! ../core/ast/index */ "./src/core/ast/index.ts");
+/**
+ * Rule for checking properties order. Can use alphabetical order or order from grouped array
+ */
 class SortOrder extends rule_1.Rule {
     constructor() {
         super(...arguments);
@@ -3099,6 +3145,9 @@ exports.SortOrder = SortOrder;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
+/**
+ * Allo or deny some mixin instead of unit statement
+ */
 class useMixinInsteadUnit extends rule_1.Rule {
     constructor() {
         super(...arguments);
@@ -3264,6 +3313,17 @@ module.exports = require("strip-json-comments");
 /***/ (function(module, exports) {
 
 module.exports = require("stylus/lib/parser");
+
+/***/ }),
+
+/***/ "typescript":
+/*!*****************************!*\
+  !*** external "typescript" ***!
+  \*****************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("typescript");
 
 /***/ }),
 

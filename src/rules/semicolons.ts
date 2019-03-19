@@ -5,9 +5,7 @@ import { ILine } from "../core/types/line";
 const ignoreRe = /(^[*#.])|[&>/]|{|}|if|for(?!\w)|else|@block|@media|(}|{|=|,)$/igm
 
 /**
- * @description check that selector properties are sorted accordingly
- * @param  {string} [line] curr line being linted
- * @return {boolean} true if in order, false if not
+ * Check that selector properties are sorted accordingly
  */
 export class Semicolons extends Rule {
 	checkLine(line: ILine): void | boolean {

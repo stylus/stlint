@@ -1,20 +1,22 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": { "*": ["types/*"] },
+    "baseUrl": ".",
+    "paths": { "*": ["types/*"] },
     "strict": true,
 
     "target": "es2016",
     "moduleResolution": "classic",
     "module": "none",
     "types": [
+      "@types/node",
       "@types/chai",
       "@types/mocha",
       "@types/node",
       "@types/async",
       "@types/glob",
       "./src/typings"
-    ],
-    "typeRoots": [
-      "./node_modules/@types"
     ]
 
   },

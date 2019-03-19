@@ -6,6 +6,9 @@ interface IColorState extends IState {
 	allowOnlyInVar?: boolean
 }
 
+/**
+ * Process all color values. Allow or deny use it not in variable and use uppercase or lowercase statements
+ */
 export class Color extends Rule<IColorState> {
 	nodesFilter = ['rgb'];
 

@@ -7,9 +7,7 @@ const validJSON = require( '../data/valid.json' );
 const ignoreRe = /hznuznoli/m
 
 /**
- * @description check for colons
- * @param {string} [line] curr line being linted
- * @returns {boolean} true if colon found, false if not
+ * Check for colons
  */
 export class Colons extends Rule {
 	checkLine(line: ILine) {

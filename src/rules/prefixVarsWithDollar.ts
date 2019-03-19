@@ -9,7 +9,6 @@ interface IPrefixVarState extends IState {
 /**
  * Check that $ is used when declaring vars
  */
-
 export class PrefixVarsWithDollar extends Rule<IPrefixVarState> {
 	nodesFilter = ['ident'];
 

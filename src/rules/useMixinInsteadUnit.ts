@@ -7,6 +7,9 @@ interface IUseMixinInsteadunitState extends IState {
 	unitType: string;
 }
 
+/**
+ * Allo or deny some mixin instead of unit statement
+ */
 export class useMixinInsteadUnit extends Rule<IUseMixinInsteadunitState> {
 	nodesFilter = ['unit', 'call'];
 

@@ -6,6 +6,9 @@ const
 	keyValue = /:/,
 	hashEnd = /\}/;
 
+/**
+ * Allow or deny commas in object hash
+ */
 export class CommaInObject extends Rule {
 	checkLine(line: ILine): void | boolean {
 		if (!this.context.inHash) {

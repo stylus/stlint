@@ -6,6 +6,9 @@ interface IDepthControlState extends IState {
 	indentPref?: "tab" | number
 }
 
+/**
+ * Control depth spaces or tab
+ */
 export class DepthControl extends Rule<IDepthControlState> {
 
 	nodesFilter = ['block', 'selector', 'obj'];
