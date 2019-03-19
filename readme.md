@@ -66,7 +66,7 @@ const stlint = StylusLinter('path/to/stylus/', {
 ```
 
 ## Config file
-Create `.stlintrc` file 
+Create `.stlintrc` file in project root
 ```json
 {
 	"reporter": "raw",
