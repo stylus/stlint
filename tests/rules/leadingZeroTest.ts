@@ -1,4 +1,4 @@
-import { LeadingZero } from "../../src/rules";
+import { LeadingZero } from "../../src/rules/index";
 import { expect } from "chai";
 import { checkLine } from "../staff/bootstrap";
 

@@ -1,5 +1,5 @@
 import { Rule } from "../core/rule";
-import { Func, Ident, Tree} from "../core/ast";
+import { Func, Ident, Tree} from "../core/ast/index";
 import { IState } from "../core/types/state";
 
 interface IPrefixVarState extends IState {

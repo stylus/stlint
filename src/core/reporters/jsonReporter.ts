@@ -1,5 +1,3 @@
-import { Reporter } from "../reporter";
-
 export class JsonReporter extends Reporter {
 	/**
 	 * @override
@@ -15,3 +13,5 @@ export class JsonReporter extends Reporter {
 		console.log(JSON.stringify(this.response, null, 2));
 	}
 }
+
+import { Reporter } from "../reporter";

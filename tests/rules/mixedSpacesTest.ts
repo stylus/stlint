@@ -1,4 +1,4 @@
-import { MixedSpaces } from "../../src/rules";
+import { MixedSpaces } from "../../src/rules/index";
 import { expect } from "chai";
 import {checkLine, splitAndRun} from "../staff/bootstrap";
 

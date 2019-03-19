@@ -1,4 +1,4 @@
-import { CommaInObject } from "../../src/rules";
+import { CommaInObject } from "../../src/rules/index";
 import { expect } from "chai";
 import { splitAndRun } from "../staff/bootstrap";
 

@@ -1,7 +1,7 @@
-import { SortOrder } from "../../src/rules";
+import { SortOrder } from "../../src/rules/index";
 import { parseAndRun } from "../staff/bootstrap";
 import { expect } from "chai";
-import * as data from "../../src/defaultRules.json";
+import data = require("../../src/defaultRules.json");
 
 const content = '.tab\n' +
 	'\tcolor #CCC\n' +

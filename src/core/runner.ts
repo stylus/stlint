@@ -1,5 +1,5 @@
 import { Visitor } from "./visitor";
-import { Node } from "./ast/";
+import { Node } from "./ast/index";
 import { INode } from "./types/ast/node";
 
 export class Runner extends  Visitor<INode, INode> {

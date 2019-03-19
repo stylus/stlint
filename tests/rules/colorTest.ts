@@ -1,4 +1,4 @@
-import { Color } from "../../src/rules";
+import { Color } from "../../src/rules/index";
 import { expect } from "chai";
 import { parseAndRun } from "../staff/bootstrap";
 

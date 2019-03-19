@@ -1,6 +1,6 @@
 import { Rule } from "../core/rule";
 import { IState } from "../core/types/state";
-import { Block, Selector, Property, Obj, Ident, Node, Media, Condition } from "../core/ast";
+import { Block, Selector, Property, Obj, Ident, Node, Media, Condition } from "../core/ast/index";
 
 interface IDepthControlState extends IState {
 	indentPref?: "tab" | number

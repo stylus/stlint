@@ -4,7 +4,7 @@ import { lcfirst } from "./helpers/lcfirst";
 import { ILine } from "./types/line";
 import { IContext } from "./types/context";
 import { INode } from "./types/ast/node";
-import { Ident, Obj, Value } from "./ast";
+import { Ident, Obj, Value } from "./ast/index";
 import { objTohash } from "./helpers/objToHash";
 import { unwrapObject } from "./helpers/unwrapObject";
 

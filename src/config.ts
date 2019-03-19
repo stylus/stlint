@@ -1,9 +1,9 @@
 import { State } from "./core/types/state";
-import * as data from "./defaultRules.json";
+import data = require("./defaultRules.json");
 import { BaseConfig } from "./core/baseConfig";
 import { ReporterType } from "./core/types/reporter";
 import { IConfig } from "./core/types/config";
-import chalk = require("chalk");
+import chalk from "chalk";
 import { resolve } from "path";
 
 export class Config extends BaseConfig implements IConfig {
@@ -52,5 +52,8 @@ export class Config extends BaseConfig implements IConfig {
 				this.extendsByPath(this.extends);
 			}
 		}
+
+		delete options.extraRules;
+		this.extendsOption(options, this); // options are main
 	}
 }

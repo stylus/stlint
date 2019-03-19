@@ -1,5 +1,5 @@
 import { Rule } from "../core/rule";
-import { Block, Property, Value } from "../core/ast";
+import { Block, Property, Value } from "../core/ast/index";
 import { IState } from "../core/types/state";
 
 interface IOrderState extends IState {
@@ -101,7 +101,7 @@ export class SortOrder extends Rule<IOrderState> {
 						'Property must be ' + (needIndex < index ? 'higher' : 'lower') + ' - ' + names.join(', '),
 						child.lineno,
 						child.column,
-						child.column + key.length
+						child.column + key.trimRight().length - 1
 					);
 				}
 

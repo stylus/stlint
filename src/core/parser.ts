@@ -1,8 +1,8 @@
 import Parser = require('stylus/lib/parser');
-import { Tree } from "./ast";
-import { Translator } from "./translator";
-import { ISNode } from "./types/ast/snode";
-import {splitLines} from "./helpers/splitLines";
+import { Tree } from './ast/index';
+import { Translator } from './translator';
+import { ISNode } from './types/ast/snode';
+import { splitLines } from './helpers/splitLines';
 
 export class StylusParser {
 	/**

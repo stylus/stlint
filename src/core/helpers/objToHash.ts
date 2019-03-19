@@ -1,4 +1,4 @@
-import { Ident, Obj, Property } from "../ast";
+import { Ident, Obj, Property } from "../ast/index";
 
 export const objTohash = (node: Obj) => {
 	const result: Dictionary = {};

@@ -1,4 +1,4 @@
-import watch = require("node-watch");
+import watch from "node-watch";
 
 export class Watcher {
 	start(path: string, callback: Function) {

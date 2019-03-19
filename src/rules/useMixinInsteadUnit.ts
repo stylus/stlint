@@ -7,7 +7,6 @@ interface IUseMixinInsteadunitState extends IState {
 	unitType: string;
 }
 
-
 export class useMixinInsteadUnit extends Rule<IUseMixinInsteadunitState> {
 	nodesFilter = ['unit', 'call'];
 

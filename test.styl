@@ -1,18 +1,18 @@
-@import "blocks/i-block/i-block.interface.styl"
+@import "test2.styl"
 
 $p = {
-	colors: #CCC #ddd #eee
-	width: basis(10, 20px, #ccc) 1000px solid,
+	colors: #CCC #ddd #eee #cdd
+	width: basis(10, 20px, #ccc) basis(125) solid
 	color: {
 		fff: black red
-	},
-	background: $colors.white[0],
-	offersShopsText: $colors.grey[2],
+	}
+	background: $colors.white[0]
+	offersShopsText: $colors.grey[2]
 	discountBgColor: $colors.base.third
 }
 
 b-retailer extends i-block
+	overflow hidden
 	border $p.border
 
-	overflow hidden
-	color $p.colors[2]
+	color #ccc

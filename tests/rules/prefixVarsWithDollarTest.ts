@@ -1,4 +1,4 @@
-import { PrefixVarsWithDollar } from "../../src/rules";
+import { PrefixVarsWithDollar } from "../../src/rules/index";
 import { parseAndRun } from "../staff/bootstrap";
 import { expect } from "chai";
 

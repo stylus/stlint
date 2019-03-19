@@ -1,4 +1,4 @@
-import { QuotePref } from "../../src/rules";
+import { QuotePref } from "../../src/rules/index";
 import { expect } from "chai";
 import { splitAndRun } from "../staff/bootstrap";
 

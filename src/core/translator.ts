@@ -1,5 +1,5 @@
-import { Visitor } from "./visitor";
-import { Line } from "./line";
+import { Visitor } from './visitor';
+import { Line } from './line';
 import {
 	Tree,
 	Group,
@@ -24,9 +24,9 @@ import {
 	Each,
 	Condition,
 	UnaryOp, Media, Querylist, Query, Feature, Keyframes
-} from "./ast";
-import { INode } from "./types/ast/node";
-import { ISNode } from "./types/ast/snode";
+} from './ast/index';
+import { INode } from './types/ast/node';
+import { ISNode } from './types/ast/snode';
 
 export class Translator extends  Visitor<ISNode, INode> {
 	constructor(root: ISNode, readonly lines: Line[]) {

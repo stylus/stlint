@@ -1,11 +1,10 @@
 {
   "compilerOptions": {
     "strict": true,
-    "target": "es5",
-    "resolveJsonModule": true,
-    "lib": [
-      "dom", "es6"
-    ],
+
+    "target": "es2016",
+    "moduleResolution": "classic",
+    "module": "none",
     "types": [
       "@types/chai",
       "@types/mocha",
@@ -17,11 +16,10 @@
     "typeRoots": [
       "./node_modules/@types"
     ]
+
   },
-  "moduleResolution": "umd",
   "exclude": [
     "./node_modules"
   ],
-  "skipLibCheck": true,
   "sourceMap": true
 }

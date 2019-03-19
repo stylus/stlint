@@ -3,7 +3,8 @@ import { Watcher } from "./src/watcher";
 import { Reader } from "./src/core/reader";
 
 export * from "./src/core/rule";
-export * from "./src/core/ast";
+export * from "./src/core/ast/index";
+export * from "./src/doc";
 
 export async function StylusLinter(path: string): Promise<void>;
 export async function StylusLinter(path: string, content: string): Promise<void>;

@@ -1,4 +1,4 @@
-import { EmptyLines } from "../../src/rules";
+import { EmptyLines } from "../../src/rules/index";
 import { parseAndRun } from "../staff/bootstrap";
 import { expect } from "chai";
 

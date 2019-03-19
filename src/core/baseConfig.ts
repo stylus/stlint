@@ -1,9 +1,9 @@
 import { isPlainObject } from "./helpers/isPlainObject";
 import { existsSync, readFileSync } from "fs";
-import stripJsonComments = require("strip-json-comments");
-import { IConfig } from "./types/config";
+import stripJsonComments from "strip-json-comments";
 import { resolve, dirname } from "path";
 import { statSync } from "fs";
+import { IStats } from "./types/IStats";
 
 export class BaseConfig {
 	configName: string = '.stlintrc';
@@ -11,30 +11,47 @@ export class BaseConfig {
 	extraRules: string | string[] = '';
 
 	/**
+	 * Wrapper for path.statSync
+	 * @param path
+	 */
+	statSync(path: string): IStats {
+		return statSync(path);
+	}
+
+	/**
+	 * Read JSON File
+	 */
+	readJSONFile(configFile: string): Dictionary {
+		if (existsSync(configFile)) {
+			try {
+				return JSON.parse(stripJsonComments(readFileSync(configFile, 'utf8')));
+			} catch {}
+		}
+
+		return {};
+	}
+
+	/**
 	 * Try read config file .stlintrc
 	 */
 	readConfig(configFile: string) {
-		if (existsSync(configFile)) {
-			try {
+		const
+			customConfig = this.readJSONFile(configFile);
+
+		if (customConfig) {
+			this.extendsOption(customConfig, this);
+
+			if (this.extraRules) {
 				const
-					customConfig = JSON.parse(stripJsonComments(readFileSync(configFile, 'utf8')));
+					dir = dirname(configFile),
+					normalizePath = (extra: string): string => resolve(dir, extra);
 
-				if (customConfig) {
-					this.extendsOption(customConfig, this);
-
-					if (this.extraRules) {
-						const
-							dir = dirname(configFile),
-							normalizePath = (extra: string): string => resolve(dir, extra);
-
-						if (Array.isArray(this.extraRules)) {
-							this.extraRules = this.extraRules.map(normalizePath);
-						} else {
-							this.extraRules = normalizePath(this.extraRules);
-						}
-					}
+				if (Array.isArray(this.extraRules)) {
+					this.extraRules = this.extraRules.map(normalizePath);
+				} else {
+					this.extraRules = normalizePath(this.extraRules);
 				}
-			} catch {}
+			}
 		}
 	}
 
@@ -71,7 +88,7 @@ export class BaseConfig {
 			path = resolve(process.cwd(), 'node_modules', pathOrPackage)
 		}
 
-		const stat = statSync(path);
+		const stat = this.statSync(path);
 
 		if (stat.isFile()) {
 			this.readConfig(path);

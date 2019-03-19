@@ -1,4 +1,4 @@
-import { Semicolons } from "../../src/rules";
+import { Semicolons } from "../../src/rules/index";
 import { expect } from "chai";
 import { splitAndRun } from "../staff/bootstrap";
 

@@ -1,7 +1,7 @@
-import { Reporter } from "../reporter";
 import { IMessagePack } from "../types/message";
 import columnify = require("columnify");
-import chalk = require("chalk");
+import chalk from "chalk";
+import { Reporter } from "../reporter";
 
 type RawMessage = {
 	file: string

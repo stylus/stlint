@@ -8,6 +8,7 @@ import { Rule } from "./core/rule";
 import { IConfig } from "./core/types/config";
 import { Config } from "./config";
 
+
 export class Linter {
 	options: Dictionary = {};
 

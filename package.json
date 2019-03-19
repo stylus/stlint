@@ -42,7 +42,7 @@
     "glob": "^7.1.3",
     "native-require": "^1.1.4",
     "node-watch": "^0.6.0",
-    "stlint-v4fire": "^1.0.0",
+    "stlint-v4fire": "^1.0.3",
     "strip-json-comments": "^2.0.1",
     "stylus": "github:stylus/stylus#fix-work-with-hash",
     "webpack-runtime-require": "^0.3.1",
@@ -61,7 +61,7 @@
     "typescript": "^3.3.3",
     "uglifyjs-webpack-plugin": "^2.1.1",
     "webpack": "^4.29.5",
-    "webpack-cli": "^3.2.3",
+    "webpack-cli": "^3.3.0",
     "webpack-node-externals": "^1.7.2"
   },
   "mocha": {

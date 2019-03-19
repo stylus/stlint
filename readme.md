@@ -11,7 +11,8 @@ npx stlint ./ -w
 ```
 
 ### Options
-#### Coming soon
+<!-- RULES START -->
+<!-- RULES END -->
 
 ### License
 MIT

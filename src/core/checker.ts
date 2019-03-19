@@ -11,7 +11,7 @@ import { lcfirst } from "./helpers/lcfirst";
 import { splitLines } from "./helpers/splitLines";
 import { statSync, readdirSync } from "fs";
 import { resolve } from "path";
-import _require = require('native-require')
+import _require = require('native-require');
 
 export class Checker {
 	rulesListForNodes: IRule[] = [];
@@ -73,7 +73,7 @@ export class Checker {
 		let results: Dictionary<typeof Rule> = {};
 
 		if (Array.isArray(path)) {
-			path.map(this.loadRules).forEach(rules => {
+			path.map(this.loadRules.bind(this)).forEach(rules => {
 				results = {...results, ...rules};
 			});
 
@@ -89,6 +89,7 @@ export class Checker {
 				results = {...results, ...this.requireRule(resolve(path, file))};
 			});
 		}
+
 
 		return results;
 	}

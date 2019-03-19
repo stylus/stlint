@@ -19,12 +19,16 @@ const options = yargs
 	})
 	.option( 'grep', {
 		alias: 'g',
-		describe: 'Filter rules and errors',
+		describe: 'Only run rules matching this string or regexp',
 		type: 'string'
 	})
 	.option( 'fix', {
 		alias: 'f',
 		describe: 'Try fix some rules',
+		type: 'boolean'
+	})
+	.option( 'doc', {
+		describe: 'Generate doc',
 		type: 'boolean'
 	})
 	.option( 'watch', {
@@ -42,4 +46,8 @@ const options = yargs
 	.epilogue( 'MIT' )
 	.argv;
 
-stlint(options._[0], options.content, options);
+if (options.doc) {
+	require( '../' ).doc();
+} else {
+	stlint(options._[0], options.content, options);
+}

@@ -1,6 +1,6 @@
 import { Rule } from "../core/rule";
 import { IState } from "../core/types/state";
-import { Block, RGB } from "../core/ast";
+import { RGB } from "../core/ast/index";
 
 interface IColorState extends IState {
 	allowOnlyInVar?: boolean

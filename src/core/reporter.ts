@@ -24,19 +24,19 @@ export abstract class Reporter implements IReporter {
 		if (!Reporter.__instance) {
 			switch (type) {
 				case 'json':
-					Reporter.__instance = new JsonReporter(config);
+					Reporter.__instance = new (require('./reporters/jsonReporter').JsonReporter)(config);
 					break;
 
 				case 'silent':
-					Reporter.__instance = new SilentReporter(config);
+					Reporter.__instance = new (require('./reporters/silentReporter').SilentReporter)(config);
 					break;
 
 				default:
-					Reporter.__instance = new RawReporter(config);
+					Reporter.__instance = new (require('./reporters/rawReporter').RawReporter)(config);
 			}
 		}
 
-		return Reporter.__instance;
+		return <IReporter>Reporter.__instance;
 	}
 
 	/**
@@ -122,7 +122,3 @@ export abstract class Reporter implements IReporter {
 export const log = (val: any) => console.log(inspect(val, {
 	depth: 10
 }));
-
-import { SilentReporter } from "./reporters/silentReporter";
-import { RawReporter } from "./reporters/rawReporter";
-import { JsonReporter } from "./reporters/jsonReporter";

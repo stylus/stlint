@@ -1,4 +1,4 @@
-import { DepthControl } from "../../src/rules";
+import { DepthControl } from "../../src/rules/index";
 import { expect } from "chai";
 import { parseAndRun } from "../staff/bootstrap";
 

@@ -23,7 +23,7 @@ module.exports = {
 	},
 
 	node: {
-		__dirname: 'mock',
+		__dirname: false,
 		fs: 'mock'
 	},
 
@@ -33,7 +33,7 @@ module.exports = {
 		path: path.resolve(__dirname, './')
 	},
 
-	mode: 'production',
+	mode: 'development',
 	optimization: {
 		minimize: false
 	}

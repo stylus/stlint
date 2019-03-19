@@ -1,4 +1,4 @@
-import { Colons } from "../../src/rules";
+import { Colons } from "../../src/rules/index";
 import { expect } from "chai";
 import { checkLine, splitAndRun } from "../staff/bootstrap";
 
