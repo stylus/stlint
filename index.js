@@ -2427,13 +2427,14 @@ exports.doc = () => {
                 throw err;
             }
             const text = result.map((item) => {
-                return `\n-----\n` +
+                return `\n` +
                     `### ${item.name}\n` +
                     `${item.description}\n` +
                     '** Default value **\n' +
                     '```json\n' +
                     `${JSON.stringify(item.default, null, 2)}\n` +
-                    '```\n';
+                    '```\n' +
+                    '----\n';
             }).join('');
             readme = readme.replace(/<!-- RULES START -->(.*)<!-- RULES END -->/msg, `<!-- RULES START -->${text}<!-- RULES END -->`);
             fs_1.writeFileSync(readmeFile, readme);
