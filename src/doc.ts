@@ -79,7 +79,7 @@ export const doc = () => {
 					`${item.description}\n` +
 					'##### Default value\n' +
 					'```json\n' +
-					`${JSON.stringify(item.default)}\n` +
+					`${JSON.stringify(item.default, null, 2)}\n` +
 					'```\n'
 					;
 			}).join('');

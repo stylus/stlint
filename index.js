@@ -2431,7 +2431,7 @@ exports.doc = () => {
                     `${item.description}\n` +
                     '##### Default value\n' +
                     '```json\n' +
-                    `${JSON.stringify(item.default)}\n` +
+                    `${JSON.stringify(item.default, null, 2)}\n` +
                     '```\n';
             }).join('');
             readme = readme.replace(/<!-- RULES START -->(.*)<!-- RULES END -->/msg, `<!-- RULES START -->${text}<!-- RULES END -->`);
