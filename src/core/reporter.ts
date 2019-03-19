@@ -18,25 +18,17 @@ export abstract class Reporter implements IReporter {
 
 	protected constructor(readonly options: Dictionary) {}
 
-	private static __instance: IReporter | null = null;
-
 	static getInstance(type: string, config: Dictionary): IReporter {
-		if (!Reporter.__instance) {
 			switch (type) {
 				case 'json':
-					Reporter.__instance = new (require('./reporters/jsonReporter').JsonReporter)(config);
-					break;
+					return new (require('./reporters/jsonReporter').JsonReporter)(config);
 
 				case 'silent':
-					Reporter.__instance = new (require('./reporters/silentReporter').SilentReporter)(config);
-					break;
+					return new (require('./reporters/silentReporter').SilentReporter)(config);
 
 				default:
-					Reporter.__instance = new (require('./reporters/rawReporter').RawReporter)(config);
+					return new (require('./reporters/rawReporter').RawReporter)(config);
 			}
-		}
-
-		return <IReporter>Reporter.__instance;
 	}
 
 	/**
@@ -77,7 +69,7 @@ export abstract class Reporter implements IReporter {
 	 */
 	fillResponse() {
 		this.response.passed = !this.errors.length;
-		this.response.errors = this.errors;
+		this.response.errors = this.errors.length ? this.errors : undefined;
 	}
 
 	/**

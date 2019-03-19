@@ -1579,19 +1579,14 @@ class Reporter {
         this.path = path;
     }
     static getInstance(type, config) {
-        if (!Reporter.__instance) {
-            switch (type) {
-                case 'json':
-                    Reporter.__instance = new (__webpack_require__(/*! ./reporters/jsonReporter */ "./src/core/reporters/jsonReporter.ts").JsonReporter)(config);
-                    break;
-                case 'silent':
-                    Reporter.__instance = new (__webpack_require__(/*! ./reporters/silentReporter */ "./src/core/reporters/silentReporter.ts").SilentReporter)(config);
-                    break;
-                default:
-                    Reporter.__instance = new (__webpack_require__(/*! ./reporters/rawReporter */ "./src/core/reporters/rawReporter.ts").RawReporter)(config);
-            }
+        switch (type) {
+            case 'json':
+                return new (__webpack_require__(/*! ./reporters/jsonReporter */ "./src/core/reporters/jsonReporter.ts").JsonReporter)(config);
+            case 'silent':
+                return new (__webpack_require__(/*! ./reporters/silentReporter */ "./src/core/reporters/silentReporter.ts").SilentReporter)(config);
+            default:
+                return new (__webpack_require__(/*! ./reporters/rawReporter */ "./src/core/reporters/rawReporter.ts").RawReporter)(config);
         }
-        return Reporter.__instance;
     }
     /**
      * Add new error in message pull
@@ -1621,7 +1616,7 @@ class Reporter {
      */
     fillResponse() {
         this.response.passed = !this.errors.length;
-        this.response.errors = this.errors;
+        this.response.errors = this.errors.length ? this.errors : undefined;
     }
     /**
      * Prepare data and output result
@@ -1655,7 +1650,6 @@ class Reporter {
         });
     }
 }
-Reporter.__instance = null;
 exports.Reporter = Reporter;
 exports.log = (val) => console.log(util_1.inspect(val, {
     depth: 10
