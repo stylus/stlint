@@ -1279,11 +1279,18 @@ class Documentator {
                 }
             }));
             if (!this.config.fix) {
-                console.log(JSON.stringify(result));
-                process.exit();
+                return this.log(result);
             }
             patcher_1.readmePatcher(result);
         }));
+    }
+    /**
+     *
+     * @param data
+     */
+    log(data) {
+        console.log(JSON.stringify(data));
+        process.exit();
     }
 }
 exports.Documentator = Documentator;

@@ -31,7 +31,7 @@ export class Documentator {
 	/**
 	 * Generate rules docs
 	 */
-	generateRules(): void {
+	private generateRules(): void {
 		const
 			result: RuleDocs[] = [];
 
@@ -90,11 +90,19 @@ export class Documentator {
 			});
 
 			if (!this.config.fix) {
-				console.log(JSON.stringify(result));
-				process.exit();
+				return this.log(result);
 			}
 
 			readmePatcher(result);
 		});
+	}
+
+	/**
+	 *
+	 * @param data
+	 */
+	private log(data: object): void {
+		console.log(JSON.stringify(data));
+		process.exit();
 	}
 }
