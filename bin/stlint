@@ -29,12 +29,11 @@ const options = yargs
 	})
 	.option( 'doc', {
 		describe: 'Generate doc',
-		type: 'boolean'
+		type: 'string'
 	})
 	.option( 'watch', {
 		alias: 'w',
-		describe: 'Watc' +
-			'h changes',
+		describe: 'Watch changes',
 		type: 'boolean'
 	})
 	.version(require( '../package' ).version)
@@ -47,7 +46,7 @@ const options = yargs
 	.argv;
 
 if (options.doc) {
-	require( '../' ).doc();
+	require( '../' ).doc(options);
 } else {
 	stlint(options._[0], options.content, options);
 }

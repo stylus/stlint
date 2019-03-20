@@ -118,11 +118,19 @@ function __export(m) {
 }
 Object.defineProperty(exports, "__esModule", { value: true });
 const linter_1 = __webpack_require__(/*! ./src/linter */ "./src/linter.ts");
-const watcher_1 = __webpack_require__(/*! ./src/watcher */ "./src/watcher.ts");
 const reader_1 = __webpack_require__(/*! ./src/core/reader */ "./src/core/reader.ts");
+const astList = __webpack_require__(/*! ./src/core/ast/index */ "./src/core/ast/index.ts");
 __export(__webpack_require__(/*! ./src/core/rule */ "./src/core/rule.ts"));
-__export(__webpack_require__(/*! ./src/core/ast/index */ "./src/core/ast/index.ts"));
+exports.ast = astList;
 __export(__webpack_require__(/*! ./src/doc */ "./src/doc.ts"));
+/**
+ * Main stylus checker
+ *
+ * @param path
+ * @param content
+ * @param options
+ * @constructor
+ */
 function StylusLinter(path, content, options = {}) {
     return __awaiter(this, void 0, void 0, function* () {
         const linter = new linter_1.Linter(options), first = () => Array.isArray(path) ? path[0] : path;
@@ -138,8 +146,7 @@ function StylusLinter(path, content, options = {}) {
             linter.display(!linter.config.watch);
         });
         if (linter.config.watch) {
-            const watcher = new watcher_1.Watcher();
-            watcher.start(Array.isArray(path) ? path[0] : path, readAndDisplay);
+            linter.watch(Array.isArray(path) ? path[0] : path, readAndDisplay);
         }
         yield readAndDisplay();
     });
@@ -174,6 +181,8 @@ class Config extends baseConfig_1.BaseConfig {
         this.watch = false;
         this.path = '';
         this.grep = '';
+        this.doc = '';
+        this.fix = false;
         this.stylusParserOptions = {};
         this.extends = '';
         this.reportOptions = {
@@ -1065,27 +1074,28 @@ class Checker {
         this.rulesListForNodes = this.rulesList.filter((rule) => rule.checkNode);
     }
     /**
-     * Load one rule or several rules
-     * @param path
+     * Create instance od all rules all rules
+     * @param rulesConstructors
      */
-    requireRule(path) {
-        if (/\.js$/.test(path)) {
-            try {
-                const rule = _require(`${path}`);
-                if (typeof rule === 'function') {
-                    return {
-                        [rule.name]: rule
-                    };
-                }
-                else {
-                    return Object.assign({}, rule);
-                }
+    initRules(rulesConstructors) {
+        const rulesNames = Object.keys(rulesConstructors), config = this.linter.config;
+        return rulesNames
+            .filter((key) => typeof rulesConstructors[key] === 'function')
+            .map((key) => {
+            if (!(rulesConstructors[key].prototype instanceof rule_1.Rule)) {
+                rulesConstructors[key].prototype = new rule_1.Rule({ conf: 'always' });
+                rulesConstructors[key].prototype.constructor = rulesConstructors[key];
             }
-            catch (e) {
-                this.linter.reporter.add('JS', e.message, 1, 1);
+            return key;
+        })
+            .map((key) => {
+            let options = config.rules[lcfirst_1.lcfirst(key)];
+            if (options === true && config.defaultRules[lcfirst_1.lcfirst(key)]) {
+                options = config.defaultRules[lcfirst_1.lcfirst(key)];
             }
-        }
-        return {};
+            return new rulesConstructors[key](options);
+        })
+            .filter((rule) => rule.state.enabled);
     }
     /**
      * Load rules from folder
@@ -1111,28 +1121,27 @@ class Checker {
         return results;
     }
     /**
-     * Create instance od all rules all rules
-     * @param rulesConstructors
+     * Load one rule or several rules
+     * @param path
      */
-    initRules(rulesConstructors) {
-        const rulesNames = Object.keys(rulesConstructors), config = this.linter.config;
-        return rulesNames
-            .filter((key) => typeof rulesConstructors[key] === 'function')
-            .map((key) => {
-            if (!(rulesConstructors[key].prototype instanceof rule_1.Rule)) {
-                rulesConstructors[key].prototype = new rule_1.Rule({ conf: 'always' });
-                rulesConstructors[key].prototype.constructor = rulesConstructors[key];
+    requireRule(path) {
+        if (/\.js$/.test(path)) {
+            try {
+                const rule = _require(`${path}`);
+                if (typeof rule === 'function') {
+                    return {
+                        [rule.name]: rule
+                    };
+                }
+                else {
+                    return Object.assign({}, rule);
+                }
             }
-            return key;
-        })
-            .map((key) => {
-            let options = config.rules[lcfirst_1.lcfirst(key)];
-            if (options === true && config.defaultRules[lcfirst_1.lcfirst(key)]) {
-                options = config.defaultRules[lcfirst_1.lcfirst(key)];
+            catch (e) {
+                this.linter.reporter.add('JS', e.message, 1, 1);
             }
-            return new rulesConstructors[key](options);
-        })
-            .filter((rule) => rule.state.enabled);
+        }
+        return {};
     }
     /**
      * Check whole AST
@@ -1186,6 +1195,170 @@ class Checker {
     }
 }
 exports.Checker = Checker;
+
+
+/***/ }),
+
+/***/ "./src/core/documentator/documentator.ts":
+/*!***********************************************!*\
+  !*** ./src/core/documentator/documentator.ts ***!
+  \***********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const config_1 = __webpack_require__(/*! ../../config */ "./src/config.ts");
+const glob_1 = __webpack_require__(/*! glob */ "glob");
+const fs_1 = __webpack_require__(/*! fs */ "fs");
+const patcher_1 = __webpack_require__(/*! ./patcher */ "./src/core/documentator/patcher.ts");
+// @ts-ignore
+const ts = __webpack_require__(/*! typescript */ "typescript");
+const visitor_1 = __webpack_require__(/*! ./visitor */ "./src/core/documentator/visitor.ts");
+const lcfirst_1 = __webpack_require__(/*! ../helpers/lcfirst */ "./src/core/helpers/lcfirst.ts");
+class Documentator {
+    constructor(options) {
+        this.config = new config_1.Config(options);
+    }
+    generate() {
+        switch (this.config.doc) {
+            default:
+                this.generateRules();
+        }
+    }
+    /**
+     * Generate rules docs
+     */
+    generateRules() {
+        const result = [];
+        new glob_1.Glob('./src/rules/*.ts', {}, (err, files) => __awaiter(this, void 0, void 0, function* () {
+            if (err) {
+                throw err;
+            }
+            files.forEach((file) => __awaiter(this, void 0, void 0, function* () {
+                const match = /\/(\w+)\.ts/.exec(file);
+                if (match) {
+                    const rule = match[1];
+                    if (rule !== 'index') {
+                        const sourceFile = ts.createSourceFile(file, fs_1.readFileSync(file).toString(), ts.ScriptTarget.ES2018, 
+                        /*setParentNodes */ true);
+                        visitor_1.visit((node) => {
+                            switch (node.kind) {
+                                case ts.SyntaxKind.ClassDeclaration: {
+                                    const name = lcfirst_1.lcfirst(node.name.escapedText);
+                                    let description = (node.jsDoc && node.jsDoc[0]) ? node.jsDoc[0].comment : '';
+                                    description = description
+                                        .replace(/\t/g, '  ')
+                                        .replace(/(```stylus)(.*)(```)/s, (...match) => {
+                                        match[2] = match[2]
+                                            .split('\n')
+                                            .map((line) => line
+                                            .replace(/^[ \t]+\*/g, '')
+                                            .replace(/^ /g, ''))
+                                            .join('\n');
+                                        return `${match[1]}${match[2]}${match[3]}`;
+                                    });
+                                    result.push({
+                                        name,
+                                        description,
+                                        default: this.config.defaultRules[name]
+                                    });
+                                }
+                            }
+                        }, sourceFile);
+                    }
+                }
+            }));
+            if (!this.config.fix) {
+                console.log(JSON.stringify(result));
+                process.exit();
+            }
+            patcher_1.readmePatcher(result);
+        }));
+    }
+}
+exports.Documentator = Documentator;
+
+
+/***/ }),
+
+/***/ "./src/core/documentator/patcher.ts":
+/*!******************************************!*\
+  !*** ./src/core/documentator/patcher.ts ***!
+  \******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const fs_1 = __webpack_require__(/*! fs */ "fs");
+/**
+ * Patch readme file
+ * @param result
+ */
+function readmePatcher(result) {
+    const readmeFile = process.cwd() + '/readme.md';
+    fs_1.readFile(readmeFile, 'utf-8', (err, readme) => {
+        if (err) {
+            throw err;
+        }
+        const text = result.map((item) => [
+            `### ${item.name}`,
+            `${item.description}\n`,
+            '**Default value**',
+            '```json',
+            `${JSON.stringify(item.default, null, 2)}`,
+            '```',
+            '----'
+        ].join('\n')).join('');
+        const readmeNew = readme.replace(/<!-- RULES START -->(.*)<!-- RULES END -->/msg, `<!-- RULES START -->${text}<!-- RULES END -->`);
+        if (readmeNew !== readme) {
+            fs_1.writeFileSync(readmeFile, readmeNew);
+            console.log('Readme file patched');
+        }
+        else {
+            console.log('Readme file not patched');
+        }
+    });
+}
+exports.readmePatcher = readmePatcher;
+
+
+/***/ }),
+
+/***/ "./src/core/documentator/visitor.ts":
+/*!******************************************!*\
+  !*** ./src/core/documentator/visitor.ts ***!
+  \******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+// @ts-ignore
+const ts = __webpack_require__(/*! typescript */ "typescript");
+/**
+ * Visit all ts nodes
+ *
+ * @param callback
+ * @param node
+ */
+function visit(callback, node) {
+    callback(node);
+    ts.forEachChild(node, visit.bind(null, callback));
+}
+exports.visit = visit;
 
 
 /***/ }),
@@ -2359,86 +2532,11 @@ module.exports = {"mixedSpaces":{"indentPref":"tab"},"prefixVarsWithDollar":{"co
 
 "use strict";
 
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const glob_1 = __webpack_require__(/*! glob */ "glob");
-const fs_1 = __webpack_require__(/*! fs */ "fs");
-// @ts-ignore
-const ts = __webpack_require__(/*! typescript */ "typescript");
-const config_1 = __webpack_require__(/*! ./config */ "./src/config.ts");
-const lcfirst_1 = __webpack_require__(/*! ./core/helpers/lcfirst */ "./src/core/helpers/lcfirst.ts");
-exports.doc = () => {
-    console.log('Documentation generator start');
-    const config = new config_1.Config({}), result = [];
-    function delint(sourceFile) {
-        delintNode(sourceFile);
-        function delintNode(node) {
-            switch (node.kind) {
-                case ts.SyntaxKind.ClassDeclaration: {
-                    const name = lcfirst_1.lcfirst(node.name.escapedText);
-                    let description = (node.jsDoc && node.jsDoc[0]) ? node.jsDoc[0].comment : '';
-                    description = description
-                        .replace(/\t/g, '  ')
-                        .replace(/(```stylus)(.*)(```)/s, (...match) => {
-                        match[2] = match[2]
-                            .split('\n')
-                            .map((line) => line
-                            .replace(/^[ \t]+\*/g, '')
-                            .replace(/^ /g, ''))
-                            .join('\n');
-                        return `${match[1]}${match[2]}${match[3]}`;
-                    });
-                    result.push({
-                        name,
-                        description,
-                        default: config.defaultRules[name]
-                    });
-                }
-            }
-            ts.forEachChild(node, delintNode);
-        }
-    }
-    new glob_1.Glob('./src/rules/*.ts', {}, (err, files) => __awaiter(this, void 0, void 0, function* () {
-        if (err) {
-            throw err;
-        }
-        files.forEach((file) => __awaiter(this, void 0, void 0, function* () {
-            const match = /\/(\w+)\.ts/.exec(file);
-            if (match) {
-                const rule = match[1];
-                if (rule !== 'index') {
-                    const sourceFile = ts.createSourceFile(file, fs_1.readFileSync(file).toString(), ts.ScriptTarget.ES2018, 
-                    /*setParentNodes */ true);
-                    delint(sourceFile);
-                }
-            }
-        }));
-        const readmeFile = process.cwd() + '/readme.md';
-        fs_1.readFile(readmeFile, 'utf-8', (err, readme) => {
-            if (err) {
-                throw err;
-            }
-            const text = result.map((item) => [
-                `### ${item.name}`,
-                `${item.description}\n`,
-                '**Default value**',
-                '```json',
-                `${JSON.stringify(item.default, null, 2)}`,
-                '```',
-                '----'
-            ].join('\n')).join('');
-            readme = readme.replace(/<!-- RULES START -->(.*)<!-- RULES END -->/msg, `<!-- RULES START -->${text}<!-- RULES END -->`);
-            fs_1.writeFileSync(readmeFile, readme);
-            console.log('Documentation generator finish');
-        });
-    }));
+const documentator_1 = __webpack_require__(/*! ./core/documentator/documentator */ "./src/core/documentator/documentator.ts");
+exports.doc = (options = {}) => {
+    const documentator = new documentator_1.Documentator(options);
+    documentator.generate();
 };
 
 
@@ -2469,6 +2567,7 @@ const fs_1 = __webpack_require__(/*! fs */ "fs");
 const path_1 = __webpack_require__(/*! path */ "path");
 const rule_1 = __webpack_require__(/*! ./core/rule */ "./src/core/rule.ts");
 const config_1 = __webpack_require__(/*! ./config */ "./src/config.ts");
+const node_watch_1 = __webpack_require__(/*! node-watch */ "node-watch");
 class Linter {
     /**
      * @param options
@@ -2511,6 +2610,19 @@ class Linter {
         this.reporter.reset();
         this.parser = new parser_1.StylusParser(this.config.stylusParserOptions);
         this.checker = new checker_1.Checker(this);
+    }
+    /**
+     * Watch to some directory or file
+     *
+     * @param path
+     * @param callback
+     */
+    watch(path, callback) {
+        node_watch_1.default(path, {
+            encoding: 'utf-8',
+            recursive: true,
+            filter: /\.styl$/
+        }, callback);
     }
     /**
      * Print all errors or warnings
@@ -3194,31 +3306,6 @@ class useMixinInsteadUnit extends rule_1.Rule {
     }
 }
 exports.useMixinInsteadUnit = useMixinInsteadUnit;
-
-
-/***/ }),
-
-/***/ "./src/watcher.ts":
-/*!************************!*\
-  !*** ./src/watcher.ts ***!
-  \************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const node_watch_1 = __webpack_require__(/*! node-watch */ "node-watch");
-class Watcher {
-    start(path, callback) {
-        node_watch_1.default(path, {
-            encoding: 'utf-8',
-            recursive: true,
-            filter: /\.styl$/
-        }, callback);
-    }
-}
-exports.Watcher = Watcher;
 
 
 /***/ }),

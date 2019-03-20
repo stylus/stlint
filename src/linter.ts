@@ -7,6 +7,7 @@ import { IReporter } from './core/types/reporter';
 import { Rule } from './core/rule';
 import { IConfig } from './core/types/config';
 import { Config } from './config';
+import watch from 'node-watch';
 
 export class Linter {
 	options: Dictionary = {};
@@ -68,6 +69,20 @@ export class Linter {
 			}
 		}
 	};
+
+	/**
+	 * Watch to some directory or file
+	 *
+	 * @param path
+	 * @param callback
+	 */
+	watch(path: string, callback: () => void): void {
+		watch(path, {
+			encoding : 'utf-8',
+			recursive: true,
+			filter: /\.styl$/
+		}, callback);
+	}
 
 	/**
 	 * Print all errors or warnings

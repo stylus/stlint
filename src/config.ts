@@ -19,6 +19,8 @@ export class Config extends BaseConfig implements IConfig {
 
 	path: string = '';
 	grep: string = '';
+	doc: string = '';
+	fix: boolean = false;
 
 	stylusParserOptions: Dictionary = {};
 

@@ -1,15 +1,20 @@
-import { Linter } from "./src/linter";
-import { Watcher } from "./src/watcher";
-import { Reader } from "./src/core/reader";
+import { Linter } from './src/linter';
+import { Reader } from './src/core/reader';
+import * as astList from './src/core/ast/index';
 
-export * from "./src/core/rule";
-export * from "./src/core/ast/index";
-export * from "./src/doc";
+export * from './src/core/rule';
+export const ast = astList;
+export * from './src/doc';
 
-export async function StylusLinter(path: string): Promise<void>;
-export async function StylusLinter(path: string, content: string): Promise<void>;
-export async function StylusLinter(path: string, content: string, options: Dictionary): Promise<void>;
-export async function StylusLinter(path: string | string[], content?: string, options: Dictionary = {}) {
+/**
+ * Main stylus checker
+ *
+ * @param path
+ * @param content
+ * @param options
+ * @constructor
+ */
+export async function StylusLinter(path: string | string[], content?: string, options: Dictionary = {}): Promise<void> {
 	const
 		linter = new Linter(options),
 		first = () => Array.isArray(path) ? path[0] : path;
@@ -32,10 +37,7 @@ export async function StylusLinter(path: string | string[], content?: string, op
 		};
 
 	if (linter.config.watch) {
-		const
-			watcher = new Watcher();
-
-		watcher.start(Array.isArray(path) ? path[0] : path, readAndDisplay);
+		linter.watch(Array.isArray(path) ? path[0] : path, readAndDisplay);
 	}
 
 	await readAndDisplay();

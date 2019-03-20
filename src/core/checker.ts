@@ -37,36 +37,40 @@ export class Checker {
 	}
 
 	/**
-	 * Load one rule or several rules
-	 * @param path
+	 * Create instance od all rules all rules
+	 * @param rulesConstructors
 	 */
-	requireRule(path: string): Dictionary<typeof Rule> {
+	private initRules(rulesConstructors: Dictionary<typeof Rule>): IRule[] {
+		const
+			rulesNames: string[] = Object.keys(rulesConstructors),
+			config = this.linter.config;
 
-		if (/\.js$/.test(path)) {
-			try {
-				const rule = _require(`${path}`);
-
-				if (typeof rule === 'function') {
-					return {
-						[rule.name]: rule
-					};
-				} else {
-					return {
-						...rule
-					};
+		return rulesNames
+			.filter((key) => typeof rulesConstructors[key] === 'function')
+			.map((key) => {
+				if (!(rulesConstructors[key].prototype instanceof Rule)) {
+					rulesConstructors[key].prototype = new Rule({conf: 'always'});
+					rulesConstructors[key].prototype.constructor = rulesConstructors[key];
 				}
-			} catch (e) {
-				this.linter.reporter.add('JS', e.message, 1, 1);
-			}
-		}
 
-		return {};
+				return key;
+			})
+			.map((key: string): IRule => {
+				let options = config.rules[lcfirst(key)];
+
+				if (options === true && config.defaultRules[lcfirst(key)]) {
+					options = config.defaultRules[lcfirst(key)];
+				}
+
+				return new (<any>rulesConstructors)[key](options);
+			})
+			.filter((rule) => rule.state.enabled);
 	}
 
 	/**
 	 * Load rules from folder
 	 */
-	loadRules(path: string | string[]): Dictionary<typeof Rule> {
+	private loadRules(path: string | string[]): Dictionary<typeof Rule> {
 		let results: Dictionary<typeof Rule> = {};
 
 		if (Array.isArray(path)) {
@@ -92,34 +96,30 @@ export class Checker {
 	}
 
 	/**
-	 * Create instance od all rules all rules
-	 * @param rulesConstructors
+	 * Load one rule or several rules
+	 * @param path
 	 */
-	initRules(rulesConstructors: Dictionary<typeof Rule>): IRule[] {
-		const
-			rulesNames: string[] = Object.keys(rulesConstructors),
-			config = this.linter.config;
+	private requireRule(path: string): Dictionary<typeof Rule> {
 
-		return rulesNames
-			.filter((key) => typeof rulesConstructors[key] === 'function')
-			.map((key) => {
-				if (!(rulesConstructors[key].prototype instanceof Rule)) {
-					rulesConstructors[key].prototype = new Rule({conf: 'always'});
-					rulesConstructors[key].prototype.constructor = rulesConstructors[key];
+		if (/\.js$/.test(path)) {
+			try {
+				const rule = _require(`${path}`);
+
+				if (typeof rule === 'function') {
+					return {
+						[rule.name]: rule
+					};
+				} else {
+					return {
+						...rule
+					};
 				}
+			} catch (e) {
+				this.linter.reporter.add('JS', e.message, 1, 1);
+			}
+		}
 
-				return key;
-			})
-			.map((key: string): IRule => {
-				let options = config.rules[lcfirst(key)];
-
-				if (options === true && config.defaultRules[lcfirst(key)]) {
-					options = config.defaultRules[lcfirst(key)];
-				}
-
-				return new (<any>rulesConstructors)[key](options);
-			})
-			.filter((rule) => rule.state.enabled);
+		return {};
 	}
 
 	/**

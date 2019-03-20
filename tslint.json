@@ -8,6 +8,7 @@
     "node_modules/**/*"
   ],
   "rules": {
+    "member-ordering": false,
     "adjacent-overload-signatures": true,
     "ban-comma-operator": false,
     "member-access": false,
