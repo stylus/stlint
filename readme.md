@@ -99,6 +99,27 @@ Stlint integrations with IDEs are available.
 * [WebStorm / PhpStorm / IntelliJ IDEA](https://github.com/stylus/stlint-idea-plugin)
 * VSCode - coming soon
 
+## Ignore errors
+sometimes you want to ignore the error for this there are two directives:
+`@stline-ignode` - ignores only one line after itself
+and block
+`@stlint-disable` `@stlint-enable`
+For example, in the following code, the rules will be ignored.
+```stylus
+$p = {
+  a: #CCC
+  // @stlint-ignore  
+  b: #ccc // need use uppercase notation will be ignored
+  c: 10px
+}
+.test
+  margin-top 20px
+  // @stlint-disable
+  padding-top 20px  // need use mixin will be ignored
+  color #ccc        // need use uppercase notation and use variable will be ignored
+  // @stlint-enable
+  background-color #ddd
+```
 
 ## Rules
 <!-- RULES START -->### colons
