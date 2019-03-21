@@ -6,6 +6,14 @@
 [![NPM](https://nodei.co/npm/stlint.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/stlint/)
 
 * [issues](https://github.com/stylus/stlint/issues)
+* [Installation](#installation)
+* [Example cli Usage](#example-cli-usage)
+* [CLI](#cli)
+* [Non CLI Usage](#non-cli-usage)
+* [As Part of Your Workflow](#as-part-of-your-workflow)
+* [Ignore errors](#ignore-errors)
+* [Rules](#rules)
+* [License](#license)
 
 ## Installation
 
@@ -448,6 +456,6 @@ Allo or deny some mixin instead of unit statement
 ```
 ----<!-- RULES END -->
 
-### License
+## License
 
 [The MIT License](https://raw.githubusercontent.com/stylus/stlint/master/LICENSE).
