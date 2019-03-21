@@ -102,7 +102,7 @@ Stlint integrations with IDEs are available.
 ## Ignore errors
 sometimes you want to ignore the error for this there are two directives:
 * `@stline-ignode` - ignores only one line after it
-* `@stlint-disable` `@stlint-enable` - ignore block (@stlint-enable is optionl)
+* `@stlint-disable` `@stlint-enable` - ignore block (@stlint-enable is optional)
 
 For example, in the following code, some errors will be ignored.
 ```stylus
