@@ -19,12 +19,22 @@ As a cli tool:
 npm install stlint -g
 ```
 
-## Use
-```bash
-npx stlint ./src/file.styl
-npx stlint ./
-npx stlint ./ -w
-```
+## Example cli Usage:
+`npx stlint` Run stlint on cwd
+`stlint` Run stlint on cwd as global
+
+`stlint path/to/filename.styl` Run stlint on a file
+
+`stlint path/to/dir --watch` Watch dir, run stlint on file change
+
+`stlint --help` Get list of commands
+
+`stlint --version` Get version number
+
+`stlint --config path/to/config/.configrc` Run stlint with custom config settings
+
+`stlint styl/ --watch -c path/to/config/.configrc` Watch dir, use custom config
+
 
 ## CLI
 `-h` or `--help`    Display list of commands
@@ -42,22 +52,6 @@ npx stlint ./ -w
 `-r` or `--reporter` Reporter "raw", "json" or "silent"
 
 All another options from [config](#Config file) 
-
-## Example cli Usage:
-`stlint` Run stlint on cwd
-
-`stlint path/to/filename.styl` Run stlint on a file
-
-`stlint path/to/dir --watch` Watch dir, run stlint on file change
-
-`stlint --help` Get list of commands
-
-`stlint --version` Get version number
-
-`stlint --config path/to/config/.configrc` Run stlint with custom config settings
-
-`stlint styl/ --watch -c path/to/config/.configrc` Watch dir, use custom config
-
 
 ## Non CLI Usage
 ```javascript
