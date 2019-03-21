@@ -41,7 +41,10 @@ const options = yargs
 	.help( 'help' )
 	.alias( 'help', 'h' )
 	.alias( 'help', '?' )
-	.example( '$0 file', 'Run Stylus Linter on .styl-file' )
+	.example( '$0 file.styl', 'Run Stylus Linter on .styl-file' )
+	.example( '$0 ./directory', 'Run Stylus Linter on directory with .styl-files' )
+	.example( '$0 ./directory --fix', 'Run Stylus Linter on directory with .styl-files and try fix some issues' )
+	.example( '$0 ./directory --watch', 'Check all .styl files in directory after some of these was changed' )
 	.epilogue( 'MIT' )
 	.argv;
 
