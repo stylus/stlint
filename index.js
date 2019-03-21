@@ -123,6 +123,7 @@ const astList = __webpack_require__(/*! ./src/core/ast/index */ "./src/core/ast/
 __export(__webpack_require__(/*! ./src/core/rule */ "./src/core/rule.ts"));
 exports.ast = astList;
 __export(__webpack_require__(/*! ./src/doc */ "./src/doc.ts"));
+__export(__webpack_require__(/*! ./src/linter */ "./src/linter.ts"));
 /**
  * Main stylus checker
  *

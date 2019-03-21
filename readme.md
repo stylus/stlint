@@ -65,9 +65,22 @@ All another options from [config](#Config file)
 ## Non CLI Usage
 ```javascript
 const StylusLinter = require('stlint').StylusLinter;
-const stlint = StylusLinter('path/to/stylus/', {
-	...options
+StylusLinter('path/to/stylus/', {
+	watch: true
 });
+```
+or check only one file or text
+```javascript
+const Linter = require('stlint').Linter;
+const linter = new Linter({
+	...
+});
+
+// if you want check content
+linter.lint('./test.styl', 'content');
+
+// if you want check file
+linter.lint('./test.styl');
 ```
 
 ## Config file

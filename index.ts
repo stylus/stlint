@@ -5,6 +5,7 @@ import * as astList from './src/core/ast/index';
 export * from './src/core/rule';
 export const ast = astList;
 export * from './src/doc';
+export * from './src/linter';
 
 /**
  * Main stylus checker
