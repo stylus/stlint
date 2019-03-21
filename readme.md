@@ -121,6 +121,23 @@ $p = {
   background-color #ddd
 ```
 
+Respectively, in order not to display errors of the entire file, it is enough to add an 
+`@stlint-disable` directive to its beginning
+
+```stylus
+// @stlint-disable - all errors below will be ignored
+$p = {
+  a: #CCC
+  b: #ccc
+  c: 10px
+}
+.test
+  margin-top 20px
+  padding-top 20px
+  color #ccc 
+  background-color #ddd
+```
+
 ## Rules
 <!-- RULES START -->
 
