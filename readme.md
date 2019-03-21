@@ -101,10 +101,10 @@ Stlint integrations with IDEs are available.
 
 ## Ignore errors
 sometimes you want to ignore the error for this there are two directives:
-`@stline-ignode` - ignores only one line after itself
-and block
-`@stlint-disable` `@stlint-enable`
-For example, in the following code, the rules will be ignored.
+* `@stline-ignode` - ignores only one line after it
+* `@stlint-disable` `@stlint-enable` - ignore block (@stlint-enable is optionl)
+
+For example, in the following code, some errors will be ignored.
 ```stylus
 $p = {
   a: #CCC
