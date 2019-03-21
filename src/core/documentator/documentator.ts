@@ -1,12 +1,23 @@
 import { Config } from '../../config';
 import { Glob } from 'glob';
 import { readFileSync } from 'fs';
-import { readmePatcher } from './patcher';
+import { readmePatcher } from './readmePatcher';
 // @ts-ignore
 import * as ts from 'typescript';
-import { visit } from './visitor';
 import { lcfirst } from '../helpers/lcfirst';
 import { State } from '../types/state';
+
+/**
+ * Visit all ts nodes
+ *
+ * @param callback
+ * @param node
+ */
+function visit(callback: (node: ts.Node) => void, node: ts.Node): void {
+	callback(node);
+
+	ts.forEachChild(node, visit.bind(null, callback));
+}
 
 export interface RuleDocs {
 	name: string;
@@ -21,6 +32,9 @@ export class Documentator {
 		this.config = new Config(options);
 	}
 
+	/**
+	 * Generate documentation
+	 */
 	generate(): void {
 		switch (this.config.doc) {
 			default:
