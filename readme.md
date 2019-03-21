@@ -66,14 +66,14 @@ All another options from [config](#Config file)
 ```javascript
 const StylusLinter = require('stlint').StylusLinter;
 StylusLinter('path/to/stylus/', {
-	watch: true
+  watch: true
 });
 ```
 or check only one file or text
 ```javascript
 const Linter = require('stlint').Linter;
 const linter = new Linter({
-	...
+  ...
 });
 
 // if you want check content
