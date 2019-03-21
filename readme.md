@@ -1,5 +1,5 @@
 # Stylus Linter 
-[![Build Status](https://travis-ci.org/stylus/stlint.svg?branch=master)](https://www.npmjs.org/package/stlint)
+[![Build Status](https://travis-ci.org/stylus/stlint.svg?branch=master)](https://travis-ci.org/stylus/stlint)
 [![NPM version](https://img.shields.io/npm/v/stlint.svg)](https://www.npmjs.org/package/stlint)
 [![NPM Downloads](https://img.shields.io/npm/dm/stlint.svg)](https://npmcharts.com/compare/stlint?minimal=true)
 
