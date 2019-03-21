@@ -7,22 +7,22 @@ export class Node implements INode {
 		return this.constructor.name.toLowerCase();
 	}
 
-	parent: INode | null = null;
+	parent: Node | null = null;
 	lineno: number = 0;
 	column: number = 0;
-	nodes: INode[] = [];
+	nodes: Node[] = [];
 	source: ISNode | null = null;
 
-	value: string | INode | null = '';
+	value: string | Node | null = '';
 
-	constructor(block: ISNode, parent: INode | null) {
+	constructor(block: ISNode, parent: Node | null) {
 		this.lineno = block.lineno;
 		this.column = block.column;
 		this.source = block;
 		this.parent = parent;
 	}
 
-	append<T extends INode>(node: T, listField: keyof T = 'nodes'): void {
+	append<T extends INode>(node: INode, listField: keyof T = 'nodes'): void {
 		const list = (<any>this)[listField];
 
 		if (list && Array.isArray(list) && node instanceof Node) {
@@ -43,12 +43,12 @@ export class Node implements INode {
 		return this.value ? this.value.toString() : ' ';
 	}
 
-	getSibling(next: boolean = false): null | INode {
+	getSibling(next: boolean = false): null | Node {
 		if (this.parent && this.parent.nodes.length) {
 			const index = this.parent.nodes.indexOf(this);
 
 			if (index !== -1 && ((!next && index > 0) || (next && index < this.parent.nodes.length - 2))) {
-				return this.parent.nodes[index + (next ? 1 : -1)];
+				return (<Node | void>this.parent.nodes[index + (next ? 1 : -1)]) || null;
 			}
 		}
 
@@ -58,19 +58,19 @@ export class Node implements INode {
 	/**
 	 * Get previous node in parent.nodes
 	 */
-	previousSibling(): null | INode {
+	previousSibling(): null | Node {
 		return this.getSibling();
 	}
 
 	/**
 	 * Get next node in parent.nodes
 	 */
-	nextSibling(): null | INode {
+	nextSibling(): null | Node {
 		return this.getSibling(true);
 	}
 
 	/**
-	 * Get match parent
+	 * Get matched parent
 	 * @param parentClass
 	 */
 	closest<T extends Node>(parentClass: string): null | T {
@@ -89,5 +89,45 @@ export class Node implements INode {
 		}
 
 		return null;
+	}
+
+	getChild(findClass?: string, last: boolean = false): null | Node {
+		let
+			node: Node | null | void = <Node | null | void>this.nodes[last ? this.nodes.length - 1 : 0];
+
+		if (findClass === undefined) {
+			return node || null;
+		}
+
+		if (node) {
+			const
+				reg = RegExp(`^(${findClass})$`, 'i');
+
+			while (node) {
+				if (reg.test(node.nodeName)) {
+					return node;
+				}
+
+				node = (last ? node.previousSibling() : node.nextSibling());
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Get first matched child
+	 * @param findClass
+	 */
+	lastChild<T extends Node>(findClass?: string): null | T {
+		return <T>this.getChild(findClass, true);
+	}
+
+	/**
+	 * Get last matched child
+	 * @param findClass
+	 */
+	firstChild<T extends Node>(findClass?: string): null | T {
+		return <T>this.getChild(findClass, false);
 	}
 }

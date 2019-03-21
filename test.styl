@@ -1,19 +1,12 @@
-// @stlint-disable
-@import "test2.styl"
+.item2-title
+	display flex
+	align-items center
+	height $p.item2Height
+	padding-left $p.paddingLeft - $p.border[0]
+	box-sizing border-box
 
-$p = {
-	colors: #CCC #ddd #eee #cdd
-	width: basis(10, 20px, #ccc) basis(125) solid
-	color: {
-		fff: black red
-	}
-	background: $colors.white[0]
-	offersShopsText: $colors.grey[2]
-	discountBgColor: $colors.base.third
-}
-
-b-retailer extends i-block
-	overflow hidden
 	border $p.border
+	border-width 0 $p.border[0]
 
-	color #ccc
+	font-size 15px
+	color $p.secondSlideTitleColor

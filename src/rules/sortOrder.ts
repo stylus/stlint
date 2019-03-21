@@ -1,10 +1,16 @@
 import { Rule } from '../core/rule';
 import { Block, Property, Value } from '../core/ast/index';
 import { IState } from '../core/types/state';
+import { Line } from '../core/line';
 
 interface IOrderState extends IState {
 	order?: Array<string[] | string>,
 	startGroupChecking?: number
+}
+
+interface TmpOrderItem {
+	name: string;
+	lineno: number;
 }
 
 /**
@@ -13,15 +19,20 @@ interface IOrderState extends IState {
 export class SortOrder extends Rule<IOrderState> {
 	nodesFilter: string[] = ['block'];
 
-	checkNode(node: Block): void {
+	checkNode(node: Block, lines: Line[]): void {
 		const
-			names: string[] = [],
+			names: TmpOrderItem[] = [],
 			order = this.state.order || [],
 			startGroupChecking = this.state.startGroupChecking || 6;
 
 		node.nodes.forEach((child) => {
 			if (child instanceof Property || child instanceof Value) {
-				names.push(child.key.toString().toLowerCase());
+				names.push(
+					{
+						name: child.key.toString().toLowerCase(),
+						lineno: child.lineno
+					}
+				);
 			}
 		});
 
@@ -31,7 +42,13 @@ export class SortOrder extends Rule<IOrderState> {
 		}
 
 		if (this.state.conf === 'alphabetical') {
-			names.sort();
+			names.sort((a, b) => {
+					if (a.name === b.name) {
+						return 0;
+					}
+
+					return a.name > b.name ? 1 : -1;
+			});
 		} else {
 			if (!this.cache.order) {
 				this.cache.ketToGroup = {};
@@ -52,12 +69,12 @@ export class SortOrder extends Rule<IOrderState> {
 			names.sort((keyA, keyB) => {
 				const
 					values = <Dictionary<string>>{
-						keyA,
-						keyB
+						keyA: keyA.name,
+						keyB: keyB.name
 					},
 					index = <Dictionary<number>>{
-						keyA: this.cache.order.indexOf(keyA),
-						keyB: this.cache.order.indexOf(keyB)
+						keyA: this.cache.order.indexOf(keyA.name),
+						keyB: this.cache.order.indexOf(keyB.name)
 					},
 					keys = Object.keys(index);
 
@@ -92,27 +109,60 @@ export class SortOrder extends Rule<IOrderState> {
 			});
 		}
 
-		let index = 0;
-		node.nodes.forEach((child) => {
-			if (child instanceof Property || child instanceof Value) {
-				const key = child.key.toString();
-				if (names[index] !== child.key) {
-					const needIndex = names.indexOf(key);
+		let
+			index = 0,
+			indexNoOrdered = 0,
+			hasOrderError = false,
+			last: Property | Value | void = void(0),
+			first: Property | Value | void = void(0),
+			child;
 
-					this.msg(
-						`Property must be ${(needIndex < index ? 'higher' : 'lower')} -  ${names.join(', ')}`,
-						child.lineno,
-						child.column,
-						child.column + key.trimRight().length - 1
-					);
+		const fix = [], partLines = [];
+
+		for (let i = 0; i < node.nodes.length; i += 1) {
+			child = node.nodes[i];
+
+			if (child instanceof Property || child instanceof Value) {
+				if (names[index].name !== child.key) {
+					if (!first) {
+						first = child;
+					}
+
+					last = child;
+
+					hasOrderError = true;
+
+					fix[indexNoOrdered] = lines[names[index].lineno].line;
+				}
+
+				if (first) {
+					partLines[indexNoOrdered] = lines[child.lineno].line;
+					indexNoOrdered += 1;
 				}
 
 				index += 1;
 			}
-		});
+		}
+
+		if (hasOrderError && last && first) {
+			for (let i = 0; i < fix.length; i += 1) {
+				if (fix[i] === undefined) {
+					fix[i] = partLines[i];
+				}
+			}
+
+			this.msg(
+				`Properties have wrong order -  ${names.map((item) => item.name).join(', ')}`,
+				first.lineno,
+				1,
+				lines[last.lineno].line.length,
+				fix.join('\n'),
+				last.lineno
+			);
+		}
 
 		if (
-			!this.errors.length &&
+			!hasOrderError &&
 			names.length >= startGroupChecking &&
 			this.state.conf === 'grouped'
 		) {
@@ -120,7 +170,7 @@ export class SortOrder extends Rule<IOrderState> {
 				lastGroup: null | number = null;
 
 			node.nodes.forEach((node) => {
-				if (node instanceof Property) {
+				if (node instanceof Property || node instanceof Value) {
 					const
 						key = node.key.toString();
 

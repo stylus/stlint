@@ -18,7 +18,7 @@ describe('Test order rule', () => {
 
 			parseAndRun(content, rule);
 
-			expect(rule.errors.length).to.be.equal(3)
+			expect(rule.errors.length).to.be.equal(1)
 		});
 	});
 	describe('Custom order', () => {
@@ -51,7 +51,7 @@ describe('Test order rule', () => {
 
 				parseAndRun(content, rule);
 
-				expect(rule.errors.length).to.be.equal(3)
+				expect(rule.errors.length).to.be.equal(1);
 			});
 		});
 	});
@@ -85,7 +85,7 @@ describe('Test order rule', () => {
 				'\tbackground-color $p.color\n' +
 				'', rule);
 
-			expect(rule.errors.length).to.be.equal(2)
+			expect(rule.errors.length).to.be.equal(2);
 		});
 
 		describe('Set big startGroupChecking', () => {

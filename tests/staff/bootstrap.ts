@@ -12,13 +12,15 @@ import { splitLines } from "../../src/core/helpers/splitLines";
  * @param rule
  */
 export const parseAndRun = (content: string, rule: IRule) => {
+	const lines: Line[] = splitLines(content);
+
 	if (rule.checkNode) {
 		const
 			parser = new StylusParser({}),
 			ast = parser.parse(content),
 			runner = new Runner(ast, (node) => {
 				if (rule.checkNode && rule.isMatchType(node.nodeName)) {
-					rule.checkNode(node);
+					rule.checkNode(node, lines);
 				}
 			});
 
@@ -26,7 +28,7 @@ export const parseAndRun = (content: string, rule: IRule) => {
 	}
 
 	if (rule.checkLine) {
-		splitAndRun(content, rule)
+		splitAndRun(content, rule);
 	}
 };
 

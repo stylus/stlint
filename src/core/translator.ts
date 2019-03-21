@@ -28,12 +28,12 @@ import {
 	Querylist,
 	Query,
 	Feature,
-	Keyframes
+	Keyframes, Atrule
 } from './ast/index';
-import { INode } from './types/ast/node';
+
 import { ISNode } from './types/ast/snode';
 
-export class Translator extends  Visitor<ISNode, INode> {
+export class Translator extends  Visitor<ISNode, Node> {
 	constructor(root: ISNode, readonly lines: Line[]) {
 		super(root);
 	}
@@ -52,41 +52,41 @@ export class Translator extends  Visitor<ISNode, INode> {
 	 * Root element in AST
 	 * @param block
 	 */
-	visitRoot(block: ISNode): INode {
-		const tree = new Tree(block);
+	visitRoot(block: ISNode): Node {
+		const tree: Node = new Tree(block);
 
-		this.eachVisit(block.nodes, (ret: INode) => {
+		this.eachVisit(block.nodes, (ret: Node) => {
 			tree.append(ret);
 		}, tree);
 
 		return tree;
 	}
 
-	visitNode(block: ISNode, parent: INode): INode {
+	visitNode(block: ISNode, parent: Node): Node {
 		return new Node(block, parent);
 	}
 
-	visitBlock(block: ISNode, parent: INode): INode {
+	visitBlock(block: ISNode, parent: Node): Node {
 		const node = new Block(block, parent);
 
-		this.eachVisit(block.nodes, (ret: INode) => {
+		this.eachVisit(block.nodes, (ret: Node) => {
 			node.append(ret);
 		}, node);
 
 		return node;
 	}
 
-	visitGroup(block: ISNode, parent: INode): INode {
+	visitGroup(block: ISNode, parent: Node): Node {
 		const node = new Group(block, parent);
 
-		this.eachVisit(block.nodes, (ret: INode) => {
+		this.eachVisit(block.nodes, (ret: Node) => {
 			node.append(ret);
 		}, node);
 
 		return node;
 	}
 
-	visitSelector(block: ISNode, parent: INode): INode {
+	visitSelector(block: ISNode, parent: Node): Node {
 		const node = new Selector(block, parent);
 
 		this.eachVisit(block.segments, (ret: Selector): void => {
@@ -100,7 +100,7 @@ export class Translator extends  Visitor<ISNode, INode> {
 		return node;
 	}
 
-	visitProperty(block: ISNode, parent: INode): INode {
+	visitProperty(block: ISNode, parent: Node): Node {
 		const node = new Property(block, parent);
 
 		node.key = block.name || (Array.isArray(block.segments) ? block.segments.join('') : '');
@@ -112,7 +112,7 @@ export class Translator extends  Visitor<ISNode, INode> {
 		return node;
 	}
 
-	visitLiteral(block: ISNode, parent: INode): INode {
+	visitLiteral(block: ISNode, parent: Node): Node {
 		const node = new Literal(block, parent);
 
 		node.val = typeof block.val === 'string' ? block.val : '';
@@ -120,21 +120,21 @@ export class Translator extends  Visitor<ISNode, INode> {
 		return node;
 	}
 
-	visitString(block: ISNode, parent: INode): INode {
+	visitString(block: ISNode, parent: Node): Node {
 		return this.visitLiteral(block, parent);
 	}
 
-	visitExpression(block: ISNode, parent: INode): INode {
+	visitExpression(block: ISNode, parent: Node): Node {
 		const node = new Value(block, parent);
 
-		this.eachVisit(block.nodes, (ret: INode) => {
+		this.eachVisit(block.nodes, (ret: Node) => {
 			node.append(ret);
 		}, node);
 
 		return node;
 	}
 
-	visitRGBA(block: ISNode, parent: INode): INode {
+	visitRGBA(block: ISNode, parent: Node): Node {
 		const node = new RGB(block, parent);
 
 		node.value = block.name || (typeof block.raw === 'string' ? block.raw : '') || '';
@@ -142,7 +142,7 @@ export class Translator extends  Visitor<ISNode, INode> {
 		return node;
 	}
 
-	visitIdent(block: ISNode, parent: INode): INode {
+	visitIdent(block: ISNode, parent: Node): Node {
 		const node = new Ident(block, parent);
 
 		node.key = block.string || block.name || '';
@@ -159,7 +159,7 @@ export class Translator extends  Visitor<ISNode, INode> {
 	 * @param block
 	 * @param parent
 	 */
-	visitImport(block: ISNode, parent: INode): INode {
+	visitImport(block: ISNode, parent: Node): Node {
 		const node = new Import(block, parent);
 
 		node.value = (block.path || '').toString().replace(/[()]/g, '');
@@ -172,7 +172,7 @@ export class Translator extends  Visitor<ISNode, INode> {
 	 * @param block
 	 * @param parent
 	 */
-	visitObject(block: ISNode, parent: INode): INode {
+	visitObject(block: ISNode, parent: Node): Node {
 		const node = new Obj(block, parent);
 
 		const
@@ -207,7 +207,7 @@ export class Translator extends  Visitor<ISNode, INode> {
 	 * @param block
 	 * @param parent
 	 */
-	visitNull(block: ISNode, parent: INode): void {
+	visitNull(block: ISNode, parent: Node): void {
 		// console.log(block);
 	}
 
@@ -216,7 +216,7 @@ export class Translator extends  Visitor<ISNode, INode> {
 	 * @param block
 	 * @param parent
 	 */
-	visitUnit(block: ISNode, parent: INode): INode {
+	visitUnit(block: ISNode, parent: Node): Node {
 		const node = new Unit(block, parent);
 
 		node.value = typeof block.raw === 'string' ? block.raw : '';
@@ -229,13 +229,13 @@ export class Translator extends  Visitor<ISNode, INode> {
 	 * @param block
 	 * @param parent
 	 */
-	visitCall(block: ISNode, parent: INode): INode {
+	visitCall(block: ISNode, parent: Node): Node {
 		const node = new Call(block, parent);
 
 		node.key = block.name || '';
 
 		if (block.args) {
-			this.eachVisit(block.args.nodes, (ret: INode) => {
+			this.eachVisit(block.args.nodes, (ret: Node) => {
 				node.append(ret);
 			}, node);
 		}
@@ -248,7 +248,7 @@ export class Translator extends  Visitor<ISNode, INode> {
 	 * @param block
 	 * @param parent
 	 */
-	visitMember(block: ISNode, parent: INode): INode {
+	visitMember(block: ISNode, parent: Node): Node {
 		const node = new Member(block, parent);
 
 		if (block.left) {
@@ -269,7 +269,7 @@ export class Translator extends  Visitor<ISNode, INode> {
 	 * @param block
 	 * @param parent
 	 */
-	visitBinOp(block: ISNode, parent: INode): INode {
+	visitBinOp(block: ISNode, parent: Node): Node {
 		const node = new BinOp(block, parent);
 
 		if (block.left) {
@@ -284,17 +284,32 @@ export class Translator extends  Visitor<ISNode, INode> {
 	}
 
 	/**
+	 * Visit atrule (ex. @font-face)
+	 * @param block
+	 * @param parent
+	 */
+	visitAtrule(block: ISNode, parent: Node): Node {
+		const node = new Atrule(block, parent);
+
+		if (block.block) {
+			node.append(this.visit(block.block, node));
+		}
+
+		return node;
+	}
+
+	/**
 	 * Declared function
 	 * @param block
 	 * @param parent
 	 */
-	visitFunction(block: ISNode, parent: INode): INode {
+	visitFunction(block: ISNode, parent: Node): Node {
 		const node = new Func(block, parent);
 
 		node.key = block.name || '';
 
-		this.eachVisit(block.params, (ret: INode) => {
-			node.append(ret, 'params');
+		this.eachVisit(block.params, (ret: Node) => {
+			node.append<Func>(ret, 'params');
 		}, node);
 
 		if (block.block) {
@@ -313,10 +328,10 @@ export class Translator extends  Visitor<ISNode, INode> {
 	 * @param block
 	 * @param parent
 	 */
-	visitParams(block: ISNode, parent: INode): INode {
+	visitParams(block: ISNode, parent: Node): Node {
 		const node = new Params(block, parent);
 
-		this.eachVisit(block.nodes, (ret: INode) => {
+		this.eachVisit(block.nodes, (ret: Node) => {
 			node.append(ret);
 		}, node);
 
@@ -328,7 +343,7 @@ export class Translator extends  Visitor<ISNode, INode> {
 	 * @param block
 	 * @param parent
 	 */
-	visitComment(block: ISNode, parent: INode): INode {
+	visitComment(block: ISNode, parent: Node): Node {
 		return new Comment(block, parent);
 	}
 
@@ -337,7 +352,7 @@ export class Translator extends  Visitor<ISNode, INode> {
 	 * @param block
 	 * @param parent
 	 */
-	visitBoolean(block: ISNode, parent: INode): INode {
+	visitBoolean(block: ISNode, parent: Node): Node {
 		return new Bool(block, parent);
 	}
 
@@ -346,7 +361,7 @@ export class Translator extends  Visitor<ISNode, INode> {
 	 * @param block
 	 * @param parent
 	 */
-	visitEach(block: ISNode, parent: INode): INode {
+	visitEach(block: ISNode, parent: Node): Node {
 		return new Each(block, parent);
 	}
 
@@ -355,7 +370,7 @@ export class Translator extends  Visitor<ISNode, INode> {
 	 * @param block
 	 * @param parent
 	 */
-	visitIf(block: ISNode, parent: INode): INode {
+	visitIf(block: ISNode, parent: Node): Node {
 		const node = new Condition(block, parent);
 
 		if (block.block) {
@@ -366,7 +381,7 @@ export class Translator extends  Visitor<ISNode, INode> {
 			node.cond = this.visit(block.cond, node);
 		}
 
-		this.eachVisit(block.elses, (ret: INode) => {
+		this.eachVisit(block.elses, (ret: Node) => {
 			node.append(ret);
 		}, node);
 
@@ -378,7 +393,7 @@ export class Translator extends  Visitor<ISNode, INode> {
 	 * @param block
 	 * @param parent
 	 */
-	visitUnaryOp(block: ISNode, parent: INode): INode {
+	visitUnaryOp(block: ISNode, parent: Node): Node {
 		const node = new UnaryOp(block, parent);
 
 		if (block.left) {
@@ -397,7 +412,7 @@ export class Translator extends  Visitor<ISNode, INode> {
 	 * @param block
 	 * @param parent
 	 */
-	visitMedia(block: ISNode, parent: INode): INode {
+	visitMedia(block: ISNode, parent: Node): Node {
 		const node = new Media(block, parent);
 
 		if (block.block) {
@@ -425,10 +440,10 @@ export class Translator extends  Visitor<ISNode, INode> {
 	 * @param block
 	 * @param parent
 	 */
-	visitQueryList(block: ISNode, parent: INode): INode {
+	visitQueryList(block: ISNode, parent: Node): Node {
 		const node = new Querylist(block, parent);
 
-		this.eachVisit(block.nodes, (ret: INode) => {
+		this.eachVisit(block.nodes, (ret: Node) => {
 			node.append(ret);
 		}, node);
 
@@ -440,7 +455,7 @@ export class Translator extends  Visitor<ISNode, INode> {
 	 * @param block
 	 * @param parent
 	 */
-	visitQuery(block: ISNode, parent: INode): INode {
+	visitQuery(block: ISNode, parent: Node): Node {
 		const node = new Query(block, parent);
 
 		if (block.type) {
@@ -451,17 +466,17 @@ export class Translator extends  Visitor<ISNode, INode> {
 			node.predicate = block.predicate;
 		}
 
-		this.eachVisit(block.nodes, (ret: INode) => {
+		this.eachVisit(block.nodes, (ret: Node) => {
 			node.append(ret);
 		}, node);
 
 		return node;
 	}
 
-	visitFeature(block: ISNode, parent: INode): INode {
+	visitFeature(block: ISNode, parent: Node): Node {
 		const node = new Feature(block, parent);
 
-		this.eachVisit(block.segments, (ret: INode) => {
+		this.eachVisit(block.segments, (ret: Node) => {
 			node.append(ret, 'segments');
 		}, node);
 
@@ -477,10 +492,10 @@ export class Translator extends  Visitor<ISNode, INode> {
 	 * @param block
 	 * @param parent
 	 */
-	visitKeyframes(block: ISNode, parent: INode): INode {
+	visitKeyframes(block: ISNode, parent: Node): Node {
 		const node = new Keyframes(block, parent);
 
-		this.eachVisit(block.segments, (ret: INode): void => {
+		this.eachVisit(block.segments, (ret: Node): void => {
 			node.append(ret, 'segments');
 		}, node);
 
@@ -491,7 +506,7 @@ export class Translator extends  Visitor<ISNode, INode> {
 		return node;
 	}
 
-	private eachVisit<T extends ISNode>(list: T[] | unknown, fn: (ret: any) => void, parent: INode): void {
+	private eachVisit<T extends ISNode>(list: T[] | unknown, fn: (ret: any) => void, parent: Node): void {
 		if (Array.isArray(list)) {
 			for (let i = 0, len = list.length; i < len; ++i) {
 				const node = list[i];

@@ -9,7 +9,15 @@ export interface IReporter {
 	response: IResponse;
 	reset(): void;
 
-	add(rule: string, message: string, line: number, start: number, end?: number, fix?: string | null): void;
+	add(
+		rule: string,
+		message: string,
+		line: number,
+		start: number,
+		end?: number,
+		fix?: string | null,
+		endLine?: number
+	): void;
 
 	display(exit: boolean): void;
 	log(): void;

@@ -104,4 +104,22 @@ describe('Colons test', () => {
 				expect(checkLine('.tab:first-child', rule)).to.be.not.true;
 			});
 		});
+
+		describe('Colons in url', () => {
+			it('Should not find error url', () => {
+				const rule = new Colons({
+					conf: "never"
+				});
+
+				splitAndRun(
+					'.test\n' +
+					'\tmax-height $headerHeight\n' +
+					'\tborder basis(10)\n' +
+					'\tbackground url(https://fonts.gstatic.com/s/roboto/v18/KFOlCnqEu92Fr1MmEU9fChc4AMP6lbBP.woff2)',
+					rule
+				);
+
+				expect(rule.errors.length).to.be.equal(0);
+			});
+		});
 	});

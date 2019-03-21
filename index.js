@@ -215,6 +215,24 @@ exports.Config = Config;
 
 /***/ }),
 
+/***/ "./src/core/ast/atrule.ts":
+/*!********************************!*\
+  !*** ./src/core/ast/atrule.ts ***!
+  \********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
+class Atrule extends node_1.Node {
+}
+exports.Atrule = Atrule;
+
+
+/***/ }),
+
 /***/ "./src/core/ast/binop.ts":
 /*!*******************************!*\
   !*** ./src/core/ast/binop.ts ***!
@@ -521,6 +539,7 @@ __export(__webpack_require__(/*! ./querylist */ "./src/core/ast/querylist.ts"));
 __export(__webpack_require__(/*! ./query */ "./src/core/ast/query.ts"));
 __export(__webpack_require__(/*! ./feature */ "./src/core/ast/feature.ts"));
 __export(__webpack_require__(/*! ./keyframes */ "./src/core/ast/keyframes.ts"));
+__export(__webpack_require__(/*! ./atrule */ "./src/core/ast/atrule.ts"));
 
 
 /***/ }),
@@ -662,7 +681,7 @@ class Node {
         if (this.parent && this.parent.nodes.length) {
             const index = this.parent.nodes.indexOf(this);
             if (index !== -1 && ((!next && index > 0) || (next && index < this.parent.nodes.length - 2))) {
-                return this.parent.nodes[index + (next ? 1 : -1)];
+                return this.parent.nodes[index + (next ? 1 : -1)] || null;
             }
         }
         return null;
@@ -680,7 +699,7 @@ class Node {
         return this.getSibling(true);
     }
     /**
-     * Get match parent
+     * Get matched parent
      * @param parentClass
      */
     closest(parentClass) {
@@ -693,6 +712,36 @@ class Node {
             node = node.parent;
         }
         return null;
+    }
+    getChild(findClass, last = false) {
+        let node = this.nodes[last ? this.nodes.length - 1 : 0];
+        if (findClass === undefined) {
+            return node || null;
+        }
+        if (node) {
+            const reg = RegExp(`^(${findClass})$`, 'i');
+            while (node) {
+                if (reg.test(node.nodeName)) {
+                    return node;
+                }
+                node = (last ? node.previousSibling() : node.nextSibling());
+            }
+        }
+        return null;
+    }
+    /**
+     * Get first matched child
+     * @param findClass
+     */
+    lastChild(findClass) {
+        return this.getChild(findClass, true);
+    }
+    /**
+     * Get last matched child
+     * @param findClass
+     */
+    firstChild(findClass) {
+        return this.getChild(findClass, false);
     }
 }
 exports.Node = Node;
@@ -1178,7 +1227,7 @@ class Checker {
         this.rulesListForNodes.forEach((rule) => {
             const line = lines[node.lineno];
             if (line && !line.isIgnored && rule.checkNode && rule.isMatchType(type)) {
-                rule.checkNode(node);
+                rule.checkNode(node, lines);
             }
         });
     }
@@ -1753,15 +1802,16 @@ class Reporter {
      * @param start
      * @param end
      * @param fix
+     * @param endLine
      */
-    add(rule, message, line = 0, start = 0, end = 0, fix = null) {
+    add(rule, message, line = 0, start = 0, end = 0, fix = null, endLine = line) {
         this.errors.push({
             message: [{
                     rule,
                     descr: message,
                     path: this.path,
                     line,
-                    endline: line,
+                    endline: endLine,
                     start,
                     end: end > start ? end : start,
                     fix: typeof fix === 'string' ? { replace: fix } : null
@@ -2031,9 +2081,10 @@ class Rule {
      * @param start
      * @param end
      * @param fix
+     * @param endLine
      */
-    msg(message, line = 1, start = 1, end = 1, fix = null) {
-        const error = [this.name, message, line, start, end, fix], hash = error.join('&');
+    msg(message, line = 1, start = 1, end = 1, fix = null, endLine = line) {
+        const error = [this.name, message, line, start, end, fix, endLine], hash = error.join('&');
         if (!this.hashErrors[hash]) {
             this.hashErrors[hash] = true;
             this.errors.push(error);
@@ -2279,6 +2330,18 @@ class Translator extends visitor_1.Visitor {
         }
         if (block.right) {
             node.right = this.visit(block.right, node);
+        }
+        return node;
+    }
+    /**
+     * Visit atrule (ex. @font-face)
+     * @param block
+     * @param parent
+     */
+    visitAtrule(block, parent) {
+        const node = new index_1.Atrule(block, parent);
+        if (block.block) {
+            node.append(this.visit(block.block, node));
         }
         return node;
     }
@@ -2683,8 +2746,14 @@ class Colons extends rule_1.Rule {
             hasPseudo = validJSON.pseudo.some((val) => line.line.indexOf(val) !== -1);
             // check for scope selector
             hasScope = validJSON.scope.some((val) => line.line.indexOf(val) !== -1);
-            if (!hasPseudo && !hasScope) {
-                colon = true;
+            const index = line.line.indexOf(':'), url = /url\(.*?\)/i.exec(line.line);
+            if (url && url.index < index && url[0].length + url.index > index) {
+                colon = false;
+            }
+            else {
+                if (!hasPseudo && !hasScope) {
+                    colon = true;
+                }
             }
         }
         if (this.state.conf === 'always' && colon === false) {
@@ -3162,11 +3231,14 @@ class SortOrder extends rule_1.Rule {
         super(...arguments);
         this.nodesFilter = ['block'];
     }
-    checkNode(node) {
+    checkNode(node, lines) {
         const names = [], order = this.state.order || [], startGroupChecking = this.state.startGroupChecking || 6;
         node.nodes.forEach((child) => {
             if (child instanceof index_1.Property || child instanceof index_1.Value) {
-                names.push(child.key.toString().toLowerCase());
+                names.push({
+                    name: child.key.toString().toLowerCase(),
+                    lineno: child.lineno
+                });
             }
         });
         // sort only 2 and more properties
@@ -3174,7 +3246,12 @@ class SortOrder extends rule_1.Rule {
             return;
         }
         if (this.state.conf === 'alphabetical') {
-            names.sort();
+            names.sort((a, b) => {
+                if (a.name === b.name) {
+                    return 0;
+                }
+                return a.name > b.name ? 1 : -1;
+            });
         }
         else {
             if (!this.cache.order) {
@@ -3194,11 +3271,11 @@ class SortOrder extends rule_1.Rule {
             }
             names.sort((keyA, keyB) => {
                 const values = {
-                    keyA,
-                    keyB
+                    keyA: keyA.name,
+                    keyB: keyB.name
                 }, index = {
-                    keyA: this.cache.order.indexOf(keyA),
-                    keyB: this.cache.order.indexOf(keyB)
+                    keyA: this.cache.order.indexOf(keyA.name),
+                    keyB: this.cache.order.indexOf(keyB.name)
                 }, keys = Object.keys(index);
                 for (const key of keys) {
                     if (index[key] === -1) {
@@ -3224,23 +3301,40 @@ class SortOrder extends rule_1.Rule {
                 return index.keyA - index.keyB;
             });
         }
-        let index = 0;
-        node.nodes.forEach((child) => {
+        let index = 0, indexNoOrdered = 0, hasOrderError = false, last = void (0), first = void (0), child;
+        const fix = [], partLines = [];
+        for (let i = 0; i < node.nodes.length; i += 1) {
+            child = node.nodes[i];
             if (child instanceof index_1.Property || child instanceof index_1.Value) {
-                const key = child.key.toString();
-                if (names[index] !== child.key) {
-                    const needIndex = names.indexOf(key);
-                    this.msg(`Property must be ${(needIndex < index ? 'higher' : 'lower')} -  ${names.join(', ')}`, child.lineno, child.column, child.column + key.trimRight().length - 1);
+                if (names[index].name !== child.key) {
+                    if (!first) {
+                        first = child;
+                    }
+                    last = child;
+                    hasOrderError = true;
+                    fix[indexNoOrdered] = lines[names[index].lineno].line;
+                }
+                if (first) {
+                    partLines[indexNoOrdered] = lines[child.lineno].line;
+                    indexNoOrdered += 1;
                 }
                 index += 1;
             }
-        });
-        if (!this.errors.length &&
+        }
+        if (hasOrderError && last && first) {
+            for (let i = 0; i < fix.length; i += 1) {
+                if (fix[i] === undefined) {
+                    fix[i] = partLines[i];
+                }
+            }
+            this.msg(`Properties have wrong order -  ${names.map((item) => item.name).join(', ')}`, first.lineno, 1, lines[last.lineno].line.length, fix.join('\n'), last.lineno);
+        }
+        if (!hasOrderError &&
             names.length >= startGroupChecking &&
             this.state.conf === 'grouped') {
             let lastGroup = null;
             node.nodes.forEach((node) => {
-                if (node instanceof index_1.Property) {
+                if (node instanceof index_1.Property || node instanceof index_1.Value) {
                     const key = node.key.toString();
                     let group = this.cache.ketToGroup[key];
                     if (group === undefined) {

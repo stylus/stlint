@@ -171,7 +171,7 @@ export class Checker {
 			const line = lines[node.lineno];
 
 			if (line && !line.isIgnored && rule.checkNode && rule.isMatchType(type)) {
-				rule.checkNode(<INode>node);
+				rule.checkNode(<INode>node, lines);
 			}
 		});
 	};

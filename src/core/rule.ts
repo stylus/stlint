@@ -86,6 +86,7 @@ export class Rule<T extends IState = IState> implements IRule<T> {
 	}
 
 	private static context: IContext = {...initContext};
+
 	nodesFilter: string[] | null = null;
 
 	state: T = <T>{
@@ -132,10 +133,18 @@ export class Rule<T extends IState = IState> implements IRule<T> {
 	 * @param start
 	 * @param end
 	 * @param fix
+	 * @param endLine
 	 */
-	msg(message: string, line: number = 1, start: number = 1, end: number = 1, fix: null | string = null): void {
+	msg(
+		message: string,
+		line: number = 1,
+		start: number = 1,
+		end: number = 1,
+		fix: null | string = null,
+		endLine: number = line
+	): void {
 		const
-			error: ErrorArray = [this.name, message, line, start, end, fix],
+			error: ErrorArray = [this.name, message, line, start, end, fix, endLine],
 			hash = error.join('&');
 
 		if (!this.hashErrors[hash]) {

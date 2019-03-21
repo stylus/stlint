@@ -43,6 +43,7 @@ export abstract class Reporter implements IReporter {
 	 * @param start
 	 * @param end
 	 * @param fix
+	 * @param endLine
 	 */
 	add(
 		rule: string,
@@ -50,7 +51,8 @@ export abstract class Reporter implements IReporter {
 		line: number = 0,
 		start: number = 0,
 		end: number = 0,
-		fix: string | null = null
+		fix: string | null = null,
+		endLine: number = line
 	): void {
 		this.errors.push({
 			message: [{
@@ -58,7 +60,7 @@ export abstract class Reporter implements IReporter {
 				descr: message,
 				path: this.path,
 				line,
-				endline: line,
+				endline: endLine,
 				start,
 				end: end > start ? end : start,
 				fix: typeof fix === 'string' ? {replace: fix} : null

@@ -29,8 +29,16 @@ export class Colons extends Rule {
 			// check for scope selector
 			hasScope = validJSON.scope.some((val: string) => line.line.indexOf(val) !== -1);
 
-			if (!hasPseudo && !hasScope) {
-				colon = true;
+			const
+				index = line.line.indexOf(':'),
+				url = /url\(.*?\)/i.exec(line.line);
+
+			if (url && url.index < index && url[0].length + url.index > index) {
+				colon = false;
+			} else {
+				if (!hasPseudo && !hasScope) {
+					colon = true;
+				}
 			}
 		}
 
