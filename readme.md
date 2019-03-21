@@ -73,7 +73,7 @@ or check only one file or text
 ```javascript
 const Linter = require('stlint').Linter;
 const linter = new Linter({
-  ...
+  ...options
 });
 
 // if you want check content
