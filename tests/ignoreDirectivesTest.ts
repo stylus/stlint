@@ -71,21 +71,20 @@ describe('Test ignore directives', () => {
 				'$p = {\n' +
 				'\ta: #CCC\n' +
 				'\t// @stlint-ignore\n' +
-				'\tb: #ccc\n' +
-				'\tc: 10px\n' +
+				'\tb: #ccc\n' + // 2 errors ignored
+				'\tc: 10px\n' + // error
 				'}\n' +
 				'.test\n' +
-				'\tmargin-top 20px\n' +
+				'\tmargin-top 20px\n' + // error
 				'\t// @stlint-ignore\n' +
-				'\tcolor #ccc\n' +
-				'\tbackground-color #ddd\n'
+				'\tcolor #ccc\n' + // ignored
+				'\tbackground-color #ddd\n' // 2 errors
 			);
 
 			response = linter.reporter.response;
 
 			expect(response.passed).to.be.false;
 			expect(response.errors && response.errors.length).to.be.equal(4);
-
 		});
 	});
 });
