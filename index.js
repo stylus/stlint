@@ -1332,6 +1332,7 @@ function readmePatcher(result) {
             throw err;
         }
         const text = result.map((item) => [
+            '\n',
             `### ${item.name}`,
             `${item.description}\n`,
             '**Default value**',

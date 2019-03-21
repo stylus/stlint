@@ -16,6 +16,7 @@ export function readmePatcher(result: RuleDocs[]): void {
 		const
 			text = result.map((item: RuleDocs) =>
 				[
+					'\n',
 					`### ${item.name}`,
 					`${item.description}\n`,
 					'**Default value**',
