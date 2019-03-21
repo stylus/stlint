@@ -21,6 +21,7 @@ npm install stlint -g
 
 ## Example cli Usage:
 `npx stlint` Run stlint on cwd
+
 `stlint` Run stlint on cwd as global
 
 `stlint path/to/filename.styl` Run stlint on a file
