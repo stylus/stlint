@@ -5,7 +5,7 @@
 
 [![NPM](https://nodei.co/npm/stlint.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/stlint/)
 
-* [issues](https://github.com/stylus/stlint/issues)
+* [Issues](https://github.com/stylus/stlint/issues)
 * [Installation](#installation)
 * [Example cli Usage](#example-cli-usage)
 * [CLI](#cli)
