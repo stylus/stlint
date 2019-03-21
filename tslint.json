@@ -35,6 +35,7 @@
       "allow-named-functions"
     ],
     "prefer-for-of": false,
+    "prefer-template": false,
     "promise-function-async": false,
     "typedef": [
       true,
@@ -111,7 +112,7 @@
     "no-unsafe-any": false,
     "no-unsafe-finally": true,
     "no-unused-expression": [
-      true,
+      false,
       "allow-fast-null-checks",
       "allow-new"
     ],

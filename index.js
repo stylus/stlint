@@ -1041,7 +1041,6 @@ const rules = __webpack_require__(/*! ../rules/index */ "./src/rules/index.ts");
 const runner_1 = __webpack_require__(/*! ./runner */ "./src/core/runner.ts");
 const rule_1 = __webpack_require__(/*! ./rule */ "./src/core/rule.ts");
 const lcfirst_1 = __webpack_require__(/*! ./helpers/lcfirst */ "./src/core/helpers/lcfirst.ts");
-const splitLines_1 = __webpack_require__(/*! ./helpers/splitLines */ "./src/core/helpers/splitLines.ts");
 const fs_1 = __webpack_require__(/*! fs */ "fs");
 const path_1 = __webpack_require__(/*! path */ "path");
 const _require = __webpack_require__(/*! native-require */ "native-require");
@@ -1051,15 +1050,6 @@ class Checker {
         this.rulesListForNodes = [];
         this.rulesListForLines = [];
         this.rulesList = [];
-        this.check = (node) => {
-            const type = node.nodeName;
-            rule_1.Rule.beforeCheckNode(node);
-            this.rulesListForNodes.forEach((rule) => {
-                if (rule.checkNode && rule.isMatchType(type)) {
-                    rule.checkNode(node);
-                }
-            });
-        };
     }
     /**
      * Load and init rules (and external rules too)
@@ -1148,9 +1138,9 @@ class Checker {
      *
      * @param ast
      */
-    checkASTRules(ast) {
+    checkASTRules(ast, lines) {
         try {
-            const runner = new runner_1.Runner(ast, this.check);
+            const runner = new runner_1.Runner(ast, this.check.bind(this, lines));
             runner.visit(ast, null);
         }
         catch (e) {
@@ -1164,12 +1154,11 @@ class Checker {
      * Check line by line
      * @param content
      */
-    checkLineRules(content) {
+    checkLineRules(content, lines) {
         try {
-            const lines = splitLines_1.splitLines(content);
             lines
                 .forEach((line, index) => {
-                if (index) {
+                if (index && !line.isIgnored) {
                     rule_1.Rule.beforeCheckLine(line);
                     this.rulesListForLines.forEach((rule) => rule.checkLine && rule.checkLine(line, index, lines));
                 }
@@ -1182,6 +1171,17 @@ class Checker {
             this.afterCheck();
         }
     }
+    check(lines, node) {
+        const type = node.nodeName;
+        rule_1.Rule.beforeCheckNode(node);
+        this.rulesListForNodes.forEach((rule) => {
+            const line = lines[node.lineno];
+            if (line && !line.isIgnored && rule.checkNode && rule.isMatchType(type)) {
+                rule.checkNode(node);
+            }
+        });
+    }
+    ;
     /**
      * After checking put errors in reporter
      */
@@ -1220,15 +1220,27 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const config_1 = __webpack_require__(/*! ../../config */ "./src/config.ts");
 const glob_1 = __webpack_require__(/*! glob */ "glob");
 const fs_1 = __webpack_require__(/*! fs */ "fs");
-const patcher_1 = __webpack_require__(/*! ./patcher */ "./src/core/documentator/patcher.ts");
+const readmePatcher_1 = __webpack_require__(/*! ./readmePatcher */ "./src/core/documentator/readmePatcher.ts");
 // @ts-ignore
 const ts = __webpack_require__(/*! typescript */ "typescript");
-const visitor_1 = __webpack_require__(/*! ./visitor */ "./src/core/documentator/visitor.ts");
 const lcfirst_1 = __webpack_require__(/*! ../helpers/lcfirst */ "./src/core/helpers/lcfirst.ts");
+/**
+ * Visit all ts nodes
+ *
+ * @param callback
+ * @param node
+ */
+function visit(callback, node) {
+    callback(node);
+    ts.forEachChild(node, visit.bind(null, callback));
+}
 class Documentator {
     constructor(options) {
         this.config = new config_1.Config(options);
     }
+    /**
+     * Generate documentation
+     */
     generate() {
         switch (this.config.doc) {
             default:
@@ -1251,7 +1263,7 @@ class Documentator {
                     if (rule !== 'index') {
                         const sourceFile = ts.createSourceFile(file, fs_1.readFileSync(file).toString(), ts.ScriptTarget.ES2018, 
                         /*setParentNodes */ true);
-                        visitor_1.visit((node) => {
+                        visit((node) => {
                             switch (node.kind) {
                                 case ts.SyntaxKind.ClassDeclaration: {
                                     const name = lcfirst_1.lcfirst(node.name.escapedText);
@@ -1281,7 +1293,7 @@ class Documentator {
             if (!this.config.fix) {
                 return this.log(result);
             }
-            patcher_1.readmePatcher(result);
+            readmePatcher_1.readmePatcher(result);
         }));
     }
     /**
@@ -1298,10 +1310,10 @@ exports.Documentator = Documentator;
 
 /***/ }),
 
-/***/ "./src/core/documentator/patcher.ts":
-/*!******************************************!*\
-  !*** ./src/core/documentator/patcher.ts ***!
-  \******************************************/
+/***/ "./src/core/documentator/readmePatcher.ts":
+/*!************************************************!*\
+  !*** ./src/core/documentator/readmePatcher.ts ***!
+  \************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1339,33 +1351,6 @@ function readmePatcher(result) {
     });
 }
 exports.readmePatcher = readmePatcher;
-
-
-/***/ }),
-
-/***/ "./src/core/documentator/visitor.ts":
-/*!******************************************!*\
-  !*** ./src/core/documentator/visitor.ts ***!
-  \******************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-// @ts-ignore
-const ts = __webpack_require__(/*! typescript */ "typescript");
-/**
- * Visit all ts nodes
- *
- * @param callback
- * @param node
- */
-function visit(callback, node) {
-    callback(node);
-    ts.forEachChild(node, visit.bind(null, callback));
-}
-exports.visit = visit;
 
 
 /***/ }),
@@ -1521,6 +1506,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 class Line {
     constructor(line, lineno = 1, lines = []) {
         this.lineno = 1;
+        this.isIgnored = false;
         this.lines = [];
         this.line = line;
         this.lineno = lineno;
@@ -2558,14 +2544,6 @@ exports.doc = (options = {}) => {
 
 "use strict";
 
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const reporter_1 = __webpack_require__(/*! ./core/reporter */ "./src/core/reporter.ts");
 const parser_1 = __webpack_require__(/*! ./core/parser */ "./src/core/parser.ts");
@@ -2575,6 +2553,7 @@ const path_1 = __webpack_require__(/*! path */ "path");
 const rule_1 = __webpack_require__(/*! ./core/rule */ "./src/core/rule.ts");
 const config_1 = __webpack_require__(/*! ./config */ "./src/config.ts");
 const node_watch_1 = __webpack_require__(/*! node-watch */ "node-watch");
+const splitLines_1 = __webpack_require__(/*! ./core/helpers/splitLines */ "./src/core/helpers/splitLines.ts");
 class Linter {
     /**
      * @param options
@@ -2584,7 +2563,8 @@ class Linter {
         /**
          * Parse styl file and check rules
          */
-        this.lint = (path, content = null) => __awaiter(this, void 0, void 0, function* () {
+        this.lint = (path, content = null) => {
+            this.reporter.reset();
             path = path_1.resolve(path);
             try {
                 if (!fs_1.existsSync(path)) {
@@ -2596,25 +2576,45 @@ class Linter {
                 this.checker.loadAndInitRules();
                 this.reporter.setPath(path);
                 rule_1.Rule.clearContext();
+                const lines = splitLines_1.splitLines(content);
+                let ignoreBlock = false, line;
+                for (let index = 1; index < lines.length; index += 1) {
+                    line = lines[index];
+                    if (ignoreBlock) {
+                        line.isIgnored = true;
+                        if (/@stlint-enable/.test(line.line)) {
+                            ignoreBlock = false;
+                        }
+                    }
+                    else if (/@stlint-ignore/.test(line.line)) {
+                        line.isIgnored = true;
+                        const next = line.next();
+                        if (next) {
+                            next.isIgnored = true;
+                        }
+                    }
+                    else if (/@stlint-disable/.test(line.line)) {
+                        ignoreBlock = true;
+                    }
+                }
                 try {
                     const ast = this.parser.parse(content);
-                    this.checker.checkASTRules(ast);
+                    this.checker.checkASTRules(ast, lines);
                 }
                 catch (e) {
                     this.reporter.add('syntaxError', e.message, e.lineno, e.startOffset);
                 }
-                this.checker.checkLineRules(content);
+                this.checker.checkLineRules(content, lines);
             }
             catch (e) {
                 if (this.config.debug) {
                     throw e;
                 }
             }
-        });
+        };
         this.options = options;
         this.config = new config_1.Config(this.options);
         this.reporter = reporter_1.Reporter.getInstance(this.config.reporter, this.config.reportOptions);
-        this.reporter.reset();
         this.parser = new parser_1.StylusParser(this.config.stylusParserOptions);
         this.checker = new checker_1.Checker(this);
     }

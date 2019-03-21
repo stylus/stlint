@@ -127,9 +127,9 @@ export class Checker {
 	 *
 	 * @param ast
 	 */
-	checkASTRules(ast: Tree): void {
+	checkASTRules(ast: Tree, lines: Line[]): void {
 		try {
-			const runner = new Runner(ast, this.check);
+			const runner = new Runner(ast, this.check.bind(this, lines));
 			runner.visit(ast, null);
 
 		} catch (e) {
@@ -144,14 +144,11 @@ export class Checker {
 	 * Check line by line
 	 * @param content
 	 */
-	checkLineRules(content: string): void {
+	checkLineRules(content: string, lines: Line[]): void {
 		try {
-			const
-				lines: Line[] = splitLines(content);
-
 			lines
 				.forEach((line, index) => {
-					if (index) {
+					if (index && !line.isIgnored) {
 						Rule.beforeCheckLine(line);
 						this.rulesListForLines.forEach((rule) => rule.checkLine && rule.checkLine(line, index, lines));
 					}
@@ -165,13 +162,15 @@ export class Checker {
 		}
 	}
 
-	private check = (node: INode): void => {
+	private check(lines: Line[], node: INode): void {
 		const type = node.nodeName;
 
 		Rule.beforeCheckNode(node);
 
 		this.rulesListForNodes.forEach((rule: IRule) => {
-			if (rule.checkNode && rule.isMatchType(type)) {
+			const line = lines[node.lineno];
+
+			if (line && !line.isIgnored && rule.checkNode && rule.isMatchType(type)) {
 				rule.checkNode(<INode>node);
 			}
 		});

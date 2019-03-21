@@ -1,8 +1,8 @@
-import { Linter } from "../src/linter";
-import { expect } from "chai";
+import { Linter } from '../src/linter';
+import { expect } from 'chai';
 
 const
-	wrongContent = `.tab\n\tcolor: #ccc;`;
+	wrongContent = '.tab\n\tcolor: #ccc;';
 
 describe('Test grep option', () => {
 	describe('Set grep option', () => {
@@ -15,11 +15,10 @@ describe('Test grep option', () => {
 			linter.lint('./test.styl', wrongContent);
 			linter.display(false);
 
-
 			const response = linter.reporter.response;
 
 			expect(response.passed).to.be.false;
-			expect(response.errors && response.errors.length).to.be.equal(2)
+			expect(response.errors && response.errors.length).to.be.equal(2);
 		});
 	});
 });

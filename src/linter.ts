@@ -8,6 +8,8 @@ import { Rule } from './core/rule';
 import { IConfig } from './core/types/config';
 import { Config } from './config';
 import watch from 'node-watch';
+import { Line } from './core/line';
+import { splitLines } from './core/helpers/splitLines';
 
 export class Linter {
 	options: Dictionary = {};
@@ -26,7 +28,6 @@ export class Linter {
 		this.config = new Config(this.options);
 
 		this.reporter = Reporter.getInstance(this.config.reporter, this.config.reportOptions);
-		this.reporter.reset();
 
 		this.parser = new StylusParser(this.config.stylusParserOptions);
 		this.checker = new Checker(this);
@@ -35,7 +36,9 @@ export class Linter {
 	/**
 	 * Parse styl file and check rules
 	 */
-	lint = async (path: string, content: string | null = null) => {
+	lint = (path: string, content: string | null = null) => {
+		this.reporter.reset();
+
 		path = resolve(path);
 
 		try {
@@ -53,15 +56,40 @@ export class Linter {
 
 			Rule.clearContext();
 
+			const
+				lines: Line[] = splitLines(content);
+
+			let ignoreBlock: boolean = false, line: Line;
+
+			for (let index = 1; index < lines.length; index += 1) {
+				line = lines[index];
+
+				if (ignoreBlock) {
+					line.isIgnored = true;
+					if (/@stlint-enable/.test(line.line)) {
+						ignoreBlock = false;
+					}
+				} else if (/@stlint-ignore/.test(line.line)) {
+					line.isIgnored = true;
+					const next = line.next();
+
+					if (next) {
+						next.isIgnored = true;
+					}
+				} else if (/@stlint-disable/.test(line.line)) {
+					ignoreBlock = true;
+				}
+			}
+
 			try {
 				const ast = this.parser.parse(content);
-				this.checker.checkASTRules(ast);
+				this.checker.checkASTRules(ast, lines);
 
 			} catch (e) {
 				this.reporter.add('syntaxError', e.message, e.lineno, e.startOffset);
 			}
 
-			this.checker.checkLineRules(content);
+			this.checker.checkLineRules(content, lines);
 		} catch (e) {
 
 			if (this.config.debug) {

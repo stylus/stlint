@@ -3,6 +3,8 @@ import { ILine } from './types/line';
 export class Line implements ILine {
 	readonly line: string;
 	readonly lineno: number = 1;
+	isIgnored: boolean = false;
+
 	readonly lines: Line[] = [];
 
 	constructor(line: string, lineno: number = 1, lines: Line[] = []) {
