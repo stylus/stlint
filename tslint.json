@@ -281,10 +281,6 @@
         "min-cases": 3
       }
     ],
-    "prefer-template": [
-      true,
-      "allow-single-concat"
-    ],
     "quotemark": [
       true,
       "single",

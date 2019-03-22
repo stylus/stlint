@@ -2,7 +2,7 @@ import { Linter } from '../src/linter';
 import { expect } from 'chai';
 
 const
-	wrongContent = `.tab\n\tcolor: #ccc`;
+	wrongContent = '.tab\n\tcolor: #ccc';
 
 describe('Smoke test', () => {
 	it('should work fine', () => {
@@ -12,7 +12,7 @@ describe('Smoke test', () => {
 		const response = linter.reporter.response;
 
 		expect(response.passed).to.be.false;
-		expect(response.errors && response.errors.length).to.be.equal(3)
+		expect(response.errors && response.errors.length).to.be.equal(3);
 	});
 
 	describe('Empty file test', () => {
@@ -23,7 +23,7 @@ describe('Smoke test', () => {
 			const response = linter.reporter.response;
 
 			expect(response.passed).to.be.true;
-			expect(response.errors).to.be.equal(void(0))
+			expect(response.errors).to.be.equal(void(0));
 		});
 	});
 
@@ -35,7 +35,7 @@ describe('Smoke test', () => {
 			const response = linter.reporter.response;
 
 			expect(response.passed).to.be.false;
-			expect(response.errors && response.errors.length).to.be.equal(1)
+			expect(response.errors && response.errors.length).to.be.equal(1);
 		});
 		describe('Broken content 2', () => {
 			it('should work fine', () => {
@@ -45,7 +45,7 @@ describe('Smoke test', () => {
 				const response = linter.reporter.response;
 
 				expect(response.passed).to.be.false;
-				expect(response.errors && response.errors.length).to.be.equal(1)
+				expect(response.errors && response.errors.length).to.be.equal(1);
 			});
 		});
 	});
@@ -55,7 +55,7 @@ describe('Smoke test', () => {
 				const
 					linter = new Linter();
 
-				linter.lint('./test.styl','$p = {\n' +
+				linter.lint('./test.styl', '$p = {\n' +
 					'\toptionColor: #CCC\n' +
 					'}\n' +
 					'.test\n' +
@@ -72,7 +72,7 @@ describe('Smoke test', () => {
 				const
 					linter = new Linter();
 
-				linter.lint('./test.styl','$colors = {\n' +
+				linter.lint('./test.styl', '$colors = {\n' +
 					'\twhite: #CCC #FFF #F00\n' +
 					'}\n' +
 					'$p = {\n' +

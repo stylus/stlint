@@ -1,13 +1,13 @@
-import { CommaInObject } from "../../src/rules/index";
-import { expect } from "chai";
-import { splitAndRun } from "../staff/bootstrap";
+import { CommaInObject } from '../../src/rules/index';
+import { expect } from 'chai';
+import { splitAndRun } from '../staff/bootstrap';
 
 describe('Comma In Object test', () => {
 	describe('Need use', () => {
 		describe('Right content', () => {
 			it('Should check object fields have trailing comma', () => {
 				const rule = new CommaInObject({
-					conf: "always"
+					conf: 'always'
 				});
 
 				splitAndRun(
@@ -20,13 +20,13 @@ describe('Comma In Object test', () => {
 					rule
 				);
 
-				expect(rule.errors.length).to.be.equal(0)
+				expect(rule.errors.length).to.be.equal(0);
 			});
 		});
 		describe('Wrong content', () => {
 			it('Should check object fields have trailing comma', () => {
 				const rule = new CommaInObject({
-					conf: "always"
+					conf: 'always'
 				});
 
 				splitAndRun(
@@ -40,7 +40,7 @@ describe('Comma In Object test', () => {
 					rule
 				);
 
-				expect(rule.errors.length).to.be.equal(2)
+				expect(rule.errors.length).to.be.equal(2);
 			});
 		});
 	});
@@ -49,7 +49,7 @@ describe('Comma In Object test', () => {
 		describe('Right content', () => {
 			it('Should check object fields have not trailing comma', () => {
 				const rule = new CommaInObject({
-					conf: "never"
+					conf: 'never'
 				});
 
 				splitAndRun(
@@ -62,13 +62,13 @@ describe('Comma In Object test', () => {
 					rule
 				);
 
-				expect(rule.errors.length).to.be.equal(0)
+				expect(rule.errors.length).to.be.equal(0);
 			});
 		});
 		describe('Wrong content', () => {
 			it('Should check object fields have not trailing comma', () => {
 				const rule = new CommaInObject({
-					conf: "never"
+					conf: 'never'
 				});
 
 				splitAndRun(
@@ -82,7 +82,7 @@ describe('Comma In Object test', () => {
 					rule
 				);
 
-				expect(rule.errors.length).to.be.equal(2)
+				expect(rule.errors.length).to.be.equal(2);
 			});
 		});
 	});

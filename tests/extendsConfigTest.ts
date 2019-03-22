@@ -1,6 +1,6 @@
-import { Config } from "../src/config";
-import { expect } from "chai";
-import { IState } from "../src/core/types/state";
+import { Config } from '../src/config';
+import { expect } from 'chai';
+import { IState } from '../src/core/types/state';
 
 describe('Test extends option', () => {
 	const tmp: Dictionary = {};
@@ -17,16 +17,15 @@ describe('Test extends option', () => {
 	describe('Define `extends` options', () => {
 		describe('like filepath', () => {
 			it('Should load config from `extends` and redefine some values from it config', () => {
-				Config.prototype.readJSONFile = (path) => {
-					return path.match('testrc') ? {
+				Config.prototype.readJSONFile = (path) =>
+					path.match('testrc') ? {
 						rules: {
 							color: false,
 							colons: false
 						}
 					} : {};
-				};
 
-				Config.prototype.statSync = (path) => ({
+				Config.prototype.statSync = () => ({
 					isDirectory(): boolean {
 						return false;
 					},
@@ -45,8 +44,8 @@ describe('Test extends option', () => {
 				expect((<IState>config.rules.color)).to.be.true; // redefine
 				expect((<IState>config.rules.colons)).to.be.false; // from extends config
 				expect((<IState>config.rules.prefixVarsWithDollar)).to.be.deep.equal({
-					"conf": "always",
-					"prefix": "$"
+					conf: 'always',
+					prefix: '$'
 				}); // default option
 
 			});
@@ -76,7 +75,7 @@ describe('Test extends option', () => {
 					return {};
 				};
 
-				Config.prototype.statSync = (path) => ({
+				Config.prototype.statSync = () => ({
 					isDirectory(): boolean {
 						return false;
 					},
@@ -88,14 +87,14 @@ describe('Test extends option', () => {
 				const config = new Config({
 					extends: [
 						'./tests/.testrA',
-						'./tests/.testrB',
+						'./tests/.testrB'
 					]
 				});
 
 				expect((<IState>config.rules.color).conf).to.be.equal('test'); // redefine
 				expect((<IState>config.rules.prefixVarsWithDollar)).to.be.deep.equal({
-					"conf": "always",
-					"prefix": "$"
+					conf: 'always',
+					prefix: '$'
 				}); // default option
 
 			});
@@ -127,7 +126,7 @@ describe('Test extends option', () => {
 					return {};
 				};
 
-				Config.prototype.statSync = (path) => ({
+				Config.prototype.statSync = () => ({
 					isDirectory(): boolean {
 						return false;
 					},
@@ -139,14 +138,14 @@ describe('Test extends option', () => {
 				const config = new Config({
 					extends: [
 						'stlint-a',
-						'stlint-b',
+						'stlint-b'
 					]
 				});
 
 				expect((<IState>config.rules.color).conf).to.be.equal('test'); // redefine
 				expect((<IState>config.rules.prefixVarsWithDollar)).to.be.deep.equal({
-					"conf": "always",
-					"prefix": "$"
+					conf: 'always',
+					prefix: '$'
 				}); // default option
 
 			});

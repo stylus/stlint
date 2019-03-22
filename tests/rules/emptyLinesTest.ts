@@ -1,11 +1,11 @@
-import { EmptyLines } from "../../src/rules/index";
-import { parseAndRun } from "../staff/bootstrap";
-import { expect } from "chai";
+import { EmptyLines } from '../../src/rules/index';
+import { parseAndRun } from '../staff/bootstrap';
+import { expect } from 'chai';
 
 describe('Empty lines Test', () => {
 	it('Should show error on several empty lines', () => {
 		const rule = new EmptyLines({
-			conf: "always"
+			conf: 'always'
 		});
 
 		parseAndRun(

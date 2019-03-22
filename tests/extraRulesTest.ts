@@ -1,5 +1,5 @@
-import { Linter } from "../src/linter";
-import { expect } from "chai";
+import { Linter } from '../src/linter';
+import { expect } from 'chai';
 
 describe('Test `extraRules` options', () => {
 	describe('like folder', () => {
@@ -33,7 +33,7 @@ describe('Test `extraRules` options', () => {
 			const linter = new Linter({
 				extraRules: [
 					'./tests/staff/extra/testRule.js'
-				],
+				]
 			});
 
 			linter.lint('./test.styl', '.test\n\tcolor red');

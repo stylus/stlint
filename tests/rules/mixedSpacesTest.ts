@@ -1,11 +1,11 @@
-import { MixedSpaces } from "../../src/rules/index";
-import { expect } from "chai";
-import {checkLine, splitAndRun} from "../staff/bootstrap";
+import { MixedSpaces } from '../../src/rules/index';
+import { expect } from 'chai';
+import { checkLine, splitAndRun } from '../staff/bootstrap';
 
 describe('Mixed spaces check test', () => {
 	it('Should check the line has mixed tabs and spaces', () => {
 		const rule = new MixedSpaces({
-			conf: "always"
+			conf: 'always'
 		});
 
 		expect(checkLine('\tcolor red', rule)).to.be.false;
@@ -18,12 +18,12 @@ describe('Mixed spaces check test', () => {
 
 		expect(checkLine('  font-size .1111px', rule)).to.be.false;
 
-		expect(rule.errors.length).to.be.equal(2)
+		expect(rule.errors.length).to.be.equal(2);
 	});
 	describe('In cssdoc', () => {
 		it('Should not find the error', () => {
 			const rule = new MixedSpaces({
-				conf: "always"
+				conf: 'always'
 			});
 
 			splitAndRun('/**\n' +
@@ -33,7 +33,7 @@ describe('Mixed spaces check test', () => {
 				'\t\tmargin-top basis(2.375)',
 				rule);
 
-			expect(rule.errors.length).to.be.equal(0)
+			expect(rule.errors.length).to.be.equal(0);
 		});
 	});
 });

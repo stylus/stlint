@@ -1,7 +1,7 @@
-import { SortOrder } from "../../src/rules/index";
-import { parseAndRun } from "../staff/bootstrap";
-import { expect } from "chai";
-import data = require("../../src/defaultRules.json");
+import { SortOrder } from '../../src/rules/index';
+import { parseAndRun } from '../staff/bootstrap';
+import { expect } from 'chai';
+import data = require('../../src/defaultRules.json');
 
 const content = '.tab\n' +
 	'\tcolor #CCC\n' +
@@ -13,39 +13,39 @@ describe('Test order rule', () => {
 	describe('Alphabetical order', () => {
 		it('should check properties in alphabetical order', () => {
 			const rule = new SortOrder({
-				conf: "alphabetical"
+				conf: 'alphabetical'
 			});
 
 			parseAndRun(content, rule);
 
-			expect(rule.errors.length).to.be.equal(1)
+			expect(rule.errors.length).to.be.equal(1);
 		});
 	});
 	describe('Custom order', () => {
 		describe('Matched order', () => {
 			it('should check properties sorted in custom order', () => {
 				const rule = new SortOrder({
-					conf: "grouped",
+					conf: 'grouped',
 					order: [
 						'color',
 						'margin',
-						'background-color',
+						'background-color'
 					]
 				});
 
 				parseAndRun(content, rule);
 
-				expect(rule.errors.length).to.be.equal(0)
+				expect(rule.errors.length).to.be.equal(0);
 			});
 		});
 		describe('Not matched order', () => {
 			it('should check properties sorted in custom order', () => {
 				const rule = new SortOrder({
-					conf: "grouped",
+					conf: 'grouped',
 					order: [
 						'margin',
 						'background-color',
-						'color',
+						'color'
 					]
 				});
 
@@ -58,7 +58,7 @@ describe('Test order rule', () => {
 	describe('Grouped order', () => {
 		it('should check properties order by list positions', () => {
 			const rule = new SortOrder({
-				conf: "grouped",
+				conf: 'grouped',
 				startGroupChecking: 1,
 				order: [
 					[
@@ -71,7 +71,7 @@ describe('Test order rule', () => {
 					[
 						'color',
 						'background-color'
-					],
+					]
 				]
 			});
 
@@ -91,19 +91,19 @@ describe('Test order rule', () => {
 		describe('Set big startGroupChecking', () => {
 			it('should not check properties in alphabetical order', () => {
 				const rule = new SortOrder({
-					conf: "grouped",
+					conf: 'grouped',
 					startGroupChecking: 7,
 					order: [
 						[
 							'position',
 							'right',
-							'left',
+							'left'
 						],
 						['font-size'],
 						[
 							'color',
 							'background-color'
-						],
+						]
 					]
 				});
 
@@ -116,14 +116,14 @@ describe('Test order rule', () => {
 					'\tbackground-color $p.color\n' +
 					'', rule);
 
-				expect(rule.errors.length).to.be.equal(0)
+				expect(rule.errors.length).to.be.equal(0);
 			});
 		});
 
 		describe('Check default options rule', () => {
 			it('Should check by default options', () => {
 				const rule = new SortOrder({
-					conf: "grouped",
+					conf: 'grouped',
 					startGroupChecking: 6,
 					order: (<Dictionary>data).sortOrder.order
 				});
@@ -167,7 +167,7 @@ describe('Test order rule', () => {
 					'\t\tpadding-left $p.paddingLeft' +
 				'', rule);
 
-				expect(rule.errors.length).to.be.equal(0)
+				expect(rule.errors.length).to.be.equal(0);
 			});
 		});
 	});
