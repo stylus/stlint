@@ -4,21 +4,19 @@ import { expect } from 'chai';
 const
 	wrongContent = '.tab\n\tcolor: #ccc;';
 
+Linter.prototype.saveFix = (path: string, content: string): void => {
+	// do nothing
+};
+
 describe('Test fix option', () => {
-	const nativeSaveFix = Linter.prototype.saveFix;
-
-	beforeEach(() => {
-		Linter.prototype.saveFix = (path: string, content: string): void => {
-			// do nothing
-		};
-	});
-	afterEach(() => {
-		Linter.prototype.saveFix = nativeSaveFix;
-	});
-
 	describe('Fix color', () => {
 		it('should replace lowercase color to uppercase', () => {
 			const linter = new Linter({
+				rules: {
+					color: {
+						conf: 'uppercase'
+					}
+				},
 				grep: 'color',
 				reporter: 'silent',
 				fix: true
