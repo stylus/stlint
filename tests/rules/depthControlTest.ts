@@ -344,7 +344,7 @@ describe('Depth control test', () => {
 			});
 		});
 		describe('Wrong depth', () => {
-			it('Shouldshow error', () => {
+			it('Should show error', () => {
 				const rule = new DepthControl({
 					conf: 'always'
 				});
