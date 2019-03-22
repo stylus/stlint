@@ -7,7 +7,8 @@ const
 		'}\n' +
 		'.tab\n' +
 		'\tcolor: #ccc;',
-	wrongContent = '.tab\n\tcolor: #ccc;';
+	wrongContent = '.tab\n\tcolor: #ccc;',
+	wrongContentColon = '.tab\n\tcolor #ccc;';
 
 Linter.prototype.saveFix = (path: string, content: string): void => {
 	// do nothing
@@ -59,6 +60,55 @@ describe('Test fix option', () => {
 				expect(response.passed).to.be.false;
 				expect(response.errors && response.errors.length).to.be.equal(2);
 				expect(wrongContentWithVar.replace('#ccc', '$p.clr')).to.be.equal(linter.fix('./test.styl', wrongContentWithVar));
+			});
+		});
+	});
+	describe('Fix colon', () => {
+		describe('Never', () => {
+			it('should remove colon between property and value', () => {
+				const linter = new Linter({
+					rules: {
+						colons: {
+							conf: 'never'
+						}
+					},
+					grep: 'colons',
+					reporter: 'silent',
+					fix: true
+				});
+
+				linter.lint('./test.styl', wrongContent);
+				linter.display(false);
+
+				const response = linter.reporter.response;
+
+				expect(response.passed).to.be.false;
+				expect(response.errors && response.errors.length).to.be.equal(2);
+				expect('.tab\n\tcolor #ccc;').to.be.equal(linter.fix('./test.styl', wrongContent));
+			});
+		});
+		describe('Always', () => {
+			it('should add colon between property and value', () => {
+				const linter = new Linter({
+					rules: {
+						colons: {
+							conf: 'always'
+						}
+					},
+					grep: 'colons',
+					reporter: 'silent',
+					fix: true
+				});
+
+				linter.lint('./test.styl', wrongContentColon);
+				linter.display(false);
+
+				const response = linter.reporter.response;
+
+				expect(response.passed).to.be.false;
+				expect(response.errors && response.errors.length).to.be.equal(2);
+
+				expect('.tab\n\tcolor: #ccc;').to.be.equal(linter.fix('./test.styl', wrongContentColon));
 			});
 		});
 	});

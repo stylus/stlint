@@ -15,7 +15,7 @@ export class Colons extends Rule {
 		let colon = this.state.conf === 'always';
 		let hasPseudo = false;
 		let hasScope = false;
-		const arr = line.line.split(/\s/);
+		const arr = line.line.split(/ /);
 
 		if (this.state.conf === 'always' &&
 			arr.length > 1 &&
@@ -43,10 +43,16 @@ export class Colons extends Rule {
 		}
 
 		if (this.state.conf === 'always' && colon === false) {
-			this.msg('missing colon between property and value', line.lineno, arr[0].length);
+			this.msg(
+				'missing colon between property and value',
+				line.lineno,
+				arr[0].length + 1,
+				arr[0].length + 1,
+				': '
+			);
 		} else if (this.state.conf === 'never' && colon === true) {
 			const index = line.line.indexOf(':');
-			this.msg('unnecessary colon found', line.lineno, index + 1);
+			this.msg('unnecessary colon found', line.lineno, index + 1, index + 2, ' ');
 		}
 
 		return colon;
