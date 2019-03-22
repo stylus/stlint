@@ -10,9 +10,9 @@ const multyLineText = '.item2-title\n' + 							// 1 13
 '\n' +																								// 7 138
 '	font-size basis(1.875)\n' +													// 8 162
 '\n' +																								// 9 163
-'	border $p.border\n' +																// 10 180
-'	border-width 0 $p.border[0]\n' +										// 11 209
-'	color $p.secondSlideTitleColor`;\n' +								// 12 245
+'	border $p.border\n' +																// 10 181
+'	border-width 0 $p.border[0]\n' +										// 11 210
+'	color $p.secondSlideTitleColor`;\n';								// 12 244
 
 describe('CalcPosition helper test', () => {
 	it('Should calc position right', () => {
@@ -21,5 +21,6 @@ describe('CalcPosition helper test', () => {
 		expect(calcPosition(2, 5, multyLineText)).to.equal(17);
 		expect(calcPosition(10, 5, multyLineText)).to.equal(167);
 		expect(calcPosition(-1, 5, multyLineText)).to.equal(4);
+		expect(calcPosition(100, 5, multyLineText)).to.equal(249);
 	});
 });

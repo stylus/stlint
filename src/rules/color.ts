@@ -27,6 +27,7 @@ export class Color extends Rule<IColorState> {
 
 	checkNode(node: RGB): void | boolean {
 		const checkReg = this.state.conf !== 'lowercase' ? /[a-z]/ : /[A-Z]/;
+		let fixed = false;
 
 		if (this.state.allowOnlyInVar && node.closest('block')) {
 			const fix = this.context.valueToVar[node.value] ||
@@ -39,6 +40,8 @@ export class Color extends Rule<IColorState> {
 				node.column + node.value.length - 1,
 				fix || null
 			);
+
+			fixed = !!fix;
 		}
 
 		if (node.value && typeof node.value === 'string' && checkReg.test(node.value)) {
@@ -49,7 +52,7 @@ export class Color extends Rule<IColorState> {
 				node.lineno,
 				node.column,
 				node.column + node.value.length - 1,
-				this.state.conf === 'uppercase' ? fix.toUpperCase() : fix.toLowerCase()
+				fixed ? null : this.state.conf === 'uppercase' ? fix.toUpperCase() : fix.toLowerCase()
 			);
 
 			return true;

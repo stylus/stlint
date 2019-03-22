@@ -8,13 +8,13 @@ import { Ident, Obj, Value } from './ast/index';
 import { objTohash } from './helpers/objToHash';
 import { unwrapObject } from './helpers/unwrapObject';
 
-const initContext: IContext  = {
+const initContext: () => IContext  = () => ({
 	hashDeep: 0,
 	inHash: false,
 	inComment: false,
 	vars: {},
 	valueToVar: {}
-};
+});
 
 const
 	hashStartRe = /\$?[\w]+\s*[=:]\s*{/,
@@ -36,7 +36,7 @@ export class Rule<T extends IState = IState> implements IRule<T> {
 	}
 
 	static clearContext(): void {
-		Rule.context = {...initContext};
+		Rule.context = initContext();
 	}
 
 	static getContext(): IContext {
@@ -85,7 +85,7 @@ export class Rule<T extends IState = IState> implements IRule<T> {
 		}
 	}
 
-	private static context: IContext = {...initContext};
+	private static context: IContext = initContext();
 
 	nodesFilter: string[] | null = null;
 

@@ -18,7 +18,7 @@ export const calcPosition = (line: number, column: number, content: string): num
 	let
 		position = 0;
 
-	for (let i = 0; i < line - 1; i += 1) {
+	for (let i = 0; i < line - 1 && i < lines.length; i += 1) {
 		position += lines[i].length + 1;
 	}
 
