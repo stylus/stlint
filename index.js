@@ -2889,7 +2889,7 @@ class DepthControl extends rule_1.Rule {
     checkNode(node) {
         const indentPref = typeof this.state.indentPref === 'number' ? this.state.indentPref : 1;
         if (node instanceof index_1.Block || node instanceof index_1.Selector) {
-            let parentNode = node.closest('selector|media|condition|keyframes'), needCheckPreviousSelector = false, prev = parentNode;
+            let parentNode = node.closest('selector|media|condition|keyframes|func'), needCheckPreviousSelector = false, prev = parentNode;
             if (parentNode && parentNode instanceof index_1.Selector) {
                 while (prev && parentNode) {
                     prev = prev.previousSibling();

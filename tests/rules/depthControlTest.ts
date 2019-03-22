@@ -323,4 +323,43 @@ describe('Depth control test', () => {
 			});
 		});
 	});
+
+	describe('Inside mixin', () => {
+		describe('Right depth', () => {
+			it('Should not show error', () => {
+				const rule = new DepthControl({
+					conf: 'always'
+				});
+
+				parseAndRun(
+					'.test\n' +
+					'\tchildren-shadow()\n' +
+					'\t\tposition relative\n' +
+					''
+					,
+					rule
+				);
+
+				expect(rule.errors.length).to.be.equal(0);
+			});
+		});
+		describe('Wrong depth', () => {
+			it('Shouldshow error', () => {
+				const rule = new DepthControl({
+					conf: 'always'
+				});
+
+				parseAndRun(
+					'.test\n' +
+					'\tchildren-shadow()\n' +
+					'\t\t\tposition relative\n' +
+					''
+					,
+					rule
+				);
+
+				expect(rule.errors.length).to.be.equal(1);
+			});
+		});
+	});
 });

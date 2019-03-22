@@ -19,7 +19,7 @@ export class DepthControl extends Rule<IDepthControlState> {
 
 		if (node instanceof Block || node instanceof Selector) {
 			let
-				parentNode: Node | null = node.closest<Node>('selector|media|condition|keyframes'),
+				parentNode: Node | null = node.closest<Node>('selector|media|condition|keyframes|func'),
 				needCheckPreviousSelector = false,
 				prev: Node | null = parentNode;
 
