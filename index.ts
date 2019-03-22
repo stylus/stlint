@@ -32,7 +32,7 @@ export async function StylusLinter(path: string | string[], content?: string, op
 	const
 		reader = new Reader(linter.config),
 		readAndDisplay = async () => {
-			await reader.read(path, linter.lint);
+			await reader.read(path, linter.lint.bind(linter));
 
 			linter.display(!linter.config.watch);
 		};

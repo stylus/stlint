@@ -1,7 +1,7 @@
 import { Reporter } from './core/reporter';
 import { StylusParser } from './core/parser';
 import { Checker } from './core/checker';
-import { existsSync, readFileSync } from 'fs';
+import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
 import { IReporter } from './core/types/reporter';
 import { Rule } from './core/rule';
@@ -10,6 +10,8 @@ import { Config } from './config';
 import watch from 'node-watch';
 import { Line } from './core/line';
 import { splitLines } from './core/helpers/splitLines';
+import { IFix, IMessage } from './core/types/message';
+import { calcPosition } from './core/helpers/calcPosition';
 
 export class Linter {
 	options: Dictionary = {};
@@ -36,7 +38,7 @@ export class Linter {
 	/**
 	 * Parse styl file and check rules
 	 */
-	lint = (path: string, content: string | null = null) => {
+	lint(path: string, content: string | null = null): void {
 		this.reporter.reset();
 
 		path = resolve(path);
@@ -59,27 +61,7 @@ export class Linter {
 			const
 				lines: Line[] = splitLines(content);
 
-			let ignoreBlock: boolean = false, line: Line;
-
-			for (let index = 1; index < lines.length; index += 1) {
-				line = lines[index];
-
-				if (ignoreBlock) {
-					line.isIgnored = true;
-					if (/@stlint-enable/.test(line.line)) {
-						ignoreBlock = false;
-					}
-				} else if (/@stlint-ignore/.test(line.line)) {
-					line.isIgnored = true;
-					const next = line.next();
-
-					if (next) {
-						next.isIgnored = true;
-					}
-				} else if (/@stlint-disable/.test(line.line)) {
-					ignoreBlock = true;
-				}
-			}
+			this.fillIgnoredLines(lines);
 
 			try {
 				const ast = this.parser.parse(content);
@@ -95,8 +77,43 @@ export class Linter {
 			if (this.config.debug) {
 				throw e;
 			}
+		} finally {
+			if (this.config.grep) {
+				this.reporter.filterErrors(this.config.grep);
+			}
+
+			if (this.config.fix && content !== null && this.reporter.errors && this.reporter.errors.length) {
+				this.fix(path, content);
+			}
 		}
-	};
+	}
+
+	protected fillIgnoredLines(lines: Line[]): void {
+		let
+			ignoreBlock = false,
+			line: Line,
+			index;
+
+		for (index = 1; index < lines.length; index += 1) {
+			line = lines[index];
+
+			if (ignoreBlock) {
+				line.isIgnored = true;
+				if (/@stlint-enable/.test(line.line)) {
+					ignoreBlock = false;
+				}
+			} else if (/@stlint-ignore/.test(line.line)) {
+				line.isIgnored = true;
+				const next = line.next();
+
+				if (next) {
+					next.isIgnored = true;
+				}
+			} else if (/@stlint-disable/.test(line.line)) {
+				ignoreBlock = true;
+			}
+		}
+	}
 
 	/**
 	 * Watch to some directory or file
@@ -116,10 +133,39 @@ export class Linter {
 	 * Print all errors or warnings
 	 */
 	display(exit: boolean = true): void {
-		if (this.config.grep) {
-			this.reporter.filterErrors(this.config.grep);
+		this.reporter.display(exit);
+	}
+
+	/**
+	 * Try fix some errors
+	 */
+	fix(path: string, content: string): string {
+		let diffContent = content;
+
+		this.reporter.errors.forEach((error) => {
+			error.message.forEach((message) => {
+				if (message.fix !== null) {
+					diffContent = this.applyFix(message.fix, message, diffContent);
+				}
+			});
+		});
+
+		if (diffContent !== content) {
+			this.saveFix(path, diffContent);
 		}
 
-		this.reporter.display(exit);
+		return diffContent;
+	}
+
+	protected applyFix(fix: IFix, message: IMessage, content: string): string {
+		const
+			start = calcPosition(message.line, message.start, content),
+			end = calcPosition(message.endline, message.end, content);
+
+		return content.substr(0, start) + fix.replace + content.substr(end + 1);
+	}
+
+	saveFix(path: string, content: string): void {
+		writeFileSync(path, content);
 	}
 }

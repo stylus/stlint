@@ -143,7 +143,7 @@ function StylusLinter(path, content, options = {}) {
             path = linter.config.path || process.cwd();
         }
         const reader = new reader_1.Reader(linter.config), readAndDisplay = () => __awaiter(this, void 0, void 0, function* () {
-            yield reader.read(path, linter.lint);
+            yield reader.read(path, linter.lint.bind(linter));
             linter.display(!linter.config.watch);
         });
         if (linter.config.watch) {
@@ -1406,6 +1406,39 @@ exports.readmePatcher = readmePatcher;
 
 /***/ }),
 
+/***/ "./src/core/helpers/calcPosition.ts":
+/*!******************************************!*\
+  !*** ./src/core/helpers/calcPosition.ts ***!
+  \******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const splitLines_1 = __webpack_require__(/*! ./splitLines */ "./src/core/helpers/splitLines.ts");
+/**
+ * Calc position in text by line and column
+ *
+ * @param line
+ * @param column
+ * @param content
+ */
+exports.calcPosition = (line, column, content) => {
+    if (line === 1) {
+        return column - 1;
+    }
+    const lines = content.split(splitLines_1.SPLIT_REG);
+    let position = 0;
+    for (let i = 0; i < line - 1; i += 1) {
+        position += lines[i].length + 1;
+    }
+    return position + column - 1;
+};
+
+
+/***/ }),
+
 /***/ "./src/core/helpers/isPlainObject.ts":
 /*!*******************************************!*\
   !*** ./src/core/helpers/isPlainObject.ts ***!
@@ -1494,13 +1527,14 @@ exports.objTohash = (node) => {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const line_1 = __webpack_require__(/*! ../line */ "./src/core/line.ts");
+exports.SPLIT_REG = /\n/;
 /**
  * Split line on lines
  * @param content
  */
 function splitLines(content) {
     const lines = [];
-    content.split(/\n/)
+    content.split(exports.SPLIT_REG)
         .forEach((ln, index) => {
         lines[index + 1] = new line_1.Line(ln, index + 1, lines);
     });
@@ -2619,69 +2653,81 @@ const rule_1 = __webpack_require__(/*! ./core/rule */ "./src/core/rule.ts");
 const config_1 = __webpack_require__(/*! ./config */ "./src/config.ts");
 const node_watch_1 = __webpack_require__(/*! node-watch */ "node-watch");
 const splitLines_1 = __webpack_require__(/*! ./core/helpers/splitLines */ "./src/core/helpers/splitLines.ts");
+const calcPosition_1 = __webpack_require__(/*! ./core/helpers/calcPosition */ "./src/core/helpers/calcPosition.ts");
 class Linter {
     /**
      * @param options
      */
     constructor(options = {}) {
         this.options = {};
-        /**
-         * Parse styl file and check rules
-         */
-        this.lint = (path, content = null) => {
-            this.reporter.reset();
-            path = path_1.resolve(path);
-            try {
-                if (!fs_1.existsSync(path)) {
-                    throw new Error('File not exists');
-                }
-                if (typeof content !== 'string') {
-                    content = fs_1.readFileSync(path, 'utf8');
-                }
-                this.checker.loadAndInitRules();
-                this.reporter.setPath(path);
-                rule_1.Rule.clearContext();
-                const lines = splitLines_1.splitLines(content);
-                let ignoreBlock = false, line;
-                for (let index = 1; index < lines.length; index += 1) {
-                    line = lines[index];
-                    if (ignoreBlock) {
-                        line.isIgnored = true;
-                        if (/@stlint-enable/.test(line.line)) {
-                            ignoreBlock = false;
-                        }
-                    }
-                    else if (/@stlint-ignore/.test(line.line)) {
-                        line.isIgnored = true;
-                        const next = line.next();
-                        if (next) {
-                            next.isIgnored = true;
-                        }
-                    }
-                    else if (/@stlint-disable/.test(line.line)) {
-                        ignoreBlock = true;
-                    }
-                }
-                try {
-                    const ast = this.parser.parse(content);
-                    this.checker.checkASTRules(ast, lines);
-                }
-                catch (e) {
-                    this.reporter.add('syntaxError', e.message, e.lineno, e.startOffset);
-                }
-                this.checker.checkLineRules(content, lines);
-            }
-            catch (e) {
-                if (this.config.debug) {
-                    throw e;
-                }
-            }
-        };
         this.options = options;
         this.config = new config_1.Config(this.options);
         this.reporter = reporter_1.Reporter.getInstance(this.config.reporter, this.config.reportOptions);
         this.parser = new parser_1.StylusParser(this.config.stylusParserOptions);
         this.checker = new checker_1.Checker(this);
+    }
+    /**
+     * Parse styl file and check rules
+     */
+    lint(path, content = null) {
+        this.reporter.reset();
+        path = path_1.resolve(path);
+        try {
+            if (!fs_1.existsSync(path)) {
+                throw new Error('File not exists');
+            }
+            if (typeof content !== 'string') {
+                content = fs_1.readFileSync(path, 'utf8');
+            }
+            this.checker.loadAndInitRules();
+            this.reporter.setPath(path);
+            rule_1.Rule.clearContext();
+            const lines = splitLines_1.splitLines(content);
+            this.fillIgnoredLines(lines);
+            try {
+                const ast = this.parser.parse(content);
+                this.checker.checkASTRules(ast, lines);
+            }
+            catch (e) {
+                this.reporter.add('syntaxError', e.message, e.lineno, e.startOffset);
+            }
+            this.checker.checkLineRules(content, lines);
+        }
+        catch (e) {
+            if (this.config.debug) {
+                throw e;
+            }
+        }
+        finally {
+            if (this.config.grep) {
+                this.reporter.filterErrors(this.config.grep);
+            }
+            if (this.config.fix && content !== null && this.reporter.errors && this.reporter.errors.length) {
+                this.fix(path, content);
+            }
+        }
+    }
+    fillIgnoredLines(lines) {
+        let ignoreBlock = false, line, index;
+        for (index = 1; index < lines.length; index += 1) {
+            line = lines[index];
+            if (ignoreBlock) {
+                line.isIgnored = true;
+                if (/@stlint-enable/.test(line.line)) {
+                    ignoreBlock = false;
+                }
+            }
+            else if (/@stlint-ignore/.test(line.line)) {
+                line.isIgnored = true;
+                const next = line.next();
+                if (next) {
+                    next.isIgnored = true;
+                }
+            }
+            else if (/@stlint-disable/.test(line.line)) {
+                ignoreBlock = true;
+            }
+        }
     }
     /**
      * Watch to some directory or file
@@ -2700,10 +2746,31 @@ class Linter {
      * Print all errors or warnings
      */
     display(exit = true) {
-        if (this.config.grep) {
-            this.reporter.filterErrors(this.config.grep);
-        }
         this.reporter.display(exit);
+    }
+    /**
+     * Try fix some errors
+     */
+    fix(path, content) {
+        let diffContent = content;
+        this.reporter.errors.forEach((error) => {
+            error.message.forEach((message) => {
+                if (message.fix !== null) {
+                    diffContent = this.applyFix(message.fix, message, diffContent);
+                }
+            });
+        });
+        if (diffContent !== content) {
+            this.saveFix(path, diffContent);
+        }
+        return diffContent;
+    }
+    applyFix(fix, message, content) {
+        const start = calcPosition_1.calcPosition(message.line, message.start, content), end = calcPosition_1.calcPosition(message.endline, message.end, content);
+        return content.substr(0, start) + fix.replace + content.substr(end + 1);
+    }
+    saveFix(path, content) {
+        fs_1.writeFileSync(path, content);
     }
 }
 exports.Linter = Linter;
