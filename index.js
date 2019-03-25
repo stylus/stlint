@@ -1009,7 +1009,7 @@ exports.Value = Value;
 Object.defineProperty(exports, "__esModule", { value: true });
 const isPlainObject_1 = __webpack_require__(/*! ./helpers/isPlainObject */ "./src/core/helpers/isPlainObject.ts");
 const fs_1 = __webpack_require__(/*! fs */ "fs");
-const strip_json_comments_1 = __webpack_require__(/*! strip-json-comments */ "strip-json-comments");
+const stripJsonComments = __webpack_require__(/*! strip-json-comments */ "strip-json-comments");
 const path_1 = __webpack_require__(/*! path */ "path");
 class BaseConfig {
     constructor() {
@@ -1030,7 +1030,7 @@ class BaseConfig {
     readJSONFile(configFile) {
         if (fs_1.existsSync(configFile)) {
             try {
-                return JSON.parse(strip_json_comments_1.default(fs_1.readFileSync(configFile, 'utf8')));
+                return JSON.parse(stripJsonComments(fs_1.readFileSync(configFile, 'utf8')));
             }
             catch (_a) { }
         }

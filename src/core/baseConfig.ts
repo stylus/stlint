@@ -1,6 +1,6 @@
 import { isPlainObject } from './helpers/isPlainObject';
 import { existsSync, readFileSync, statSync } from 'fs';
-import stripJsonComments from 'strip-json-comments';
+import stripJsonComments = require('strip-json-comments');
 import { resolve, dirname } from 'path';
 import { IStats } from './types/IStats';
 
