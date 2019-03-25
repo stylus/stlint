@@ -4,9 +4,15 @@
 
 const yargs = require( 'yargs' );
 const stlint = require( '../' ).StylusLinter;
+const Linter = require( '../' ).Linter;
 
 const options = yargs
 	.usage( 'Usage: $0 file' )
+	.option( 'info', {
+		alias: 'i',
+		describe: 'Show info',
+		type: 'boolean'
+	})
 	.option( 'config', {
 		alias: 'c',
 		describe: 'Location of custom config file',
@@ -48,7 +54,10 @@ const options = yargs
 	.epilogue( 'MIT' )
 	.argv;
 
-if (options.doc) {
+if (options.info) {
+	const linter = new Linter(options);
+	linter.info();
+} else if (options.doc) {
 	require( '../' ).doc(options);
 } else {
 	stlint(options._[0], options.content, options);

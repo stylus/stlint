@@ -157,6 +157,17 @@ exports.StylusLinter = StylusLinter;
 
 /***/ }),
 
+/***/ "./package.json":
+/*!**********************!*\
+  !*** ./package.json ***!
+  \**********************/
+/*! exports provided: name, version, description, main, bin, files, repository, bugs, scripts, keywords, author, license, dependencies, devDependencies, mocha, default */
+/***/ (function(module) {
+
+module.exports = {"name":"stlint","version":"1.0.16","description":"Stylus Linter","main":"index.js","bin":{"stlint":"./bin/stlint"},"files":["bin/","index.js","src/"],"repository":{"type":"git","url":"https://github.com/stylus/stlint"},"bugs":{"url":"https://github.com/stylus/stlint/issues"},"scripts":{"newversion":"npm test && npm version patch --no-git-tag-version && npm run build && npm run doc && npm run newversiongit && npm publish ./","newversiongit":"git add --all  && git commit -m \"New version $npm_package_version. Read more https://github.com/stylus/stlint/releases/tag/$npm_package_version \" && git tag $npm_package_version && git push --tags origin HEAD:master","start":"webpack --watch","build":"webpack","doc":"./bin/stlint --doc rules --fix","test2":"./bin/stlint ./test.styl","test":"mocha tests/**/**.ts tests/**.ts","fix":"tslint -c tslint.json ./src/**/*.ts ./src/**/**/*.ts ./src/*.ts --fix"},"keywords":["lint","linter","stylus","stylus-linter","stlint"],"author":"Chupurnov Valeriy<chupurnov@gmail.com>","license":"MIT","dependencies":{"async":"^2.6.2","chalk":"^2.4.2","columnify":"^1.5.4","glob":"^7.1.3","native-require":"^1.1.4","node-watch":"^0.6.0","strip-json-comments":"^2.0.1","stylus":"github:stylus/stylus#fix-source-maps-bugs","tslint":"^5.14.0","yargs":"^13.2.2"},"devDependencies":{"@types/async":"^2.4.1","@types/chai":"^4.1.7","@types/glob":"^7.1.1","@types/mocha":"^5.2.6","@types/node":"^11.11.5","awesome-typescript-loader":"^5.2.1","chai":"^4.2.0","mocha":"^6.0.1","ts-node":"^8.0.3","tslint-config-prettier":"^1.18.0","tslint-plugin-prettier":"^2.0.1","typescript":"^3.3.4000","typings":"^2.1.1","webpack":"^4.29.5","webpack-cli":"^3.3.0","webpack-node-externals":"^1.7.2"},"mocha":{"require":["ts-node/register","tests/staff/bootstrap.ts"]}};
+
+/***/ }),
+
 /***/ "./src/config.ts":
 /*!***********************!*\
   !*** ./src/config.ts ***!
@@ -2654,6 +2665,7 @@ const config_1 = __webpack_require__(/*! ./config */ "./src/config.ts");
 const node_watch_1 = __webpack_require__(/*! node-watch */ "node-watch");
 const splitLines_1 = __webpack_require__(/*! ./core/helpers/splitLines */ "./src/core/helpers/splitLines.ts");
 const calcPosition_1 = __webpack_require__(/*! ./core/helpers/calcPosition */ "./src/core/helpers/calcPosition.ts");
+const pkg = __webpack_require__(/*! ../package.json */ "./package.json");
 class Linter {
     /**
      * @param options
@@ -2771,6 +2783,20 @@ class Linter {
     }
     saveFix(path, content) {
         fs_1.writeFileSync(path, content);
+    }
+    info() {
+        const rules = Object.keys(this.config.rules)
+            .filter((ruleKey) => ruleKey.match(this.config.grep))
+            .reduce((rls, ruleKey) => {
+            rls[ruleKey] = this.config.rules[ruleKey];
+            return rls;
+        }, {});
+        console.log(`Version: ${pkg.version}\n` +
+            `Config:  ${this.config.configFile}\n` +
+            (this.config.extraRules ? `Extra Rules:  ${JSON.stringify(this.config.extraRules)}\\n` : '') +
+            (this.config.extends ? `Extends:  ${JSON.stringify(this.config.extends)}\\n` : '') +
+            `Rules:  ${JSON.stringify(rules, null, 2)}\n` +
+            '');
     }
 }
 exports.Linter = Linter;

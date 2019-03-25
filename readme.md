@@ -58,6 +58,8 @@ npm install stlint -g
 
 `-f` or `--fix` Try fix some issues
 
+`-i` or `--info` Show info about version and config (can be used with --grep for filter rules)
+
 `-r` or `--reporter` Reporter "raw", "json" or "silent"
 
 All another options from [config](#Config file) 

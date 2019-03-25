@@ -12,6 +12,7 @@ import { Line } from './core/line';
 import { splitLines } from './core/helpers/splitLines';
 import { IFix, IMessage } from './core/types/message';
 import { calcPosition } from './core/helpers/calcPosition';
+const pkg = require('../package.json');
 
 export class Linter {
 	options: Dictionary = {};
@@ -167,5 +168,24 @@ export class Linter {
 
 	saveFix(path: string, content: string): void {
 		writeFileSync(path, content);
+	}
+
+	info(): void {
+		const
+			rules = Object.keys(this.config.rules)
+				.filter((ruleKey) => ruleKey.match(this.config.grep))
+				.reduce((rls, ruleKey) => {
+					rls[ruleKey] = this.config.rules[ruleKey];
+					return rls;
+				}, <Dictionary>{});
+
+		console.log(
+			`Version: ${pkg.version}\n` +
+			`Config:  ${this.config.configFile}\n` +
+			(this.config.extraRules ? `Extra Rules:  ${JSON.stringify(this.config.extraRules)}\\n` : '') +
+			(this.config.extends ? `Extends:  ${JSON.stringify(this.config.extends)}\\n` : '') +
+			`Rules:  ${JSON.stringify(rules, null, 2)}\n` +
+			''
+		);
 	}
 }
