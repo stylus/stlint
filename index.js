@@ -1430,7 +1430,7 @@ exports.calcPosition = (line, column, content) => {
     }
     const lines = content.split(splitLines_1.SPLIT_REG);
     let position = 0;
-    for (let i = 0; i < line - 1; i += 1) {
+    for (let i = 0; i < line - 1 && i < lines.length; i += 1) {
         position += lines[i].length + 1;
     }
     return position + column - 1;
@@ -2017,13 +2017,13 @@ const lcfirst_1 = __webpack_require__(/*! ./helpers/lcfirst */ "./src/core/helpe
 const index_1 = __webpack_require__(/*! ./ast/index */ "./src/core/ast/index.ts");
 const objToHash_1 = __webpack_require__(/*! ./helpers/objToHash */ "./src/core/helpers/objToHash.ts");
 const unwrapObject_1 = __webpack_require__(/*! ./helpers/unwrapObject */ "./src/core/helpers/unwrapObject.ts");
-const initContext = {
+const initContext = () => ({
     hashDeep: 0,
     inHash: false,
     inComment: false,
     vars: {},
     valueToVar: {}
-};
+});
 const hashStartRe = /\$?[\w]+\s*[=:]\s*{/, hashEndRe = /}/, startMultiComment = /\/\*/, endMultiComment = /\*\//;
 class Rule {
     constructor(conf) {
@@ -2062,7 +2062,7 @@ class Rule {
         return lcfirst_1.lcfirst(this.constructor.name);
     }
     static clearContext() {
-        Rule.context = Object.assign({}, initContext);
+        Rule.context = initContext();
     }
     static getContext() {
         return Rule.context;
@@ -2132,7 +2132,7 @@ class Rule {
         return !this.nodesFilter || this.nodesFilter.includes(type);
     }
 }
-Rule.context = Object.assign({}, initContext);
+Rule.context = initContext();
 exports.Rule = Rule;
 
 
@@ -2801,7 +2801,7 @@ class Colons extends rule_1.Rule {
         let colon = this.state.conf === 'always';
         let hasPseudo = false;
         let hasScope = false;
-        const arr = line.line.split(/\s/);
+        const arr = line.line.split(/ /);
         if (this.state.conf === 'always' &&
             arr.length > 1 &&
             arr[0].indexOf(':') === -1 &&
@@ -2824,11 +2824,11 @@ class Colons extends rule_1.Rule {
             }
         }
         if (this.state.conf === 'always' && colon === false) {
-            this.msg('missing colon between property and value', line.lineno, arr[0].length);
+            this.msg('missing colon between property and value', line.lineno, arr[0].length + 1, arr[0].length + 1, ': ');
         }
         else if (this.state.conf === 'never' && colon === true) {
             const index = line.line.indexOf(':');
-            this.msg('unnecessary colon found', line.lineno, index + 1);
+            this.msg('unnecessary colon found', line.lineno, index + 1, index + 2, ' ');
         }
         return colon;
     }
@@ -2872,15 +2872,17 @@ class Color extends rule_1.Rule {
     }
     checkNode(node) {
         const checkReg = this.state.conf !== 'lowercase' ? /[a-z]/ : /[A-Z]/;
+        let fixed = false;
         if (this.state.allowOnlyInVar && node.closest('block')) {
             const fix = this.context.valueToVar[node.value] ||
                 this.context.valueToVar[node.value.toLowerCase()] ||
                 this.context.valueToVar[node.value.toUpperCase()];
             this.msg('Set color only in variable' + (fix ? `(${fix})` : ''), node.lineno, node.column, node.column + node.value.length - 1, fix || null);
+            fixed = !!fix;
         }
         if (node.value && typeof node.value === 'string' && checkReg.test(node.value)) {
             const fix = node.value.toString();
-            this.msg(`Only ${this.state.conf} HEX format`, node.lineno, node.column, node.column + node.value.length - 1, this.state.conf === 'uppercase' ? fix.toUpperCase() : fix.toLowerCase());
+            this.msg(`Only ${this.state.conf} HEX format`, node.lineno, node.column, node.column + node.value.length - 1, fixed ? null : this.state.conf === 'uppercase' ? fix.toUpperCase() : fix.toLowerCase());
             return true;
         }
         return false;
@@ -3084,8 +3086,8 @@ __export(__webpack_require__(/*! ./emptyLines */ "./src/rules/emptyLines.ts"));
 Object.defineProperty(exports, "__esModule", { value: true });
 const rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
 const decimalRe = /[^\d+](0+\.\d+)|[\s,(:](\.\d+)/i;
-const leadZeroRe = /[^\d+](0+\.\d+)/;
-const nonZeroRe = /[\s,(:](\.\d+)/;
+const leadZeroRe = /([^\d+])(0+\.\d+)/;
+const nonZeroRe = /([\s,(:])(\.\d+)/;
 /**
  * Check for leading 0 on numbers ( 0.5 )
  */
@@ -3097,10 +3099,10 @@ class LeadingZero extends rule_1.Rule {
         const leadZeroFound = leadZeroRe.exec(line.line);
         const leadZeroMissing = nonZeroRe.exec(line.line);
         if (this.state.conf === 'always' && leadZeroMissing) {
-            this.msg('leading zeros for decimal points are required', line.lineno, leadZeroMissing.index);
+            this.msg('leading zeros for decimal points are required', line.lineno, leadZeroMissing.index + leadZeroMissing[1].length + 1, leadZeroMissing.index + leadZeroMissing[1].length + 1, '0.');
         }
         else if (this.state.conf === 'never' && leadZeroFound) {
-            this.msg('leading zeros for decimal points are unnecessary', line.lineno, leadZeroFound.index);
+            this.msg('leading zeros for decimal points are unnecessary', line.lineno, leadZeroFound.index + leadZeroFound[1].length + 1, leadZeroFound.index + leadZeroFound[1].length + 1, '');
         }
         return Boolean(leadZeroFound);
     }
