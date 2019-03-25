@@ -28,6 +28,11 @@ export class Linter {
 	 */
 	constructor(options: Dictionary = {}) {
 		this.options = options;
+
+		if (options.config && typeof options.config === 'string') {
+			options.configFile = options.config;
+		}
+
 		this.config = new Config(this.options);
 
 		this.reporter = Reporter.getInstance(this.config.reporter, this.config.reportOptions);

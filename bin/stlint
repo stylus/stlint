@@ -1,64 +1,64 @@
 #!/usr/bin/env node
 
-'use strict'
+'use strict';
 
-const yargs = require( 'yargs' );
-const stlint = require( '../' ).StylusLinter;
-const Linter = require( '../' ).Linter;
+const yargs = require('yargs');
+const stlint = require('../').StylusLinter;
+const Linter = require('../').Linter;
 
 const options = yargs
-	.usage( 'Usage: $0 file' )
-	.option( 'info', {
+	.usage('Usage: $0 file')
+	.option('info', {
 		alias: 'i',
 		describe: 'Show info',
 		type: 'boolean'
 	})
-	.option( 'config', {
+	.option('config', {
 		alias: 'c',
 		describe: 'Location of custom config file',
 		type: 'string'
 	})
-	.option( 'reporter', {
+	.option('reporter', {
 		alias: 'r',
 		describe: 'Reporter name',
 		type: 'string'
 	})
-	.option( 'grep', {
+	.option('grep', {
 		alias: 'g',
 		describe: 'Only run rules matching this string or regexp',
 		type: 'string'
 	})
-	.option( 'fix', {
+	.option('fix', {
 		alias: 'f',
 		describe: 'Try fix some rules',
 		type: 'boolean'
 	})
-	.option( 'doc', {
+	.option('doc', {
 		describe: 'Generate doc',
 		type: 'string'
 	})
-	.option( 'watch', {
+	.option('watch', {
 		alias: 'w',
 		describe: 'Watch changes',
 		type: 'boolean'
 	})
-	.version(require( '../package' ).version)
-	.alias( 'version', 'v' )
-	.help( 'help' )
-	.alias( 'help', 'h' )
-	.alias( 'help', '?' )
-	.example( '$0 file.styl', 'Run Stylus Linter on .styl-file' )
-	.example( '$0 ./directory', 'Run Stylus Linter on directory with .styl-files' )
-	.example( '$0 ./directory --fix', 'Run Stylus Linter on directory with .styl-files and try fix some issues' )
-	.example( '$0 ./directory --watch', 'Check all .styl files in directory after some of these was changed' )
-	.epilogue( 'MIT' )
+	.version(require('../package').version)
+	.alias('version', 'v')
+	.help('help')
+	.alias('help', 'h')
+	.alias('help', '?')
+	.example('$0 file.styl', 'Run Stylus Linter on .styl-file')
+	.example('$0 ./directory', 'Run Stylus Linter on directory with .styl-files')
+	.example('$0 ./directory --fix', 'Run Stylus Linter on directory with .styl-files and try fix some issues')
+	.example('$0 ./directory --watch', 'Check all .styl files in directory after some of these was changed')
+	.epilogue('MIT')
 	.argv;
 
 if (options.info) {
 	const linter = new Linter(options);
 	linter.info();
 } else if (options.doc) {
-	require( '../' ).doc(options);
+	require('../').doc(options);
 } else {
 	stlint(options._[0], options.content, options);
 }
