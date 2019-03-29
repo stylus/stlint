@@ -4,7 +4,7 @@ import chalk from 'chalk';
 import { Reporter } from '../reporter';
 
 interface RawMessage {
-	file: string
+	file?: string
 	line: number
 	description: string
 	rule: string
@@ -32,14 +32,14 @@ export class RawReporter extends Reporter {
 					messagesToFile[path] = [];
 				}
 
-				messagesToFile[path].push({
-					file: chalk.magenta(pl(path, 30)),
+				const row  = {
+					//file: chalk.magenta(pl(path, 30)),
 					line: chalk.yellow(pl(message.line.toString(), 3)),
-					description: chalk.red(pl(message.descr, 45)),
+					description: chalk.red(pl(message.descr, 75)),
 					rule: chalk.cyan(message.rule)
-				});
+				};
 
-				console.log('-'.padEnd(columns, '-'));
+				messagesToFile[path].push(row);
 			});
 		});
 
@@ -55,7 +55,7 @@ export class RawReporter extends Reporter {
 
 		const cnt = this.errors.length;
 
-		msg.push(`Stlint: ${(cnt ? chalk.red(cnt) : chalk.green(0))} Errors.`);
+		msg.push(`\nStlint: ${(cnt ? chalk.red(cnt) : chalk.green(0))} Errors.\n`);
 
 		console.log(msg.join(''));
 	}

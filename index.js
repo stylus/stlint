@@ -1964,13 +1964,13 @@ class RawReporter extends reporter_1.Reporter {
                 if (!messagesToFile[path]) {
                     messagesToFile[path] = [];
                 }
-                messagesToFile[path].push({
-                    file: chalk_1.default.magenta(pl(path, 30)),
+                const row = {
+                    //file: chalk.magenta(pl(path, 30)),
                     line: chalk_1.default.yellow(pl(message.line.toString(), 3)),
-                    description: chalk_1.default.red(pl(message.descr, 45)),
+                    description: chalk_1.default.red(pl(message.descr, 75)),
                     rule: chalk_1.default.cyan(message.rule)
-                });
-                console.log('-'.padEnd(columns, '-'));
+                };
+                messagesToFile[path].push(row);
             });
         });
         const msgGrouped = Object.keys(messagesToFile).map((file) => [
@@ -1980,7 +1980,7 @@ class RawReporter extends reporter_1.Reporter {
         ].join('\n'));
         msg.push(msgGrouped.join('\n'));
         const cnt = this.errors.length;
-        msg.push(`Stlint: ${(cnt ? chalk_1.default.red(cnt) : chalk_1.default.green(0))} Errors.`);
+        msg.push(`\nStlint: ${(cnt ? chalk_1.default.red(cnt) : chalk_1.default.green(0))} Errors.\n`);
         console.log(msg.join(''));
     }
 }
