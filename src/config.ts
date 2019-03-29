@@ -30,8 +30,6 @@ export class Config extends BaseConfig implements IConfig {
 		columnSplitter: ' | ',
 		headingTransform: (heading: string) =>
 			chalk.yellow(heading.toUpperCase()),
-		maxWidth: 70,
-		minWidth: 10,
 		truncate: false
 	};
 

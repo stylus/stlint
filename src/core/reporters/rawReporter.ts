@@ -19,7 +19,10 @@ export class RawReporter extends Reporter {
 			cwd = process.cwd(),
 			warningsOrErrors = [...this.errors], // TODO add warning mode
 			messagesToFile: Dictionary<RawMessage[]> = {},
-			msg = [];
+			msg = [],
+			columns = process.stdout.columns || this.options.maxWidth || 400,
+			calcWidth = (percent: number): number => Math.ceil((columns / 100) * percent) - 4,
+			pl = (str: string, percent: number): string => str.padEnd(calcWidth(percent), ' ');
 
 		warningsOrErrors.forEach((pack: IMessagePack) => {
 			pack.message.forEach((message) => {
@@ -30,11 +33,13 @@ export class RawReporter extends Reporter {
 				}
 
 				messagesToFile[path].push({
-					file: chalk.magenta(path.padEnd(30, ' ')),
-					line: chalk.yellow(message.line),
-					description: chalk.red(message.descr.padEnd(this.options.maxWidth || 100, ' ')),
+					file: chalk.magenta(pl(path, 30)),
+					line: chalk.yellow(pl(message.line.toString(), 3)),
+					description: chalk.red(pl(message.descr, 45)),
 					rule: chalk.cyan(message.rule)
 				});
+
+				console.log('-'.padEnd(columns, '-'));
 			});
 		});
 
