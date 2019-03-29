@@ -45,7 +45,7 @@
     "native-require": "^1.1.4",
     "node-watch": "^0.6.0",
     "strip-json-comments": "^2.0.1",
-    "stylus": "github:stylus/stylus#fix-source-maps-bugs",
+    "stylus": "github:stylus/stylus#rc-0.54.6",
     "tslint": "^5.14.0",
     "yargs": "^13.2.2"
   },
@@ -54,7 +54,7 @@
     "@types/chai": "^4.1.7",
     "@types/glob": "^7.1.1",
     "@types/mocha": "^5.2.6",
-    "@types/node": "^11.11.5",
+    "@types/node": "^11.12.1",
     "awesome-typescript-loader": "^5.2.1",
     "chai": "^4.2.0",
     "mocha": "^6.0.1",

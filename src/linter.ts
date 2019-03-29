@@ -187,8 +187,8 @@ export class Linter {
 		console.log(
 			`Version: ${pkg.version}\n` +
 			`Config:  ${this.config.configFile}\n` +
-			(this.config.extraRules ? `Extra Rules:  ${JSON.stringify(this.config.extraRules)}\\n` : '') +
-			(this.config.extends ? `Extends:  ${JSON.stringify(this.config.extends)}\\n` : '') +
+			(this.config.extraRules ? `Extra Rules:  ${JSON.stringify(this.config.extraRules)}\n` : '') +
+			(this.config.extends ? `Extends:  ${JSON.stringify(this.config.extends)}\n` : '') +
 			`Rules:  ${JSON.stringify(rules, null, 2)}\n` +
 			''
 		);

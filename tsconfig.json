@@ -1,9 +1,5 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
-    "paths": { "*": ["types/*"] },
-    "baseUrl": ".",
-    "paths": { "*": ["types/*"] },
     "strict": true,
 
     "target": "es2016",
