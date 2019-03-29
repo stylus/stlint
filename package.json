@@ -1,6 +1,6 @@
 {
   "name": "stlint",
-  "version": "1.0.23",
+  "version": "1.0.24",
   "description": "Stylus Linter",
   "main": "index.js",
   "bin": {
@@ -45,7 +45,7 @@
     "native-require": "^1.1.4",
     "node-watch": "^0.6.0",
     "strip-json-comments": "^2.0.1",
-    "stylus": "github:stylus/stylus#rc-0.54.6",
+    "stylus": "github:stylus/stylus#hash-issue-again",
     "yargs": "^13.2.2"
   },
   "devDependencies": {
