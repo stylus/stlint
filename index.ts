@@ -38,7 +38,10 @@ export async function StylusLinter(path: string | string[], content?: string, op
 		};
 
 	if (linter.config.watch) {
-		linter.watch(Array.isArray(path) ? path[0] : path, readAndDisplay);
+		linter.watch(Array.isArray(path) ? path[0] : path, () => {
+			console.log('Recheck files...');
+			readAndDisplay();
+		});
 	}
 
 	await readAndDisplay();
