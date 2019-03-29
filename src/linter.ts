@@ -7,7 +7,7 @@ import { IReporter } from './core/types/reporter';
 import { Rule } from './core/rule';
 import { IConfig } from './core/types/config';
 import { Config } from './config';
-import watch from 'node-watch';
+import watch = require('node-watch');
 import { Line } from './core/line';
 import { splitLines } from './core/helpers/splitLines';
 import { IFix, IMessage } from './core/types/message';
