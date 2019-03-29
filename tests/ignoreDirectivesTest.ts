@@ -23,6 +23,8 @@ describe('Test ignore directives', () => {
 			expect(response.passed).to.be.false;
 			expect(response.errors && response.errors.length).to.be.equal(5);
 
+			linter.reporter.reset();
+
 			linter.lint('./test.styl',
 				'$p = {\n' +
 				'\ta: #CCC\n' +
@@ -66,6 +68,8 @@ describe('Test ignore directives', () => {
 
 			expect(response.passed).to.be.false;
 			expect(response.errors && response.errors.length).to.be.equal(7);
+
+			linter.reporter.reset();
 
 			linter.lint('./test.styl',
 				'$p = {\n' +

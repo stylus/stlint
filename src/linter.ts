@@ -45,8 +45,6 @@ export class Linter {
 	 * Parse styl file and check rules
 	 */
 	lint(path: string, content: string | null = null): void {
-		this.reporter.reset();
-
 		path = resolve(path);
 
 		try {
