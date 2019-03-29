@@ -28,7 +28,7 @@ import {
 	Querylist,
 	Query,
 	Feature,
-	Keyframes, Atrule
+	Keyframes, Atrule, Ternary
 } from './ast/index';
 
 import { ISNode } from './types/ast/snode';
@@ -147,7 +147,7 @@ export class Translator extends  Visitor<ISNode, Node> {
 
 		node.key = block.string || block.name || '';
 
-		if (block.val) {
+		if (block.val && typeof block.val !== 'string') {
 			node.value = <Value>this.visit(block.val, node);
 		}
 
@@ -419,7 +419,7 @@ export class Translator extends  Visitor<ISNode, Node> {
 			node.append(this.visit(block.block, node));
 		}
 
-		if (block.val) {
+		if (block.val && typeof block.val !== 'string') {
 			node.query = this.visit(block.val, node);
 		}
 
@@ -501,6 +501,28 @@ export class Translator extends  Visitor<ISNode, Node> {
 
 		if (block.block) {
 			node.append(this.visit(block.block, node));
+		}
+
+		return node;
+	}
+
+	visitTernary(block: ISNode, parent: Node): Node {
+		const node = new Ternary(block, parent);
+
+		this.eachVisit(block.nodes, (ret: Node) => {
+			node.append(ret);
+		}, node);
+
+		if (block.cond) {
+			node.cond = new Ident(block.cond, node);
+		}
+
+		if (block.trueExpr) {
+			node.trueExpr = new Value(block.trueExpr, node);
+		}
+
+		if (block.falseExpr) {
+			node.falseExpr = new Value(block.falseExpr, node);
 		}
 
 		return node;

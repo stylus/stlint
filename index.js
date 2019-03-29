@@ -552,6 +552,7 @@ __export(__webpack_require__(/*! ./query */ "./src/core/ast/query.ts"));
 __export(__webpack_require__(/*! ./feature */ "./src/core/ast/feature.ts"));
 __export(__webpack_require__(/*! ./keyframes */ "./src/core/ast/keyframes.ts"));
 __export(__webpack_require__(/*! ./atrule */ "./src/core/ast/atrule.ts"));
+__export(__webpack_require__(/*! ./ternary */ "./src/core/ast/ternary.ts"));
 
 
 /***/ }),
@@ -900,6 +901,24 @@ class Selector extends node_1.Node {
     }
 }
 exports.Selector = Selector;
+
+
+/***/ }),
+
+/***/ "./src/core/ast/ternary.ts":
+/*!*********************************!*\
+  !*** ./src/core/ast/ternary.ts ***!
+  \*********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
+class Ternary extends node_1.Node {
+}
+exports.Ternary = Ternary;
 
 
 /***/ }),
@@ -2276,7 +2295,7 @@ class Translator extends visitor_1.Visitor {
     visitIdent(block, parent) {
         const node = new index_1.Ident(block, parent);
         node.key = block.string || block.name || '';
-        if (block.val) {
+        if (block.val && typeof block.val !== 'string') {
             node.value = this.visit(block.val, node);
         }
         return node;
@@ -2490,7 +2509,7 @@ class Translator extends visitor_1.Visitor {
         if (block.block) {
             node.append(this.visit(block.block, node));
         }
-        if (block.val) {
+        if (block.val && typeof block.val !== 'string') {
             node.query = this.visit(block.val, node);
         }
         // Hack because stylus set Media.column on end of line
@@ -2554,6 +2573,22 @@ class Translator extends visitor_1.Visitor {
         }, node);
         if (block.block) {
             node.append(this.visit(block.block, node));
+        }
+        return node;
+    }
+    visitTernary(block, parent) {
+        const node = new index_1.Ternary(block, parent);
+        this.eachVisit(block.nodes, (ret) => {
+            node.append(ret);
+        }, node);
+        if (block.cond) {
+            node.cond = new index_1.Ident(block.cond, node);
+        }
+        if (block.trueExpr) {
+            node.trueExpr = new index_1.Value(block.trueExpr, node);
+        }
+        if (block.falseExpr) {
+            node.falseExpr = new index_1.Value(block.falseExpr, node);
         }
         return node;
     }

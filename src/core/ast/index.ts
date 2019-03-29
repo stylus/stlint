@@ -27,3 +27,4 @@ export * from './query';
 export * from './feature';
 export * from './keyframes';
 export * from './atrule';
+export * from './ternary';

@@ -8,11 +8,13 @@ export interface ISNode {
 	name?: string;
 	string?: string;
 	expr?: ISNode;
-	val?: ISNode;
+	val?: ISNode | string;
 	left?: ISNode;
 	right?: ISNode;
 	type?: ISNode;
 	cond?: ISNode;
+	trueExpr?: ISNode;
+	falseExpr?: ISNode;
 	predicate?: string;
 
 	nodes: ISNode[];
