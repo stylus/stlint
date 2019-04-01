@@ -61,7 +61,7 @@ describe('Test fix option', () => {
 							allowOnlyInVar: true
 						}
 					},
-					grep: 'color',
+					grep: /^color$/,
 					reporter: 'silent',
 					fix: true
 				});
@@ -72,7 +72,7 @@ describe('Test fix option', () => {
 				const response = linter.reporter.response;
 
 				expect(response.passed).to.be.false;
-				expect(response.errors && response.errors.length).to.be.equal(2);
+				expect(response.errors && response.errors.length).to.be.equal(4);
 				expect(wrongContentWithVar.replace(/#ccc/g, '$p.clr')).to.be.equal(linter.fix('./test.styl', wrongContentWithVar));
 			});
 		});
