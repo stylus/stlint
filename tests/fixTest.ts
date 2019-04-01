@@ -6,7 +6,21 @@ const
 		'\tclr: #CCC\n' +
 		'}\n' +
 		'.tab\n' +
-		'\tcolor: #ccc;',
+		'\tcolor: #ccc;\n' +
+		'\tabsolute left 10px top 20px\n' +
+		'\tbackground: #ccc;',
+	wrongContentMultyLine = '$p = {\n' +
+		'\tclr: #CCC\n' +
+		'}\n' +
+		'.tab\n' +
+		'\tline-height: 10px;\n' +
+		'\tcolor: #ccc;\n' +
+		'\tabsolute left 10px\n' +
+		'\ttop 20px\n' +
+		'\tpadding: 20px;\n' +
+		'\tmargin 20px\n' +
+		'\tfont-size: 12px;\n' +
+		'\tbackground: #ccc;',
 	wrongContent = '.tab\n\tcolor: #ccc;',
 	wrongContentColon = '.tab\n\tcolor #ccc;';
 
@@ -59,7 +73,7 @@ describe('Test fix option', () => {
 
 				expect(response.passed).to.be.false;
 				expect(response.errors && response.errors.length).to.be.equal(2);
-				expect(wrongContentWithVar.replace('#ccc', '$p.clr')).to.be.equal(linter.fix('./test.styl', wrongContentWithVar));
+				expect(wrongContentWithVar.replace(/#ccc/g, '$p.clr')).to.be.equal(linter.fix('./test.styl', wrongContentWithVar));
 			});
 		});
 	});
@@ -109,6 +123,127 @@ describe('Test fix option', () => {
 				expect(response.errors && response.errors.length).to.be.equal(2);
 
 				expect('.tab\n\tcolor: #ccc;').to.be.equal(linter.fix('./test.styl', wrongContentColon));
+			});
+		});
+	});
+	describe('Fix order', () => {
+		describe('Grouped', () => {
+			it('should fix properties order', () => {
+				const linter = new Linter({
+					rules: {
+						sortOrder: {
+							conf: 'grouped',
+							order: [
+								'color',
+								'background',
+								'absolute'
+							]
+						}
+					},
+					grep: 'sortOrder',
+					reporter: 'silent',
+					fix: true
+				});
+
+				linter.lint('./test.styl', wrongContentWithVar);
+				linter.display(false);
+
+				const response = linter.reporter.response;
+
+				expect(response.passed).to.be.false;
+				expect(response.errors && response.errors.length).to.be.equal(1);
+				expect('$p = {\n' +
+					'\tclr: #CCC\n' +
+					'}\n' +
+					'.tab\n' +
+					'\tcolor: #ccc;\n' +
+					'\tbackground: #ccc;\n' +
+					'\tabsolute left 10px top 20px' +
+					''
+				).to.be.equal(linter.fix('./test.styl', wrongContentWithVar));
+			});
+			describe('More 5', () => {
+				it('should fix properties order and add separate lines', () => {
+					const linter = new Linter({
+						rules: {
+							sortOrder: {
+								conf: 'grouped',
+								order: [
+									[
+										'absolute',
+										'left',
+										'top'
+									],
+									[
+										'margin',
+										'padding'
+									],
+									[
+										'font',
+										'line-height'
+									],
+									[
+										'background',
+										'color'
+									]
+								]
+							}
+						},
+						grep: 'sortOrder',
+						reporter: 'silent',
+						fix: true
+					});
+
+					linter.lint('./test.styl', wrongContentMultyLine);
+					linter.display(false);
+
+					expect('$p = {\n' +
+						'\tclr: #CCC\n' +
+						'}\n' +
+						'.tab\n' +
+						'\tabsolute left 10px\n' +
+						'\ttop 20px\n' +
+						'\n' +
+						'\tmargin 20px\n' +
+						'\tpadding: 20px;\n' +
+						'\n' +
+						'\tfont-size: 12px;\n' +
+						'\tline-height: 10px;\n' +
+						'\n' +
+						'\tbackground: #ccc;\n' +
+						'\tcolor: #ccc;' +
+						''
+					).to.be.equal(linter.fix('./test.styl', wrongContentMultyLine));
+				});
+			});
+		});
+		describe('Alphabetical', () => {
+			it('should fix properties order', () => {
+				const linter = new Linter({
+					rules: {
+						sortOrder: {
+							conf: 'alphabetical'
+						}
+					},
+					grep: 'sortOrder',
+					reporter: 'silent',
+					fix: true
+				});
+
+				linter.lint('./test.styl', wrongContentWithVar);
+				linter.display(false);
+
+				const response = linter.reporter.response;
+
+				expect(response.passed).to.be.false;
+				expect(response.errors && response.errors.length).to.be.equal(1);
+				expect('$p = {\n' +
+					'\tclr: #CCC\n' +
+					'}\n' +
+					'.tab\n' +
+					'\tabsolute left 10px top 20px\n' +
+					'\tbackground: #ccc;\n' +
+					'\tcolor: #ccc;').to.be.equal(linter.fix('./test.styl', wrongContentWithVar));
 			});
 		});
 	});
