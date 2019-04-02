@@ -2,7 +2,7 @@ import Parser = require('stylus/lib/parser');
 import { Tree } from './ast/index';
 import { Translator } from './translator';
 import { ISNode } from './types/ast/snode';
-import { splitLines } from './helpers/splitLines';
+import { Content } from './content';
 
 export class StylusParser {
 	/**
@@ -16,13 +16,13 @@ export class StylusParser {
 	 * @param {string} content
 	 * @returns {Tree}
 	 */
-	parse(content: string): Tree {
-		const parser = new Parser(content, this.options);
+	parse(content: Content): Tree {
+		const parser = new Parser(content.toString(), this.options);
 
 		try {
 			const stylusAST: ISNode = parser.parse();
 
-			const translator = new Translator(stylusAST, splitLines(content));
+			const translator = new Translator(stylusAST, content);
 
 			return translator.transpile();
 		} catch (err) {

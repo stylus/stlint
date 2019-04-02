@@ -4,8 +4,7 @@ import { expect } from 'chai';
 describe('Test ignore directives', () => {
 	describe('Multiline', () => {
 		it('should ignore error in disable block', () => {
-			const
-				linter = new Linter();
+			const linter = new Linter();
 
 			linter.lint('./test.styl',
 				'$p = {\n' +
@@ -43,6 +42,7 @@ describe('Test ignore directives', () => {
 			response = linter.reporter.response;
 
 			expect(response.passed).to.be.false;
+
 			expect(response.errors && response.errors.length).to.be.equal(1);
 
 		});

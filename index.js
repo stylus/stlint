@@ -167,7 +167,7 @@ exports.StylusLinter = StylusLinter;
 /*! exports provided: name, version, description, main, bin, files, repository, bugs, scripts, keywords, author, license, dependencies, devDependencies, mocha, default */
 /***/ (function(module) {
 
-module.exports = {"name":"stlint","version":"1.0.26","description":"Stylus Linter","main":"index.js","bin":{"stlint":"./bin/stlint"},"files":["bin/","index.js","src/"],"repository":{"type":"git","url":"https://github.com/stylus/stlint"},"bugs":{"url":"https://github.com/stylus/stlint/issues"},"scripts":{"newversion":"npm test && npm version patch --no-git-tag-version && npm run build && npm run doc && npm run newversiongit && npm publish ./","newversiongit":"git add --all  && git commit -m \"New version $npm_package_version. Read more https://github.com/stylus/stlint/releases/tag/$npm_package_version \" && git tag $npm_package_version && git push --tags origin HEAD:master","start":"webpack --watch","build":"webpack","doc":"./bin/stlint --doc rules --fix","test2":"./bin/stlint ./test.styl","test":"mocha tests/**/**.ts tests/**.ts","fix":"tslint -c tslint.json ./src/**/*.ts ./src/**/**/*.ts ./src/*.ts --fix"},"keywords":["lint","linter","stylus","stylus-linter","stlint"],"author":"Chupurnov Valeriy<chupurnov@gmail.com>","license":"MIT","dependencies":{"async":"^2.6.2","chalk":"^2.4.2","columnify":"^1.5.4","glob":"^7.1.3","native-require":"^1.1.4","node-watch":"^0.6.0","strip-json-comments":"^2.0.1","stylus":"github:stylus/stylus#hash-issue-again","yargs":"^13.2.2"},"devDependencies":{"tslint":"^5.14.0","@types/async":"^2.4.1","@types/chai":"^4.1.7","@types/glob":"^7.1.1","@types/mocha":"^5.2.6","@types/node":"^11.12.1","awesome-typescript-loader":"^5.2.1","chai":"^4.2.0","mocha":"^6.0.1","ts-node":"^8.0.3","tslint-config-prettier":"^1.18.0","tslint-plugin-prettier":"^2.0.1","typescript":"^3.3.4000","typings":"^2.1.1","webpack":"^4.29.5","webpack-cli":"^3.3.0","webpack-node-externals":"^1.7.2"},"mocha":{"require":["ts-node/register","tests/staff/bootstrap.ts"]}};
+module.exports = {"name":"stlint","version":"1.0.26","description":"Stylus Linter","main":"index.js","bin":{"stlint":"./bin/stlint"},"files":["bin/","index.js","src/"],"repository":{"type":"git","url":"https://github.com/stylus/stlint"},"bugs":{"url":"https://github.com/stylus/stlint/issues"},"scripts":{"newversion":"npm test && npm version patch --no-git-tag-version && npm run build && npm run doc && npm run newversiongit && npm publish ./","newversiongit":"git add --all  && git commit -m \"New version $npm_package_version. Read more https://github.com/stylus/stlint/releases/tag/$npm_package_version \" && git tag $npm_package_version && git push --tags origin HEAD:master","start":"webpack --watch","build":"webpack","doc":"./bin/stlint --doc rules --fix","test2":"./bin/stlint ./test.styl","test":"mocha tests/**/**.ts tests/**.ts","fix":"tslint -c tslint.json ./src/**/*.ts ./src/**/**/*.ts ./src/*.ts --fix"},"keywords":["lint","linter","stylus","stylus-linter","stlint"],"author":"Chupurnov Valeriy<chupurnov@gmail.com>","license":"MIT","dependencies":{"async":"^2.6.2","chalk":"^2.4.2","columnify":"^1.5.4","glob":"^7.1.3","native-require":"^1.1.4","node-watch":"^0.6.0","strip-json-comments":"^2.0.1","stylus":"github:stylus/stylus#dev","yargs":"^13.2.2"},"devDependencies":{"@types/async":"^2.4.1","@types/chai":"^4.1.7","@types/glob":"^7.1.1","@types/mocha":"^5.2.6","@types/node":"^11.12.2","awesome-typescript-loader":"^5.2.1","chai":"^4.2.0","mocha":"^6.0.1","ts-node":"^8.0.3","tslint":"^5.14.0","tslint-config-prettier":"^1.18.0","tslint-plugin-prettier":"^2.0.1","typescript":"^3.4.1","typings":"^2.1.1","webpack":"^4.29.5","webpack-cli":"^3.3.0","webpack-node-externals":"^1.7.2"},"mocha":{"require":["ts-node/register","tests/staff/bootstrap.ts"]}};
 
 /***/ }),
 
@@ -665,6 +665,10 @@ class Node {
         this.column = 0;
         this.nodes = [];
         this.source = null;
+        /**
+         * Content
+         */
+        this.content = null;
         this.value = '';
         this.lineno = block.lineno;
         this.column = block.column;
@@ -673,6 +677,12 @@ class Node {
     }
     get nodeName() {
         return this.constructor.name.toLowerCase();
+    }
+    /**
+     * Get line object
+     */
+    get line() {
+        return (this.content && this.lineno && this.content.getLine(this.lineno)) || null;
     }
     append(node, listField = 'nodes') {
         const list = this[listField];
@@ -1077,17 +1087,19 @@ class BaseConfig {
      * @param to
      */
     extendsOption(from, to) {
+        const result = to;
         Object.keys(from).forEach((key) => {
             if (isPlainObject_1.isPlainObject(from[key]) && isPlainObject_1.isPlainObject(to[key])) {
-                this.extendsOption(from[key], to[key]);
+                result[key] = Object.assign({}, this.extendsOption(from[key], Object.assign({}, to[key])));
             }
             else if (Array.isArray(from[key]) && Array.isArray(to[key])) {
-                to[key] = to[key].map((val, index) => (from[key][index] !== undefined) ? from[key][index] : to[key][index]);
+                result[key] = to[key].map((val, index) => (from[key][index] !== undefined) ? from[key][index] : to[key][index]);
             }
             else {
-                to[key] = from[key];
+                result[key] = from[key];
             }
         });
+        return result;
     }
     /**
      * Load extra config files
@@ -1218,10 +1230,11 @@ class Checker {
      * Check whole AST
      *
      * @param ast
+     * @param content
      */
-    checkASTRules(ast, lines) {
+    checkASTRules(ast, content) {
         try {
-            const runner = new runner_1.Runner(ast, this.check.bind(this, lines));
+            const runner = new runner_1.Runner(ast, this.check.bind(this, content));
             runner.visit(ast, null);
         }
         catch (e) {
@@ -1235,13 +1248,12 @@ class Checker {
      * Check line by line
      * @param content
      */
-    checkLineRules(content, lines) {
+    checkLineRules(content) {
         try {
-            lines
-                .forEach((line, index) => {
+            content.forEach((line, index) => {
                 if (index && !line.isIgnored) {
                     rule_1.Rule.beforeCheckLine(line);
-                    this.rulesListForLines.forEach((rule) => rule.checkLine && rule.checkLine(line, index, lines));
+                    this.rulesListForLines.forEach((rule) => rule.checkLine && rule.checkLine(line, index, content));
                 }
             });
         }
@@ -1252,17 +1264,16 @@ class Checker {
             this.afterCheck();
         }
     }
-    check(lines, node) {
+    check(content, node) {
         const type = node.nodeName;
         rule_1.Rule.beforeCheckNode(node);
         this.rulesListForNodes.forEach((rule) => {
-            const line = lines[node.lineno];
+            const line = node.line;
             if (line && !line.isIgnored && rule.checkNode && rule.isMatchType(type)) {
-                rule.checkNode(node, lines);
+                rule.checkNode(node, content);
             }
         });
     }
-    ;
     /**
      * After checking put errors in reporter
      */
@@ -1276,6 +1287,81 @@ class Checker {
     }
 }
 exports.Checker = Checker;
+
+
+/***/ }),
+
+/***/ "./src/core/content.ts":
+/*!*****************************!*\
+  !*** ./src/core/content.ts ***!
+  \*****************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const calcPosition_1 = __webpack_require__(/*! ./helpers/calcPosition */ "./src/core/helpers/calcPosition.ts");
+const splitLines_1 = __webpack_require__(/*! ./helpers/splitLines */ "./src/core/helpers/splitLines.ts");
+class Content {
+    constructor(content) {
+        this.content = content;
+        this.lines = splitLines_1.splitLines(content);
+    }
+    toString() {
+        return this.content;
+    }
+    /**
+     * Get first line
+     */
+    firstLine() {
+        return this.lines[1];
+    }
+    /**
+     * Apply callback on every line
+     *
+     * @param callback
+     */
+    forEach(callback) {
+        for (let lineno = 1; lineno < this.lines.length; lineno += 1) {
+            if (callback(this.lines[lineno], lineno) === false) {
+                break;
+            }
+        }
+    }
+    /**
+     * Return line
+     * @param lineno
+     */
+    getLine(lineno) {
+        if (!this.lines[lineno]) {
+            throw new Error('Line not exists');
+        }
+        return this.lines[lineno];
+    }
+    /**
+     * Apply some fix to text
+     *
+     * @param messages
+     */
+    applyFixes(messages) {
+        let content = this.content;
+        messages.forEach((message, index) => {
+            if (message.fix) {
+                const start = calcPosition_1.calcPosition(message.line, message.start, content), end = calcPosition_1.calcPosition(message.endline, message.end, content), oldPart = content.substring(start, end + 1), fix = message.fix.replace.toString(), diffLines = splitLines_1.splitLines(fix).length - splitLines_1.splitLines(oldPart).length;
+                content = content.substr(0, start) + fix + content.substr(end + 1);
+                if (diffLines) {
+                    for (let i = index + 1; i < messages.length; i += 1) {
+                        messages[i].line += diffLines;
+                        messages[i].endline += diffLines;
+                    }
+                }
+            }
+        });
+        return new Content(content);
+    }
+}
+exports.Content = Content;
 
 
 /***/ }),
@@ -1459,11 +1545,14 @@ exports.calcPosition = (line, column, content) => {
     if (line === 1) {
         return column - 1;
     }
-    const lines = content.split(splitLines_1.SPLIT_REG);
     let position = 0;
-    for (let i = 0; i < line - 1 && i < lines.length; i += 1) {
-        position += lines[i].length + 1;
-    }
+    splitLines_1.splitLines(content)
+        .forEach((ln, lineno) => {
+        if (lineno >= line) {
+            return false;
+        }
+        position += ln.line.length + 1;
+    });
     return position + column - 1;
 };
 
@@ -1557,21 +1646,20 @@ exports.objTohash = (node) => {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const line_1 = __webpack_require__(/*! ../line */ "./src/core/line.ts");
-exports.SPLIT_REG = /\n/;
 /**
  * Split line on lines
  * @param content
  */
-function splitLines(content) {
+const line_1 = __webpack_require__(/*! ../line */ "./src/core/line.ts");
+const SPLIT_REG = /\n/;
+exports.splitLines = (content) => {
     const lines = [];
-    content.split(exports.SPLIT_REG)
+    content.split(SPLIT_REG)
         .forEach((ln, index) => {
         lines[index + 1] = new line_1.Line(ln, index + 1, lines);
     });
     return lines;
-}
-exports.splitLines = splitLines;
+};
 
 
 /***/ }),
@@ -1672,7 +1760,6 @@ exports.Line = Line;
 Object.defineProperty(exports, "__esModule", { value: true });
 const Parser = __webpack_require__(/*! stylus/lib/parser */ "stylus/lib/parser");
 const translator_1 = __webpack_require__(/*! ./translator */ "./src/core/translator.ts");
-const splitLines_1 = __webpack_require__(/*! ./helpers/splitLines */ "./src/core/helpers/splitLines.ts");
 class StylusParser {
     /**
      * @param options Stylus parser options
@@ -1687,10 +1774,10 @@ class StylusParser {
      * @returns {Tree}
      */
     parse(content) {
-        const parser = new Parser(content, this.options);
+        const parser = new Parser(content.toString(), this.options);
         try {
             const stylusAST = parser.parse();
-            const translator = new translator_1.Translator(stylusAST, splitLines_1.splitLines(content));
+            const translator = new translator_1.Translator(stylusAST, content);
             return translator.transpile();
         }
         catch (err) {
@@ -1879,7 +1966,7 @@ class Reporter {
                     endline: endLine,
                     start,
                     end: end > start ? end : start,
-                    fix: typeof fix === 'string' ? { replace: fix } : null
+                    fix: fix ? { replace: fix } : null
                 }]
         });
     }
@@ -2214,9 +2301,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const visitor_1 = __webpack_require__(/*! ./visitor */ "./src/core/visitor.ts");
 const index_1 = __webpack_require__(/*! ./ast/index */ "./src/core/ast/index.ts");
 class Translator extends visitor_1.Visitor {
-    constructor(root, lines) {
+    constructor(root, content) {
         super(root);
-        this.lines = lines;
+        this.content = content;
     }
     methodNotExists(method, node) {
         const e = new Error(`No method ${method} line:${node.lineno}`);
@@ -2225,6 +2312,16 @@ class Translator extends visitor_1.Visitor {
     }
     transpile() {
         return this.visit(this.root, null);
+    }
+    visit(node, parent) {
+        const newNode = super.visit(node, parent);
+        if (newNode) {
+            newNode.content = this.content;
+        }
+        if (parent && !parent.content) {
+            parent.content = this.content;
+        }
+        return newNode;
     }
     /**
      * Root element in AST
@@ -2513,8 +2610,9 @@ class Translator extends visitor_1.Visitor {
             node.query = this.visit(block.val, node);
         }
         // Hack because stylus set Media.column on end of line
-        if (this.lines[node.lineno]) {
-            const column = this.lines[node.lineno].line.indexOf('@media');
+        const line = node.line;
+        if (line) {
+            const column = line.line.indexOf('@media');
             if (column !== -1 && column + 1 !== node.column) {
                 node.column = column + 1;
             }
@@ -2585,10 +2683,10 @@ class Translator extends visitor_1.Visitor {
             node.cond = new index_1.Ident(block.cond, node);
         }
         if (block.trueExpr) {
-            node.trueExpr = new index_1.Value(block.trueExpr, node);
+            node.trueExpr = this.visit(block.trueExpr, node);
         }
         if (block.falseExpr) {
-            node.falseExpr = new index_1.Value(block.falseExpr, node);
+            node.falseExpr = this.visit(block.falseExpr, node);
         }
         return node;
     }
@@ -2700,8 +2798,7 @@ const path_1 = __webpack_require__(/*! path */ "path");
 const rule_1 = __webpack_require__(/*! ./core/rule */ "./src/core/rule.ts");
 const config_1 = __webpack_require__(/*! ./config */ "./src/config.ts");
 const watch = __webpack_require__(/*! node-watch */ "node-watch");
-const splitLines_1 = __webpack_require__(/*! ./core/helpers/splitLines */ "./src/core/helpers/splitLines.ts");
-const calcPosition_1 = __webpack_require__(/*! ./core/helpers/calcPosition */ "./src/core/helpers/calcPosition.ts");
+const content_1 = __webpack_require__(/*! ./core/content */ "./src/core/content.ts");
 const pkg = __webpack_require__(/*! ../package.json */ "./package.json");
 class Linter {
     /**
@@ -2721,28 +2818,28 @@ class Linter {
     /**
      * Parse styl file and check rules
      */
-    lint(path, content = null) {
+    lint(path, str = null) {
         path = path_1.resolve(path);
+        if (!fs_1.existsSync(path)) {
+            throw new Error('File not exists');
+        }
+        if (typeof str !== 'string') {
+            str = fs_1.readFileSync(path, 'utf8');
+        }
+        const content = new content_1.Content(str);
         try {
-            if (!fs_1.existsSync(path)) {
-                throw new Error('File not exists');
-            }
-            if (typeof content !== 'string') {
-                content = fs_1.readFileSync(path, 'utf8');
-            }
             this.checker.loadAndInitRules();
             this.reporter.setPath(path);
             rule_1.Rule.clearContext();
-            const lines = splitLines_1.splitLines(content);
-            this.fillIgnoredLines(lines);
+            this.fillIgnoredLines(content);
             try {
                 const ast = this.parser.parse(content);
-                this.checker.checkASTRules(ast, lines);
+                this.checker.checkASTRules(ast, content);
             }
             catch (e) {
                 this.reporter.add('syntaxError', e.message, e.lineno, e.startOffset);
             }
-            this.checker.checkLineRules(content, lines);
+            this.checker.checkLineRules(content);
         }
         catch (e) {
             if (this.config.debug) {
@@ -2753,15 +2850,14 @@ class Linter {
             if (this.config.grep) {
                 this.reporter.filterErrors(this.config.grep);
             }
-            if (this.config.fix && content !== null && this.reporter.errors && this.reporter.errors.length) {
+            if (this.config.fix && str !== null && this.reporter.errors && this.reporter.errors.length) {
                 this.fix(path, content);
             }
         }
     }
-    fillIgnoredLines(lines) {
-        let ignoreBlock = false, line, index;
-        for (index = 1; index < lines.length; index += 1) {
-            line = lines[index];
+    fillIgnoredLines(content) {
+        let ignoreBlock = false;
+        content.forEach((line) => {
             if (ignoreBlock) {
                 line.isIgnored = true;
                 if (/@stlint-enable/.test(line.line)) {
@@ -2778,7 +2874,7 @@ class Linter {
             else if (/@stlint-disable/.test(line.line)) {
                 ignoreBlock = true;
             }
-        }
+        });
     }
     /**
      * Watch to some directory or file
@@ -2804,21 +2900,20 @@ class Linter {
      */
     fix(path, content) {
         let diffContent = content;
-        this.reporter.errors.forEach((error) => {
+        const fixes = this.reporter.errors.reduce((fxs, error) => {
             error.message.forEach((message) => {
                 if (message.fix !== null) {
-                    diffContent = this.applyFix(message.fix, message, diffContent);
+                    fxs.push(Object.assign({}, message));
                 }
             });
-        });
-        if (diffContent !== content) {
-            this.saveFix(path, diffContent);
+            return fxs;
+        }, []);
+        fixes.sort((a, b) => a.line - b.line);
+        diffContent = diffContent.applyFixes(fixes);
+        if (diffContent.toString() !== content.toString()) {
+            this.saveFix(path, diffContent.toString());
         }
-        return diffContent;
-    }
-    applyFix(fix, message, content) {
-        const start = calcPosition_1.calcPosition(message.line, message.start, content), end = calcPosition_1.calcPosition(message.endline, message.end, content);
-        return content.substr(0, start) + fix.replace + content.substr(end + 1);
+        return diffContent.toString();
     }
     saveFix(path, content) {
         fs_1.writeFileSync(path, content);
@@ -3357,6 +3452,7 @@ exports.Semicolons = Semicolons;
 Object.defineProperty(exports, "__esModule", { value: true });
 const rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
 const index_1 = __webpack_require__(/*! ../core/ast/index */ "./src/core/ast/index.ts");
+const line_1 = __webpack_require__(/*! ../core/line */ "./src/core/line.ts");
 /**
  * Rule for checking properties order. Can use alphabetical order or order from grouped array
  */
@@ -3365,22 +3461,24 @@ class SortOrder extends rule_1.Rule {
         super(...arguments);
         this.nodesFilter = ['block'];
     }
-    checkNode(node, lines) {
-        const names = [], order = this.state.order || [], startGroupChecking = this.state.startGroupChecking || 6;
+    checkNode(node, content) {
+        const properties = [], order = this.state.order || [], propertyToLine = {}, startGroupChecking = this.state.startGroupChecking || 6;
         node.nodes.forEach((child) => {
             if (child instanceof index_1.Property || child instanceof index_1.Value) {
-                names.push({
-                    name: child.key.toString().toLowerCase(),
+                const name = child.key.toString().toLowerCase();
+                properties.push({
+                    name,
                     lineno: child.lineno
                 });
+                propertyToLine[name] = content.getLine(child.lineno);
             }
         });
         // sort only 2 and more properties
-        if (names.length < 2) {
+        if (properties.length < 2) {
             return;
         }
         if (this.state.conf === 'alphabetical') {
-            names.sort((a, b) => {
+            properties.sort((a, b) => {
                 if (a.name === b.name) {
                     return 0;
                 }
@@ -3389,7 +3487,7 @@ class SortOrder extends rule_1.Rule {
         }
         else {
             if (!this.cache.order) {
-                this.cache.ketToGroup = {};
+                this.cache.keyToGroup = {};
                 let groupIndex = 0;
                 this.cache.order = order.reduce((sort, key) => {
                     if (typeof key === 'string') {
@@ -3397,13 +3495,13 @@ class SortOrder extends rule_1.Rule {
                     }
                     else {
                         sort.push.apply(sort, key);
-                        key.forEach((subkey) => this.cache.ketToGroup[subkey] = groupIndex);
+                        key.forEach((subkey) => this.cache.keyToGroup[subkey] = groupIndex);
                         groupIndex += 1;
                     }
                     return sort;
                 }, []);
             }
-            names.sort((keyA, keyB) => {
+            properties.sort((keyA, keyB) => {
                 const values = {
                     keyA: keyA.name,
                     keyB: keyB.name
@@ -3435,61 +3533,70 @@ class SortOrder extends rule_1.Rule {
                 return index.keyA - index.keyB;
             });
         }
-        let index = 0, indexNoOrdered = 0, hasOrderError = false, last = void (0), first = void (0), child;
-        const fix = [], partLines = [];
+        let index = 0, indexNoOrdered = 0, hasOrderError = false, last = void (0), first = void (0), child, fix = [];
+        const fixObject = {}, partLines = [];
+        Object.defineProperty(fixObject, 'toString', {
+            value: () => fix.map((line) => typeof line === 'string' ? line : line.line).join('\n')
+        });
         for (let i = 0; i < node.nodes.length; i += 1) {
             child = node.nodes[i];
             if (child instanceof index_1.Property || child instanceof index_1.Value) {
-                if (names[index].name !== child.key) {
+                if (properties[index].name !== child.key) {
                     if (!first) {
                         first = child;
                     }
                     last = child;
                     hasOrderError = true;
-                    fix[indexNoOrdered] = lines[names[index].lineno].line;
+                    fix[indexNoOrdered] = content.getLine(properties[index].lineno);
                 }
                 if (first) {
-                    partLines[indexNoOrdered] = lines[child.lineno].line;
+                    partLines[indexNoOrdered] = content.getLine(child.lineno);
                     indexNoOrdered += 1;
                 }
                 index += 1;
             }
         }
-        if (hasOrderError && last && first) {
-            for (let i = 0; i < fix.length; i += 1) {
-                if (fix[i] === undefined) {
-                    fix[i] = partLines[i];
-                }
+        for (let i = 0; i < fix.length; i += 1) {
+            if (fix[i] === undefined) {
+                fix[i] = partLines[i];
             }
-            this.msg(`Properties have wrong order -  ${names.map((item) => item.name).join(', ')}`, first.lineno, 1, lines[last.lineno].line.length, fix.join('\n'), last.lineno);
         }
-        if (!hasOrderError &&
-            names.length >= startGroupChecking &&
+        if (hasOrderError && last && first) {
+            this.msg(`Properties have wrong order -  ${properties.map((item) => item.name).join(', ')}`, first.lineno, 1, content.getLine(last.lineno).line.length, fixObject, // We can change 'fix' array below
+            last.lineno);
+        }
+        if (properties.length >= startGroupChecking &&
             this.state.conf === 'grouped') {
             let lastGroup = null;
-            node.nodes.forEach((node) => {
-                if (node instanceof index_1.Property || node instanceof index_1.Value) {
-                    const key = node.key.toString();
-                    let group = this.cache.ketToGroup[key];
-                    if (group === undefined) {
-                        const parts = key.split('-');
-                        if (parts.length > 1) {
-                            let l = parts.length - 1;
-                            while (l > 0 && group === undefined) {
-                                group = this.cache.ketToGroup[parts.slice(0, l).join('-')];
-                                l -= 1;
+            properties.forEach((property) => {
+                let group = this.cache.keyToGroup[property.name];
+                if (group === undefined) {
+                    const parts = property.name.split('-');
+                    if (parts.length > 1) {
+                        let l = parts.length - 1;
+                        while (l > 0 && group === undefined) {
+                            group = this.cache.keyToGroup[parts.slice(0, l).join('-')];
+                            l -= 1;
+                        }
+                    }
+                }
+                if (group !== undefined && group !== lastGroup) {
+                    if (lastGroup !== null) {
+                        const line = propertyToLine[property.name];
+                        if (!hasOrderError && line) {
+                            const prev = line.prev();
+                            if (prev && prev.line.trim().length !== 0) {
+                                this.msg('Need new line after group', prev.lineno, 1, prev.line.length, prev.line + '\n');
+                            }
+                        }
+                        if (hasOrderError && line) {
+                            const index = fix.indexOf(line) - 1, prev = fix[index];
+                            if (index > 0 && prev && prev instanceof line_1.Line && prev.line && prev.line.trim().length) {
+                                fix = [...fix.slice(0, index + 1), '', ...fix.slice(index + 1)];
                             }
                         }
                     }
-                    if (group !== undefined && group !== lastGroup) {
-                        if (lastGroup !== null) {
-                            const prev = node.previousSibling();
-                            if (prev && prev.lineno === node.lineno - 1) {
-                                this.msg('Need new line after group', prev.lineno, prev.column, prev.column);
-                            }
-                        }
-                        lastGroup = group;
-                    }
+                    lastGroup = group;
                 }
             });
         }

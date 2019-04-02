@@ -58,19 +58,23 @@ export class BaseConfig {
 	 * @param from
 	 * @param to
 	 */
-	extendsOption(from: Dictionary, to: Dictionary): void {
+	extendsOption(from: Dictionary, to: Dictionary): Dictionary {
+		const result: Dictionary = to;
+
 		Object.keys(from).forEach((key) => {
 			if (isPlainObject(from[key]) && isPlainObject(to[key])) {
-				this.extendsOption(from[key], to[key]);
+				result[key] = {...this.extendsOption(from[key], {...to[key]})};
 
 			} else if (Array.isArray(from[key]) && Array.isArray(to[key])) {
-				to[key] = to[key].map((val: any, index: number) =>
+				result[key] = to[key].map((val: any, index: number) =>
 					(from[key][index] !== undefined) ? from[key][index] : to[key][index]);
 
 			} else {
-				to[key] = from[key];
+				result[key] = from[key];
 			}
 		});
+
+		return result;
 	}
 
 	/**

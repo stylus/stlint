@@ -1,9 +1,18 @@
 import { ISNode } from './snode';
+import { ILine } from '../line';
+import { IContent } from '../content';
 
 export interface INode {
 	[key: string]: unknown;
 	lineno: number;
 	column: number;
+
+	content: IContent | null;
+
+	/**
+	 * Get line object
+	 */
+	line: ILine | null;
 
 	parent: INode | null;
 	block?: INode | null;

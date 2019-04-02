@@ -16,11 +16,12 @@ const multyLineText = '.item2-title\n' + 							// 1 13
 
 describe('CalcPosition helper test', () => {
 	it('Should calc position right', () => {
-		expect(calcPosition(1, 1, multyLineText)).to.equal(0);
-		expect(calcPosition(1, 5, multyLineText)).to.equal(4);
-		expect(calcPosition(2, 5, multyLineText)).to.equal(17);
-		expect(calcPosition(10, 5, multyLineText)).to.equal(167);
-		expect(calcPosition(-1, 5, multyLineText)).to.equal(4);
-		expect(calcPosition(100, 5, multyLineText)).to.equal(249);
+		const content = multyLineText;
+		expect(calcPosition(1, 1, content)).to.equal(0);
+		expect(calcPosition(1, 5, content)).to.equal(4);
+		expect(calcPosition(2, 5, content)).to.equal(17);
+		expect(calcPosition(10, 5, content)).to.equal(167);
+		expect(calcPosition(-1, 5, content)).to.equal(4);
+		expect(calcPosition(100, 5, content)).to.equal(249);
 	});
 });

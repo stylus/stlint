@@ -8,10 +8,9 @@ import { Rule } from './core/rule';
 import { IConfig } from './core/types/config';
 import { Config } from './config';
 import watch = require('node-watch');
-import { Line } from './core/line';
-import { splitLines } from './core/helpers/splitLines';
-import { IFix, IMessage } from './core/types/message';
-import { calcPosition } from './core/helpers/calcPosition';
+import { Content } from './core/content';
+import { IContent } from './core/types/content';
+import { IMessage } from './core/types/message';
 const pkg = require('../package.json');
 
 export class Linter {
@@ -44,17 +43,20 @@ export class Linter {
 	/**
 	 * Parse styl file and check rules
 	 */
-	lint(path: string, content: string | null = null): void {
+	lint(path: string, str: string | null = null): void {
 		path = resolve(path);
 
-		try {
-			if (!existsSync(path)) {
-				throw new Error('File not exists');
-			}
+		if (!existsSync(path)) {
+			throw new Error('File not exists');
+		}
 
-			if (typeof content !== 'string') {
-				content = readFileSync(path, 'utf8');
-			}
+		if (typeof str !== 'string') {
+			str = readFileSync(path, 'utf8');
+		}
+
+		const content = new Content(str);
+
+		try {
 
 			this.checker.loadAndInitRules();
 
@@ -62,22 +64,18 @@ export class Linter {
 
 			Rule.clearContext();
 
-			const
-				lines: Line[] = splitLines(content);
-
-			this.fillIgnoredLines(lines);
+			this.fillIgnoredLines(content);
 
 			try {
 				const ast = this.parser.parse(content);
-				this.checker.checkASTRules(ast, lines);
+				this.checker.checkASTRules(ast, content);
 
 			} catch (e) {
 				this.reporter.add('syntaxError', e.message, e.lineno, e.startOffset);
 			}
 
-			this.checker.checkLineRules(content, lines);
+			this.checker.checkLineRules(content);
 		} catch (e) {
-
 			if (this.config.debug) {
 				throw e;
 			}
@@ -86,26 +84,23 @@ export class Linter {
 				this.reporter.filterErrors(this.config.grep);
 			}
 
-			if (this.config.fix && content !== null && this.reporter.errors && this.reporter.errors.length) {
+			if (this.config.fix && str !== null && this.reporter.errors && this.reporter.errors.length) {
 				this.fix(path, content);
 			}
 		}
 	}
 
-	protected fillIgnoredLines(lines: Line[]): void {
+	protected fillIgnoredLines(content: Content): void {
 		let
-			ignoreBlock = false,
-			line: Line,
-			index;
+			ignoreBlock = false;
 
-		for (index = 1; index < lines.length; index += 1) {
-			line = lines[index];
-
+		content.forEach((line) => {
 			if (ignoreBlock) {
 				line.isIgnored = true;
 				if (/@stlint-enable/.test(line.line)) {
 					ignoreBlock = false;
 				}
+
 			} else if (/@stlint-ignore/.test(line.line)) {
 				line.isIgnored = true;
 				const next = line.next();
@@ -113,10 +108,11 @@ export class Linter {
 				if (next) {
 					next.isIgnored = true;
 				}
+
 			} else if (/@stlint-disable/.test(line.line)) {
 				ignoreBlock = true;
 			}
-		}
+		});
 	}
 
 	/**
@@ -143,30 +139,30 @@ export class Linter {
 	/**
 	 * Try fix some errors
 	 */
-	fix(path: string, content: string): string {
-		let diffContent = content;
+	fix(path: string, content: IContent): string {
+		let
+			diffContent = content;
 
-		this.reporter.errors.forEach((error) => {
-			error.message.forEach((message) => {
-				if (message.fix !== null) {
-					diffContent = this.applyFix(message.fix, message, diffContent);
-				}
-			});
-		});
+		const
+			fixes: IMessage[] = this.reporter.errors.reduce<IMessage[]>((fxs, error) => {
+				error.message.forEach((message: IMessage) => {
+					if (message.fix !== null) {
+						fxs.push({...message});
+					}
+				});
 
-		if (diffContent !== content) {
-			this.saveFix(path, diffContent);
+				return fxs;
+			}, []);
+
+		fixes.sort((a, b) => a.line - b.line);
+
+		diffContent = diffContent.applyFixes(fixes);
+
+		if (diffContent.toString() !== content.toString()) {
+			this.saveFix(path, diffContent.toString());
 		}
 
-		return diffContent;
-	}
-
-	protected applyFix(fix: IFix, message: IMessage, content: string): string {
-		const
-			start = calcPosition(message.line, message.start, content),
-			end = calcPosition(message.endline, message.end, content);
-
-		return content.substr(0, start) + fix.replace + content.substr(end + 1);
+		return diffContent.toString();
 	}
 
 	saveFix(path: string, content: string): void {

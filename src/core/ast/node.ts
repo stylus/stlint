@@ -1,5 +1,7 @@
 import { INode } from '../types/ast/node';
 import { ISNode } from '../types/ast/snode';
+import { Line } from '../line';
+import { IContent } from '../types/content';
 
 export class Node implements INode {
 
@@ -12,6 +14,18 @@ export class Node implements INode {
 	column: number = 0;
 	nodes: Node[] = [];
 	source: ISNode | null = null;
+
+	/**
+	 * Content
+	 */
+	content: IContent | null = null;
+
+	/**
+	 * Get line object
+	 */
+	get line(): Line | null {
+		return (this.content && this.lineno && this.content.getLine(this.lineno)) || null;
+	}
 
 	value: string | Node | null = '';
 

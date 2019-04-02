@@ -1,12 +1,12 @@
-import { Line } from '../line';
-
-export const SPLIT_REG = /\n/;
-
 /**
  * Split line on lines
  * @param content
  */
-export function splitLines(content: string): Line[] {
+import { Line } from '../line';
+
+const SPLIT_REG = /\n/;
+
+export const splitLines = (content: string): Line[] => {
 	const
 		lines: Line[] = [];
 
@@ -16,4 +16,4 @@ export function splitLines(content: string): Line[] {
 		});
 
 	return lines;
-}
+};

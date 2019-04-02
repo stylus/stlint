@@ -8,10 +8,10 @@ import { Line } from './line';
 import { Rule } from './rule';
 import { IReporter } from './types/reporter';
 import { lcfirst } from './helpers/lcfirst';
-import { splitLines } from './helpers/splitLines';
 import { statSync, readdirSync } from 'fs';
 import { resolve } from 'path';
 import _require = require('native-require');
+import { IContent } from './types/content';
 
 export class Checker {
 	rulesListForNodes: IRule[] = [];
@@ -126,10 +126,11 @@ export class Checker {
 	 * Check whole AST
 	 *
 	 * @param ast
+	 * @param content
 	 */
-	checkASTRules(ast: Tree, lines: Line[]): void {
+	checkASTRules(ast: Tree, content: IContent): void {
 		try {
-			const runner = new Runner(ast, this.check.bind(this, lines));
+			const runner = new Runner(ast, this.check.bind(this, content));
 			runner.visit(ast, null);
 
 		} catch (e) {
@@ -144,13 +145,12 @@ export class Checker {
 	 * Check line by line
 	 * @param content
 	 */
-	checkLineRules(content: string, lines: Line[]): void {
+	checkLineRules(content: IContent): void {
 		try {
-			lines
-				.forEach((line, index) => {
+			content.forEach((line, index) => {
 					if (index && !line.isIgnored) {
 						Rule.beforeCheckLine(line);
-						this.rulesListForLines.forEach((rule) => rule.checkLine && rule.checkLine(line, index, lines));
+						this.rulesListForLines.forEach((rule) => rule.checkLine && rule.checkLine(line, index, content));
 					}
 				});
 
@@ -162,19 +162,19 @@ export class Checker {
 		}
 	}
 
-	private check(lines: Line[], node: INode): void {
+	private check(content: IContent, node: INode): void {
 		const type = node.nodeName;
 
 		Rule.beforeCheckNode(node);
 
 		this.rulesListForNodes.forEach((rule: IRule) => {
-			const line = lines[node.lineno];
+			const line = node.line;
 
 			if (line && !line.isIgnored && rule.checkNode && rule.isMatchType(type)) {
-				rule.checkNode(<INode>node, lines);
+				rule.checkNode(<INode>node, content);
 			}
 		});
-	};
+	}
 
 	/**
 	 * After checking put errors in reporter

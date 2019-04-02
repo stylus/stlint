@@ -63,7 +63,7 @@ export abstract class Reporter implements IReporter {
 				endline: endLine,
 				start,
 				end: end > start ? end : start,
-				fix: typeof fix === 'string' ? {replace: fix} : null
+				fix: fix ? {replace: fix} : null
 			}]
 		});
 	}

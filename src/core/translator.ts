@@ -1,5 +1,4 @@
 import { Visitor } from './visitor';
-import { Line } from './line';
 import {
 	Tree,
 	Group,
@@ -32,9 +31,10 @@ import {
 } from './ast/index';
 
 import { ISNode } from './types/ast/snode';
+import { IContent } from './types/content';
 
 export class Translator extends  Visitor<ISNode, Node> {
-	constructor(root: ISNode, readonly lines: Line[]) {
+	constructor(root: ISNode, readonly content: IContent) {
 		super(root);
 	}
 
@@ -46,6 +46,20 @@ export class Translator extends  Visitor<ISNode, Node> {
 
 	transpile(): Tree {
 		return this.visit(this.root, null);
+	}
+
+	visit(node: ISNode, parent: Node | null): Node {
+		const newNode = super.visit(node, parent);
+
+		if (newNode) {
+			newNode.content = this.content;
+		}
+
+		if (parent && !parent.content) {
+			parent.content = this.content;
+		}
+
+		return newNode;
 	}
 
 	/**
@@ -424,8 +438,10 @@ export class Translator extends  Visitor<ISNode, Node> {
 		}
 
 		// Hack because stylus set Media.column on end of line
-		if (this.lines[node.lineno]) {
-			const column = this.lines[node.lineno].line.indexOf('@media');
+
+		const line = node.line;
+		if (line) {
+			const column = line.line.indexOf('@media');
 
 			if (column !== -1 && column + 1 !== node.column) {
 				node.column = column + 1;
@@ -518,11 +534,11 @@ export class Translator extends  Visitor<ISNode, Node> {
 		}
 
 		if (block.trueExpr) {
-			node.trueExpr = new Value(block.trueExpr, node);
+			node.trueExpr = <Value>this.visit(block.trueExpr, node);
 		}
 
 		if (block.falseExpr) {
-			node.falseExpr = new Value(block.falseExpr, node);
+			node.falseExpr = <Value>this.visit(block.falseExpr, node);
 		}
 
 		return node;

@@ -1,26 +1,26 @@
-import { IRule } from "../../src/core/types/rule";
-import { Runner } from "../../src/core/runner";
-import { StylusParser } from "../../src/core/parser";
-import { Rule } from "../../src/core/rule";
-import { Line } from "../../src/core/line";
-import { splitLines } from "../../src/core/helpers/splitLines";
+import { IRule } from '../../src/core/types/rule';
+import { Runner } from '../../src/core/runner';
+import { StylusParser } from '../../src/core/parser';
+import { Rule } from '../../src/core/rule';
+import { Content } from '../../src/core/content';
 
 /**
- * Парсит дерево АСТ а потом пробегает по нему правилом
+ * Parse tree AST and apply rule
  *
- * @param content
+ * @param text
  * @param rule
  */
-export const parseAndRun = (content: string, rule: IRule) => {
-	const lines: Line[] = splitLines(content);
+export const parseAndRun = (text: string, rule: IRule) => {
+	const
+		content = new Content(text),
+		parser = new StylusParser({}),
+		ast = parser.parse(content);
 
 	if (rule.checkNode) {
 		const
-			parser = new StylusParser({}),
-			ast = parser.parse(content),
 			runner = new Runner(ast, (node) => {
 				if (rule.checkNode && rule.isMatchType(node.nodeName)) {
-					rule.checkNode(node, lines);
+					rule.checkNode(node, content);
 				}
 			});
 
@@ -28,35 +28,38 @@ export const parseAndRun = (content: string, rule: IRule) => {
 	}
 
 	if (rule.checkLine) {
-		splitAndRun(content, rule);
+		splitAndRun(text, rule, content);
 	}
 };
 
 /**
- * Разбивает текст на строки а потом применяет к каждой строке правило
+ * Split content on lines and apply rule on every lines
  *
- * @param content
+ * @param text
  * @param rule
+ * @param content
  */
-export const splitAndRun = (content: string, rule: IRule) => {
-	const lines: Line[] = splitLines(content);
-
+export const splitAndRun = (text: string, rule: IRule, content: Content = new Content(text)) => {
 	if (rule.checkLine) {
 		Rule.clearContext();
 
-		lines
-			.forEach((line, index) => {
+		content.forEach((line, index) => {
 				if (index) {
 					Rule.beforeCheckLine(line);
-					rule.checkLine && rule.checkLine(line, index, lines);
+					rule.checkLine && rule.checkLine(line, index, content);
 				}
-			})
+			});
 	}
 };
 
-
+/**
+ * Check rule only on one line
+ *
+ * @param line
+ * @param rule
+ */
 export const checkLine = (line: string, rule: IRule): void | boolean => {
-	const lines = [new Line(line)];
+	const content = new Content(line);
 
-	return rule.checkLine && rule.checkLine(lines[0], 0, lines);
+	return rule.checkLine && rule.checkLine(content.firstLine(), 0, content);
 };

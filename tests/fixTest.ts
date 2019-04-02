@@ -1,5 +1,6 @@
 import { Linter } from '../src/linter';
 import { expect } from 'chai';
+import { Content } from '../src/core/content';
 
 const
 	wrongContentWithVar = '$p = {\n' +
@@ -9,6 +10,7 @@ const
 		'\tcolor: #ccc;\n' +
 		'\tabsolute left 10px top 20px\n' +
 		'\tbackground: #ccc;',
+
 	wrongContentMultyLine = '$p = {\n' +
 		'\tclr: #CCC\n' +
 		'}\n' +
@@ -16,15 +18,30 @@ const
 		'\tline-height: 10px;\n' +
 		'\tcolor: #ccc;\n' +
 		'\tabsolute left 10px\n' +
+		'\n' +
 		'\ttop 20px\n' +
 		'\tpadding: 20px;\n' +
 		'\tmargin 20px\n' +
 		'\tfont-size: 12px;\n' +
 		'\tbackground: #ccc;',
+
+	wrongContentMultyLineWithRightOrder = '$p = {\n' +
+		'\tclr: #CCC\n' +
+		'}\n' +
+		'.tab\n' +
+		'\tabsolute left 10px\n' +
+		'\ttop 20px\n' +
+		'\tmargin 20px\n' +
+		'\tpadding: 20px;\n' +
+		'\tfont-size: 12px;\n' +
+		'\tline-height: 10px;\n' +
+		'\tbackground: #ccc;\n' +
+		'\tcolor: #ccc;' +
+		'',
 	wrongContent = '.tab\n\tcolor: #ccc;',
 	wrongContentColon = '.tab\n\tcolor #ccc;';
 
-Linter.prototype.saveFix = (path: string, content: string): void => {
+Linter.prototype.saveFix = (): void => {
 	// do nothing
 };
 
@@ -49,7 +66,7 @@ describe('Test fix option', () => {
 
 			expect(response.passed).to.be.false;
 			expect(response.errors && response.errors.length).to.be.equal(2);
-			expect('.tab\n\tcolor: #CCC;').to.be.equal(linter.fix('./test.styl', wrongContent));
+			expect('.tab\n\tcolor: #CCC;').to.be.equal(linter.fix('./test.styl', new Content(wrongContent)));
 		});
 
 		describe('There is $p.color with same color value', () => {
@@ -73,7 +90,9 @@ describe('Test fix option', () => {
 
 				expect(response.passed).to.be.false;
 				expect(response.errors && response.errors.length).to.be.equal(4);
-				expect(wrongContentWithVar.replace(/#ccc/g, '$p.clr')).to.be.equal(linter.fix('./test.styl', wrongContentWithVar));
+				expect(
+					wrongContentWithVar.replace(/#ccc/g, '$p.clr')
+				).to.be.equal(linter.fix('./test.styl', new Content(wrongContentWithVar)));
 			});
 		});
 	});
@@ -98,7 +117,7 @@ describe('Test fix option', () => {
 
 				expect(response.passed).to.be.false;
 				expect(response.errors && response.errors.length).to.be.equal(2);
-				expect('.tab\n\tcolor #ccc;').to.be.equal(linter.fix('./test.styl', wrongContent));
+				expect('.tab\n\tcolor #ccc;').to.be.equal(linter.fix('./test.styl', new Content(wrongContent)));
 			});
 		});
 		describe('Always', () => {
@@ -122,7 +141,9 @@ describe('Test fix option', () => {
 				expect(response.passed).to.be.false;
 				expect(response.errors && response.errors.length).to.be.equal(2);
 
-				expect('.tab\n\tcolor: #ccc;').to.be.equal(linter.fix('./test.styl', wrongContentColon));
+				expect(
+					'.tab\n\tcolor: #ccc;'
+				).to.be.equal(linter.fix('./test.styl', new Content(wrongContentColon)));
 			});
 		});
 	});
@@ -152,6 +173,7 @@ describe('Test fix option', () => {
 
 				expect(response.passed).to.be.false;
 				expect(response.errors && response.errors.length).to.be.equal(1);
+
 				expect('$p = {\n' +
 					'\tclr: #CCC\n' +
 					'}\n' +
@@ -160,7 +182,7 @@ describe('Test fix option', () => {
 					'\tbackground: #ccc;\n' +
 					'\tabsolute left 10px top 20px' +
 					''
-				).to.be.equal(linter.fix('./test.styl', wrongContentWithVar));
+				).to.be.equal(linter.fix('./test.styl', new Content(wrongContentWithVar)));
 			});
 			describe('More 5', () => {
 				it('should fix properties order and add separate lines', () => {
@@ -197,7 +219,9 @@ describe('Test fix option', () => {
 					linter.lint('./test.styl', wrongContentMultyLine);
 					linter.display(false);
 
-					expect('$p = {\n' +
+					expect(
+						linter.fix('./test.styl', new Content(wrongContentMultyLine))
+					).to.be.equal('$p = {\n' +
 						'\tclr: #CCC\n' +
 						'}\n' +
 						'.tab\n' +
@@ -213,7 +237,68 @@ describe('Test fix option', () => {
 						'\tbackground: #ccc;\n' +
 						'\tcolor: #ccc;' +
 						''
-					).to.be.equal(linter.fix('./test.styl', wrongContentMultyLine));
+					);
+				});
+				describe('Already sorted', () => {
+					it('should only add separate lines', () => {
+						const linter = new Linter({
+							rules: {
+								sortOrder: {
+									conf: 'grouped',
+									order: [
+										[
+											'absolute',
+											'left',
+											'top'
+										],
+										[
+											'margin',
+											'padding'
+										],
+										[
+											'font',
+											'line-height'
+										],
+										[
+											'background',
+											'color'
+										]
+									]
+								}
+							},
+							grep: 'sortOrder',
+							reporter: 'silent',
+							fix: true
+						});
+
+						linter.lint('./test.styl', wrongContentMultyLineWithRightOrder);
+						linter.display(false);
+
+						const response = linter.reporter.response;
+
+						expect(response.passed).to.be.false;
+						expect(response.errors && response.errors.length).to.be.equal(3);
+
+						expect(
+							linter.fix('./test.styl', new Content(wrongContentMultyLineWithRightOrder))
+						).to.be.equal('$p = {\n' +
+							'\tclr: #CCC\n' +
+							'}\n' +
+							'.tab\n' +
+							'\tabsolute left 10px\n' +
+							'\ttop 20px\n' +
+							'\n' +
+							'\tmargin 20px\n' +
+							'\tpadding: 20px;\n' +
+							'\n' +
+							'\tfont-size: 12px;\n' +
+							'\tline-height: 10px;\n' +
+							'\n' +
+							'\tbackground: #ccc;\n' +
+							'\tcolor: #ccc;' +
+							''
+						);
+					});
 				});
 			});
 		});
@@ -237,13 +322,14 @@ describe('Test fix option', () => {
 
 				expect(response.passed).to.be.false;
 				expect(response.errors && response.errors.length).to.be.equal(1);
+
 				expect('$p = {\n' +
 					'\tclr: #CCC\n' +
 					'}\n' +
 					'.tab\n' +
 					'\tabsolute left 10px top 20px\n' +
 					'\tbackground: #ccc;\n' +
-					'\tcolor: #ccc;').to.be.equal(linter.fix('./test.styl', wrongContentWithVar));
+					'\tcolor: #ccc;').to.be.equal(linter.fix('./test.styl', new Content(wrongContentWithVar)));
 			});
 		});
 	});
