@@ -12,13 +12,13 @@ const
 		'\tbackground: #ccc;',
 
 	wrongPropertyOnSeveralLinesContent = '.tab\n' +
-		'\toutline #ccc;\n' +
+		'\toutline: #ccc;\n' +
 		'\tcolor: #ccc;\n' +
 		'\tabsolute left 10px top 20px\n' +
 		'\tbackground url(fromSVG(\n' +
-		'\t\t<svg width="17" height="10">\n' +
+		'\t\t\'<svg width="17" height="10">\n' +
 		'\t\t\t<path d="M14.8465234,0.154589372 C14.6397833,-0.0515297907 14.3038306,-0.0515297907" />\n' +
-		'\t\t</svg>)) no-repeat center center;\n' +
+		'\t\t</svg>\')) no-repeat center center;\n' +
 		'\tpadding: 10px;',
 
 	wrongContentMultyLine = '$p = {\n' +
@@ -194,45 +194,209 @@ describe('Test fix option', () => {
 					''
 				).to.be.equal(linter.fix('./test.styl', new Content(wrongContentWithVar)));
 			});
-			// describe('Property on several lines', () => {
-			// 	it('should fix properties order', () => {
-			// 		const linter = new Linter({
-			// 			rules: {
-			// 				sortOrder: {
-			// 					conf: 'grouped',
-			// 					order: [
-			// 						'color',
-			// 						'background',
-			// 						'absolute'
-			// 					]
-			// 				}
-			// 			},
-			// 			grep: 'sortOrder',
-			// 			reporter: 'silent',
-			// 			fix: true
-			// 		});
-			//
-			// 		linter.lint('./test.styl', wrongContentWithVar);
-			// 		linter.display(false);
-			//
-			// 		const response = linter.reporter.response;
-			//
-			// 		expect(response.passed).to.be.false;
-			// 		expect(response.errors && response.errors.length).to.be.equal(1);
-			//
-			// 		expect('.tab\n' +
-			// 			'\tabsolute left 10px top 20px\n' +
-			// 			'\tpadding: 10px;\n' +
-			// 			'\tbackground url(fromSVG(\n' +
-			// 			'\t\t<svg width="17" height="10">\n' +
-			// 			'\t\t\t<path d="M14.8465234,0.154589372 C14.6397833,-0.0515297907 14.3038306,-0.0515297907" />\n' +
-			// 			'\t\t</svg>)) no-repeat center center;\n' +
-			// 			'\tcolor: #ccc;\n' +
-			// 			'\toutline: #ccc;\n' +
-			// 			''
-			// 		).to.be.equal(linter.fix('./test.styl', new Content(wrongPropertyOnSeveralLinesContent)));
-			// 	});
-			// });
+			describe('Property on several lines', () => {
+				it('should fix properties order', () => {
+					const linter = new Linter({
+						rules: {
+							sortOrder: {
+								conf: 'grouped',
+								order: [
+									'padding',
+									'background',
+									'absolute',
+									'color',
+									'outline'
+								]
+							}
+						},
+						grep: 'sortOrder',
+						reporter: 'silent',
+						fix: true
+					});
+
+					linter.lint('./test.styl', wrongPropertyOnSeveralLinesContent);
+					linter.display(false);
+
+					const response = linter.reporter.response;
+
+					expect(response.passed).to.be.false;
+					expect(response.errors && response.errors.length).to.be.equal(1);
+
+					expect(linter.fix('./test.styl', new Content(wrongPropertyOnSeveralLinesContent)))
+						.to.be.equal(
+							'.tab\n' +
+							'\tpadding: 10px;\n' +
+							'\tbackground url(fromSVG(\n' +
+							'\t\t\'<svg width="17" height="10">\n' +
+							'\t\t\t<path d="M14.8465234,0.154589372 C14.6397833,-0.0515297907 14.3038306,-0.0515297907" />\n' +
+							'\t\t</svg>\')) no-repeat center center;\n' +
+							'\tabsolute left 10px top 20px\n' +
+							'\tcolor: #ccc;\n' +
+							'\toutline: #ccc;' +
+							''
+							);
+				});
+				describe('On last position', () => {
+					const
+						wrongPropertyOnSeveralLinesContent = '.tab\n' +
+							'\toutline: #ccc;\n' +
+							'\tcolor: #ccc;\n' +
+							'\tabsolute left 10px top 20px\n' +
+							'\tpadding: 10px;\n' +
+							'\tbackground url(fromSVG(\n' +
+							'\t\t\'<svg width="17" height="10">\n' +
+							'\t\t\t<path d="M14.8465234,0.154589372 C14.6397833,-0.0515297907 14.3038306,-0.0515297907" />\n' +
+							'\t\t</svg>\')) no-repeat center center;' +
+							'';
+
+					it('should fix properties order', () => {
+						const linter = new Linter({
+							rules: {
+								sortOrder: {
+									conf: 'grouped',
+									order: [
+										'padding',
+										'background',
+										'absolute',
+										'color',
+										'outline'
+									]
+								}
+							},
+							grep: 'sortOrder',
+							reporter: 'silent',
+							fix: true
+						});
+
+						linter.lint('./test.styl', wrongPropertyOnSeveralLinesContent);
+						linter.display(false);
+
+						const response = linter.reporter.response;
+
+						expect(response.passed).to.be.false;
+						expect(response.errors && response.errors.length).to.be.equal(1);
+
+						expect(linter.fix('./test.styl', new Content(wrongPropertyOnSeveralLinesContent)))
+							.to.be.equal(
+							'.tab\n' +
+							'\tpadding: 10px;\n' +
+							'\tbackground url(fromSVG(\n' +
+							'\t\t\'<svg width="17" height="10">\n' +
+							'\t\t\t<path d="M14.8465234,0.154589372 C14.6397833,-0.0515297907 14.3038306,-0.0515297907" />\n' +
+							'\t\t</svg>\')) no-repeat center center;\n' +
+							'\tabsolute left 10px top 20px\n' +
+							'\tcolor: #ccc;\n' +
+							'\toutline: #ccc;' +
+							''
+						);
+					});
+
+					describe('On last position property has normal order', () => {
+						const
+							wrongPropertyOnSeveralLinesContent = '.tab\n' +
+								'\tleft 10px\n' +
+								'\tcolor: #ccc\n' +
+								'\tabsolute left 10px top 20px\n' +
+								'\tbackground url(fromSVG(\n' +
+								'\t\t\'<svg width="17" height="10">  <path d="M14.8465234,0.154589372 C14.6397833,-0.0515297907 14.3038306,-0.0515297907" />  </svg>\'\n' +
+								'\t)) no-repeat center center\n' +
+								'\tpadding: 10px;\n' +
+								'\toutline #ccc;\n' +
+								'';
+
+						it('should fix properties order', () => {
+							const linter = new Linter({
+								rules: {
+									sortOrder: {
+										conf: 'grouped',
+										order: [
+											'padding',
+											'background',
+											'absolute',
+											'color',
+											'outline'
+										]
+									}
+								},
+								grep: 'sortOrder',
+								reporter: 'silent',
+								fix: true
+							});
+
+							linter.lint('./test.styl', wrongPropertyOnSeveralLinesContent);
+							linter.display(false);
+
+							const response = linter.reporter.response;
+
+							expect(response.passed).to.be.false;
+							expect(response.errors && response.errors.length).to.be.equal(1);
+
+							expect(linter.fix('./test.styl', new Content(wrongPropertyOnSeveralLinesContent)))
+								.to.be.equal(
+								'.tab\n' +
+								'\tpadding: 10px;\n' +
+								'\tbackground url(fromSVG(\n' +
+								'\t\t\'<svg width="17" height="10">\n' +
+								'\t\t\t<path d="M14.8465234,0.154589372 C14.6397833,-0.0515297907 14.3038306,-0.0515297907" />\n' +
+								'\t\t</svg>\')) no-repeat center center;\n' +
+								'\tabsolute left 10px top 20px\n' +
+								'\tcolor: #ccc;\n' +
+								'\toutline: #ccc;' +
+								''
+							);
+						});
+					});
+				});
+				describe('Default core order', () => {
+					const
+						wrongPropertyOnSeveralLinesContent = '.tab\n' +
+							'\toutline #ccc;\n' +
+							'\tcolor: #ccc\n' +
+							'\tabsolute left 10px top 20px\n' +
+							'\tbackground url(fromSVG(\n' +
+							'\t\t\'<svg width="17" height="10">\n' +
+							'\t\t\t<path d="M14.8465234,0.154589372 C14.6397833,-0.0515297907 14.3038306,-0.0515297907" />\n' +
+							'\t\t</svg>\'\n' +
+							'\t)) no-repeat center center\n' +
+							'\tpadding: 10px;';
+
+					it('should fix properties order', () => {
+						const linter = new Linter({
+							rules: {
+								sortOrder: {
+									conf: 'grouped'
+								}
+							},
+							grep: 'sortOrder',
+							reporter: 'silent',
+							fix: true
+						});
+
+						linter.lint('./test.styl', wrongPropertyOnSeveralLinesContent);
+						linter.display(false);
+
+						const response = linter.reporter.response;
+
+						expect(response.passed).to.be.false;
+						expect(response.errors && response.errors.length).to.be.equal(1);
+
+						expect(linter.fix('./test.styl', new Content(wrongPropertyOnSeveralLinesContent)))
+							.to.be.equal(
+							'.tab\n' +
+							'\tabsolute left 10px top 20px\n' +
+							'\tpadding: 10px;\n' +
+							'\tcolor: #ccc\n' +
+							'\tbackground url(fromSVG(\n' +
+							'\t\t\'<svg width="17" height="10">\n' +
+							'\t\t\t<path d="M14.8465234,0.154589372 C14.6397833,-0.0515297907 14.3038306,-0.0515297907" />\n' +
+							'\t\t</svg>\'\n' +
+							'\t)) no-repeat center center\n' +
+							'\toutline #ccc;' +
+							''
+						);
+					});
+				});
+			});
 			describe('More 5', () => {
 				it('should fix properties order and add separate lines', () => {
 					const linter = new Linter({

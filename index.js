@@ -3464,13 +3464,14 @@ class SortOrder extends rule_1.Rule {
         this.nodesFilter = ['block'];
     }
     checkNode(node, content) {
-        const properties = [], order = this.state.order || [], propertyToLine = {}, startGroupChecking = this.state.startGroupChecking || 6;
+        const getLastLine = (child) => (child.value && child.value instanceof index_1.Node) ? child.value.lineno : child.lineno, properties = [], order = this.state.order || [], propertyToLine = {}, startGroupChecking = this.state.startGroupChecking || 6;
         node.nodes.forEach((child) => {
             if (child instanceof index_1.Property || child instanceof index_1.Value) {
                 const name = child.key.toString().toLowerCase();
                 properties.push({
                     name,
-                    lineno: child.lineno
+                    startLine: child.lineno,
+                    endLine: getLastLine(child)
                 });
                 propertyToLine[name] = content.getLine(child.lineno);
             }
@@ -3538,7 +3539,17 @@ class SortOrder extends rule_1.Rule {
         let index = 0, indexNoOrdered = 0, hasOrderError = false, last = void (0), first = void (0), child, fix = [];
         const fixObject = {}, partLines = [];
         Object.defineProperty(fixObject, 'toString', {
-            value: () => fix.map((line) => typeof line === 'string' ? line : line.line).join('\n')
+            value: () => fix
+                .reduce((array, line) => {
+                if (Array.isArray(line)) {
+                    array.push(...line);
+                }
+                else {
+                    array.push(line);
+                }
+                return array;
+            }, [])
+                .map((line) => typeof line === 'string' ? line : line.line).join('\n')
         });
         for (let i = 0; i < node.nodes.length; i += 1) {
             child = node.nodes[i];
@@ -3550,10 +3561,31 @@ class SortOrder extends rule_1.Rule {
                     }
                     last = child;
                     hasOrderError = true;
-                    fix[indexNoOrdered] = content.getLine(properties[index].lineno);
+                    let start = properties[index].startLine;
+                    if (start !== properties[index].endLine) {
+                        const st = [];
+                        for (; start <= properties[index].endLine; start += 1) {
+                            st.push(content.getLine(start));
+                        }
+                        fix[indexNoOrdered] = st;
+                    }
+                    else {
+                        fix[indexNoOrdered] = content.getLine(start);
+                    }
                 }
                 if (first) {
-                    partLines[indexNoOrdered] = content.getLine(child.lineno);
+                    const end = getLastLine(child);
+                    let start = child.lineno;
+                    if (start !== end) {
+                        const st = [];
+                        for (; start <= end; start += 1) {
+                            st.push(content.getLine(start));
+                        }
+                        partLines[indexNoOrdered] = st;
+                    }
+                    else {
+                        partLines[indexNoOrdered] = content.getLine(start);
+                    }
                     indexNoOrdered += 1;
                 }
                 index += 1;
@@ -3566,7 +3598,7 @@ class SortOrder extends rule_1.Rule {
         }
         if (hasOrderError && last && first) {
             this.msg(`Properties have wrong order -  ${properties.map((item) => item.name).join(', ')}`, first.lineno, 1, content.getLine(last.lineno).line.length, fixObject, // We can change 'fix' array below
-            last.lineno);
+            getLastLine(last));
         }
         if (properties.length >= startGroupChecking &&
             this.state.conf === 'grouped') {

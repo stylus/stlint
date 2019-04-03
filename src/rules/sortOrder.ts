@@ -1,5 +1,5 @@
 import { Rule } from '../core/rule';
-import { Block, Property, Value } from '../core/ast/index';
+import { Block, Property, Value, Node } from '../core/ast/index';
 import { IState } from '../core/types/state';
 import { Line } from '../core/line';
 import { Content } from '../core/content';
@@ -11,7 +11,8 @@ interface IOrderState extends IState {
 
 interface TmpOrderItem {
 	name: string;
-	lineno: number;
+	startLine: number;
+	endLine: number;
 }
 
 /**
@@ -22,6 +23,8 @@ export class SortOrder extends Rule<IOrderState> {
 
 	checkNode(node: Block, content: Content): void {
 		const
+			getLastLine = (child: Node): number =>
+				(child.value && child.value instanceof Node) ? child.value.lineno : child.lineno,
 			properties: TmpOrderItem[] = [],
 			order = this.state.order || [],
 			propertyToLine: Dictionary<Line> = {},
@@ -29,12 +32,14 @@ export class SortOrder extends Rule<IOrderState> {
 
 		node.nodes.forEach((child) => {
 			if (child instanceof Property || child instanceof Value) {
-				const name = child.key.toString().toLowerCase();
+				const
+					name = child.key.toString().toLowerCase();
 
 				properties.push(
 					{
 						name,
-						lineno: child.lineno
+						startLine: child.lineno,
+						endLine: getLastLine(child)
 					}
 				);
 
@@ -122,14 +127,24 @@ export class SortOrder extends Rule<IOrderState> {
 			last: Property | Value | void = void (0),
 			first: Property | Value | void = void (0),
 			child,
-			fix: Array<Line | string> = [];
+			fix: Array<Line | string | Array<Line>> = [];
 
 		const
 			fixObject = {},
-			partLines: Array<Line> = [];
+			partLines: Array<Line | Array<Line>> = [];
 
 		Object.defineProperty(<any>fixObject, 'toString', {
-			value: (): string =>  fix.map((line) => typeof line === 'string' ? line : line.line).join('\n')
+			value: (): string =>  fix
+				.reduce<Array<Line | string>>((array, line) => {
+					if (Array.isArray(line)) {
+						array.push(...line);
+					} else {
+						array.push(line);
+					}
+
+					return array;
+				}, [])
+				.map((line) => typeof line === 'string' ? line : line.line).join('\n')
 		});
 
 		for (let i = 0; i < node.nodes.length; i += 1) {
@@ -147,11 +162,39 @@ export class SortOrder extends Rule<IOrderState> {
 
 					hasOrderError = true;
 
-					fix[indexNoOrdered] = content.getLine(properties[index].lineno);
+					let
+						start = properties[index].startLine;
+
+					if (start !== properties[index].endLine) {
+						const st = [];
+
+						for (; start <= properties[index].endLine; start += 1) {
+							st.push(content.getLine(start));
+						}
+
+						fix[indexNoOrdered] = st;
+					} else {
+						fix[indexNoOrdered] = content.getLine(start);
+					}
 				}
 
 				if (first) {
-					partLines[indexNoOrdered] = content.getLine(child.lineno);
+					const end = getLastLine(child);
+					let
+						start = child.lineno;
+
+					if (start !== end) {
+						const st = [];
+
+						for (; start <= end; start += 1) {
+							st.push(content.getLine(start));
+						}
+
+						partLines[indexNoOrdered] = st;
+					} else {
+						partLines[indexNoOrdered] = content.getLine(start);
+					}
+
 					indexNoOrdered += 1;
 				}
 
@@ -172,7 +215,7 @@ export class SortOrder extends Rule<IOrderState> {
 				1,
 				content.getLine(last.lineno).line.length,
 				<any>fixObject, // We can change 'fix' array below
-				last.lineno
+				getLastLine(last)
 			);
 		}
 
