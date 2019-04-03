@@ -167,7 +167,7 @@ exports.StylusLinter = StylusLinter;
 /*! exports provided: name, version, description, main, bin, files, repository, bugs, scripts, keywords, author, license, dependencies, devDependencies, mocha, default */
 /***/ (function(module) {
 
-module.exports = {"name":"stlint","version":"1.0.28","description":"Stylus Linter","main":"index.js","bin":{"stlint":"./bin/stlint"},"files":["bin/","index.js","src/"],"repository":{"type":"git","url":"https://github.com/stylus/stlint"},"bugs":{"url":"https://github.com/stylus/stlint/issues"},"scripts":{"newversion":"npm test && npm version patch --no-git-tag-version && npm run build && npm run doc && npm run newversiongit && npm publish ./","newversiongit":"git add --all  && git commit -m \"New version $npm_package_version. Read more https://github.com/stylus/stlint/releases/tag/$npm_package_version \" && git tag $npm_package_version && git push --tags origin HEAD:master","start":"webpack --watch","build":"webpack","doc":"./bin/stlint --doc rules --fix","test2":"./bin/stlint ./test.styl","test":"mocha tests/**/**.ts tests/**.ts","fix":"tslint -c tslint.json ./src/**/*.ts ./src/**/**/*.ts ./src/*.ts --fix"},"keywords":["lint","linter","stylus","stylus-linter","stlint"],"author":"Chupurnov Valeriy<chupurnov@gmail.com>","license":"MIT","dependencies":{"async":"^2.6.2","chalk":"^2.4.2","columnify":"^1.5.4","glob":"^7.1.3","native-require":"^1.1.4","node-watch":"^0.6.0","strip-json-comments":"^2.0.1","stylus":"github:stylus/stylus#dev","yargs":"^13.2.2"},"devDependencies":{"@types/async":"^2.4.1","@types/chai":"^4.1.7","@types/glob":"^7.1.1","@types/mocha":"^5.2.6","@types/node":"^11.12.2","awesome-typescript-loader":"^5.2.1","chai":"^4.2.0","mocha":"^6.0.1","ts-node":"^8.0.3","tslint":"^5.14.0","tslint-config-prettier":"^1.18.0","tslint-plugin-prettier":"^2.0.1","typescript":"^3.4.1","typings":"^2.1.1","webpack":"^4.29.5","webpack-cli":"^3.3.0","webpack-node-externals":"^1.7.2"},"mocha":{"require":["ts-node/register","tests/staff/bootstrap.ts"]}};
+module.exports = {"name":"stlint","version":"1.0.29","description":"Stylus Linter","main":"index.js","bin":{"stlint":"./bin/stlint"},"files":["bin/","index.js","src/"],"repository":{"type":"git","url":"https://github.com/stylus/stlint"},"bugs":{"url":"https://github.com/stylus/stlint/issues"},"scripts":{"newversion":"npm test && npm version patch --no-git-tag-version && npm run build && npm run doc && npm run newversiongit && npm publish ./","newversiongit":"git add --all  && git commit -m \"New version $npm_package_version. Read more https://github.com/stylus/stlint/releases/tag/$npm_package_version \" && git tag $npm_package_version && git push --tags origin HEAD:master","start":"webpack --watch","build":"webpack","doc":"./bin/stlint --doc rules --fix","test2":"./bin/stlint ./test.styl","test":"mocha tests/**/**.ts tests/**.ts","fix":"tslint -c tslint.json ./src/**/*.ts ./src/**/**/*.ts ./src/*.ts --fix"},"keywords":["lint","linter","stylus","stylus-linter","stlint"],"author":"Chupurnov Valeriy<chupurnov@gmail.com>","license":"MIT","dependencies":{"async":"^2.6.2","chalk":"^2.4.2","columnify":"^1.5.4","glob":"^7.1.3","native-require":"^1.1.4","node-watch":"^0.6.0","strip-json-comments":"^2.0.1","stylus":"github:stylus/stylus#dev","yargs":"^13.2.2"},"devDependencies":{"@types/async":"^2.4.1","@types/chai":"^4.1.7","@types/glob":"^7.1.1","@types/mocha":"^5.2.6","@types/node":"^11.12.2","awesome-typescript-loader":"^5.2.1","chai":"^4.2.0","mocha":"^6.0.1","ts-node":"^8.0.3","tslint":"^5.14.0","tslint-config-prettier":"^1.18.0","tslint-plugin-prettier":"^2.0.1","typescript":"^3.4.1","typings":"^2.1.1","webpack":"^4.29.5","webpack-cli":"^3.3.0","webpack-node-externals":"^1.7.2"},"mocha":{"require":["ts-node/register","tests/staff/bootstrap.ts"]}};
 
 /***/ }),
 
@@ -3493,11 +3493,11 @@ class SortOrder extends rule_1.Rule {
                 let groupIndex = 0;
                 this.cache.order = order.reduce((sort, key) => {
                     if (typeof key === 'string') {
-                        sort.push(key);
+                        sort.push(key.toLowerCase());
                     }
                     else {
-                        sort.push.apply(sort, key);
-                        key.forEach((subkey) => this.cache.keyToGroup[subkey] = groupIndex);
+                        sort.push.apply(sort, key.map((subkey) => subkey.toLowerCase()));
+                        key.forEach((subkey) => this.cache.keyToGroup[subkey.toLowerCase()] = groupIndex);
                         groupIndex += 1;
                     }
                     return sort;
@@ -3543,7 +3543,8 @@ class SortOrder extends rule_1.Rule {
         for (let i = 0; i < node.nodes.length; i += 1) {
             child = node.nodes[i];
             if (child instanceof index_1.Property || child instanceof index_1.Value) {
-                if (properties[index].name !== child.key) {
+                const name = child.key.toString().toLowerCase();
+                if (properties[index].name !== name) {
                     if (!first) {
                         first = child;
                     }
