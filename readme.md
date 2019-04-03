@@ -44,7 +44,6 @@ npm install stlint -g
 
 `stlint styl/ --watch -c path/to/config/.configrc` Watch dir, use custom config
 
-
 ## CLI
 `-h` or `--help`    Display list of commands
 
@@ -470,6 +469,59 @@ Allo or deny some mixin instead of unit statement
 }
 ```
 ----<!-- RULES END -->
+
+## Self rules
+You can create folder and use it for extra rules
+```json
+{
+  "extraRules": "/Users/v-chupurnov/WebstormProjects/test/rules/"
+}
+``` 
+In this folder you can create native JavaScript files
+```javascript
+const Rgb = require('stlint').ast.RGB;
+
+function TestRule() {
+	nodesFilter = ['rgb']; // can be one of https://github.com/stylus/stlint/tree/master/src/core/ast
+
+	/**
+	 * Check the AST nodes
+	 * @param node
+	 */
+	this.checkNode = (node) => {
+		if (node instanceof Rgb) {
+			console.log(this.state.conf); // test111
+			console.log(this.state.someExtraVariable); // 112
+			// this.msg('Test error on test node', node.lineno, node.column, node.line.length);
+		}
+	};
+
+	/**
+	 * Check every line
+	 * @param line
+	 */
+	this.checkLine = (line) => {
+		if (line.lineno === 1) {
+			// this.msg('Test error on test line', line.lineno, 1, line.line.length);
+		}
+	};
+}
+
+module.exports.TestRule = TestRule;
+```
+And you need add this rule in your config
+```json
+{
+  "extraRules": "/Users/v-chupurnov/WebstormProjects/test/rules/",
+  "rules": {
+    "testRule": {
+      "conf": "test111",
+      "someExtraVariable": 112,
+      "enabled": true
+    }
+  }
+}
+``` 
 
 ## License
 

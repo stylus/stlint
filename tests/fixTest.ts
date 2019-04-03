@@ -11,6 +11,16 @@ const
 		'\tabsolute left 10px top 20px\n' +
 		'\tbackground: #ccc;',
 
+	wrongPropertyOnSeveralLinesContent = '.tab\n' +
+		'\toutline #ccc;\n' +
+		'\tcolor: #ccc;\n' +
+		'\tabsolute left 10px top 20px\n' +
+		'\tbackground url(fromSVG(\n' +
+		'\t\t<svg width="17" height="10">\n' +
+		'\t\t\t<path d="M14.8465234,0.154589372 C14.6397833,-0.0515297907 14.3038306,-0.0515297907" />\n' +
+		'\t\t</svg>)) no-repeat center center;\n' +
+		'\tpadding: 10px;',
+
 	wrongContentMultyLine = '$p = {\n' +
 		'\tclr: #CCC\n' +
 		'}\n' +
@@ -183,6 +193,45 @@ describe('Test fix option', () => {
 					'\tabsolute left 10px top 20px' +
 					''
 				).to.be.equal(linter.fix('./test.styl', new Content(wrongContentWithVar)));
+			});
+			describe('Property on several lines', () => {
+				it('should fix properties order', () => {
+					const linter = new Linter({
+						rules: {
+							sortOrder: {
+								conf: 'grouped',
+								order: [
+									'color',
+									'background',
+									'absolute'
+								]
+							}
+						},
+						grep: 'sortOrder',
+						reporter: 'silent',
+						fix: true
+					});
+
+					linter.lint('./test.styl', wrongContentWithVar);
+					linter.display(false);
+
+					const response = linter.reporter.response;
+
+					expect(response.passed).to.be.false;
+					expect(response.errors && response.errors.length).to.be.equal(1);
+
+					expect('.tab\n' +
+						'\tabsolute left 10px top 20px\n' +
+						'\tpadding: 10px;\n' +
+						'\tbackground url(fromSVG(\n' +
+						'\t\t<svg width="17" height="10">\n' +
+						'\t\t\t<path d="M14.8465234,0.154589372 C14.6397833,-0.0515297907 14.3038306,-0.0515297907" />\n' +
+						'\t\t</svg>)) no-repeat center center;\n' +
+						'\tcolor: #ccc;\n' +
+						'\toutline: #ccc;\n' +
+						''
+					).to.be.equal(linter.fix('./test.styl', new Content(wrongPropertyOnSeveralLinesContent)));
+				});
 			});
 			describe('More 5', () => {
 				it('should fix properties order and add separate lines', () => {
