@@ -62,10 +62,10 @@ export class SortOrder extends Rule<IOrderState> {
 
 				this.cache.order = order.reduce<string[]>((sort, key) => {
 					if (typeof key === 'string') {
-						sort.push(key);
+						sort.push(key.toLowerCase());
 					} else {
-						sort.push.apply(sort, key);
-						key.forEach((subkey) => this.cache.keyToGroup[subkey] = groupIndex);
+						sort.push.apply(sort, key.map((subkey) => subkey.toLowerCase()));
+						key.forEach((subkey) => this.cache.keyToGroup[subkey.toLowerCase()] = groupIndex);
 						groupIndex += 1;
 					}
 					return sort;
@@ -136,7 +136,9 @@ export class SortOrder extends Rule<IOrderState> {
 			child = node.nodes[i];
 
 			if (child instanceof Property || child instanceof Value) {
-				if (properties[index].name !== child.key) {
+				const name = child.key.toString().toLowerCase();
+
+				if (properties[index].name !== name) {
 					if (!first) {
 						first = child;
 					}

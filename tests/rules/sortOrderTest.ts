@@ -120,6 +120,42 @@ describe('Test order rule', () => {
 			});
 		});
 
+		describe('Different register', () => {
+			it('should check the properties has some order', () => {
+				const rule = new SortOrder({
+					conf: 'grouped',
+					startGroupChecking: 17,
+					order: [
+						[
+							'position',
+							'right',
+							'useGPU',
+							'usegRu',
+							'left'
+						],
+						['font-size'],
+						[
+							'color',
+							'background-color'
+						]
+					]
+				});
+
+				parseAndRun('.tab\n' +
+					'\tposition absolute\n' +
+					'\tright 10px\n' +
+					'\tuseGPU();\n' +
+					'\tuseGRU();\n' +
+					'\tleft 10px\n' +
+					'\tfont-size 10px\n' +
+					'\tcolor #CCC\n' +
+					'\tbackground-color $p.color\n' +
+					'', rule);
+
+				expect(rule.errors.length).to.be.equal(0);
+			});
+		});
+
 		describe('Check default options rule', () => {
 			it('Should check by default options', () => {
 				const rule = new SortOrder({
