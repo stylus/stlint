@@ -209,13 +209,15 @@ export class SortOrder extends Rule<IOrderState> {
 		}
 
 		if (hasOrderError && last && first) {
+			const lastLine = getLastLine(last);
+
 			this.msg(
 				`Properties have wrong order -  ${properties.map((item) => item.name).join(', ')}`,
 				first.lineno,
 				1,
-				content.getLine(last.lineno).line.length,
+				content.getLine(lastLine).line.length,
 				<any>fixObject, // We can change 'fix' array below
-				getLastLine(last)
+				lastLine
 			);
 		}
 

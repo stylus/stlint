@@ -160,7 +160,7 @@
     ],
     "max-file-line-count": [
       true,
-      600
+      700
     ],
     "max-line-length": [
       true,

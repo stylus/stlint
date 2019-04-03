@@ -1041,6 +1041,7 @@ const isPlainObject_1 = __webpack_require__(/*! ./helpers/isPlainObject */ "./sr
 const fs_1 = __webpack_require__(/*! fs */ "fs");
 const stripJsonComments = __webpack_require__(/*! strip-json-comments */ "strip-json-comments");
 const path_1 = __webpack_require__(/*! path */ "path");
+const mergeArray_1 = __webpack_require__(/*! ./helpers/mergeArray */ "./src/core/helpers/mergeArray.ts");
 class BaseConfig {
     constructor() {
         this.configName = '.stlintrc';
@@ -1093,7 +1094,7 @@ class BaseConfig {
                 result[key] = Object.assign({}, this.extendsOption(from[key], Object.assign({}, to[key])));
             }
             else if (Array.isArray(from[key]) && Array.isArray(to[key])) {
-                result[key] = to[key].map((val, index) => (from[key][index] !== undefined) ? from[key][index] : to[key][index]);
+                result[key] = mergeArray_1.mergeArray(to[key], from[key]);
             }
             else {
                 result[key] = from[key];
@@ -1597,6 +1598,33 @@ exports.isPlainObject = (obj) => {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.lcfirst = (str) => str[0].toLowerCase() + str.substr(1);
+
+
+/***/ }),
+
+/***/ "./src/core/helpers/mergeArray.ts":
+/*!****************************************!*\
+  !*** ./src/core/helpers/mergeArray.ts ***!
+  \****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * Merge two array
+ * @param a
+ * @param b
+ */
+function mergeArray(a, b) {
+    let result = a.map((value, index) => b[index] !== undefined ? b[index] : a[index]);
+    if (b.length > a.length) {
+        result = result.concat(b.slice(a.length));
+    }
+    return result;
+}
+exports.mergeArray = mergeArray;
 
 
 /***/ }),
@@ -3597,8 +3625,9 @@ class SortOrder extends rule_1.Rule {
             }
         }
         if (hasOrderError && last && first) {
-            this.msg(`Properties have wrong order -  ${properties.map((item) => item.name).join(', ')}`, first.lineno, 1, content.getLine(last.lineno).line.length, fixObject, // We can change 'fix' array below
-            getLastLine(last));
+            const lastLine = getLastLine(last);
+            this.msg(`Properties have wrong order -  ${properties.map((item) => item.name).join(', ')}`, first.lineno, 1, content.getLine(lastLine).line.length, fixObject, // We can change 'fix' array below
+            lastLine);
         }
         if (properties.length >= startGroupChecking &&
             this.state.conf === 'grouped') {

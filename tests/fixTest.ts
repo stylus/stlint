@@ -298,7 +298,8 @@ describe('Test fix option', () => {
 								'\tcolor: #ccc\n' +
 								'\tabsolute left 10px top 20px\n' +
 								'\tbackground url(fromSVG(\n' +
-								'\t\t\'<svg width="17" height="10">  <path d="M14.8465234,0.154589372 C14.6397833,-0.0515297907 14.3038306,-0.0515297907" />  </svg>\'\n' +
+								'\t\t\'<svg width="17" height="10"><path d="M14.8465234,0.154589372 ' +
+								'C14.6397833,-0.0515297907 14.3038306,-0.0515297907" />  </svg>\'\n' +
 								'\t)) no-repeat center center\n' +
 								'\tpadding: 10px;\n' +
 								'\toutline #ccc;\n' +
@@ -313,6 +314,7 @@ describe('Test fix option', () => {
 											'padding',
 											'background',
 											'absolute',
+											'left',
 											'color',
 											'outline'
 										]
@@ -336,12 +338,13 @@ describe('Test fix option', () => {
 								'.tab\n' +
 								'\tpadding: 10px;\n' +
 								'\tbackground url(fromSVG(\n' +
-								'\t\t\'<svg width="17" height="10">\n' +
-								'\t\t\t<path d="M14.8465234,0.154589372 C14.6397833,-0.0515297907 14.3038306,-0.0515297907" />\n' +
-								'\t\t</svg>\')) no-repeat center center;\n' +
+								'\t\t\'<svg width="17" height="10"><path d="M14.8465234,0.154589372 ' +
+								'C14.6397833,-0.0515297907 14.3038306,-0.0515297907" />  </svg>\'\n' +
+								'\t)) no-repeat center center\n' +
 								'\tabsolute left 10px top 20px\n' +
-								'\tcolor: #ccc;\n' +
-								'\toutline: #ccc;' +
+								'\tleft 10px\n' +
+								'\tcolor: #ccc\n' +
+								'\toutline #ccc;\n' +
 								''
 							);
 						});

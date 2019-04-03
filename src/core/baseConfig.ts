@@ -3,6 +3,7 @@ import { existsSync, readFileSync, statSync } from 'fs';
 import stripJsonComments = require('strip-json-comments');
 import { resolve, dirname } from 'path';
 import { IStats } from './types/IStats';
+import { mergeArray } from './helpers/mergeArray';
 
 export class BaseConfig {
 	configName: string = '.stlintrc';
@@ -66,8 +67,7 @@ export class BaseConfig {
 				result[key] = {...this.extendsOption(from[key], {...to[key]})};
 
 			} else if (Array.isArray(from[key]) && Array.isArray(to[key])) {
-				result[key] = to[key].map((val: any, index: number) =>
-					(from[key][index] !== undefined) ? from[key][index] : to[key][index]);
+				result[key] = mergeArray(to[key], from[key]);
 
 			} else {
 				result[key] = from[key];
