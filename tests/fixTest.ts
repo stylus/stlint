@@ -49,7 +49,7 @@ const
 		'\tcolor: #ccc;' +
 		'',
 	wrongContent = '.tab\n\tcolor: #ccc;',
-	wrongContentColon = '.tab\n\tcolor #ccc;';
+	wrongContentColon = '.tab\n\tcolor #ccc';
 
 Linter.prototype.saveFix = (): void => {
 	// do nothing
@@ -149,10 +149,10 @@ describe('Test fix option', () => {
 				const response = linter.reporter.response;
 
 				expect(response.passed).to.be.false;
-				expect(response.errors && response.errors.length).to.be.equal(2);
+				expect(response.errors && response.errors.length).to.be.equal(1);
 
 				expect(
-					'.tab\n\tcolor: #ccc;'
+					'.tab\n\tcolor: #ccc'
 				).to.be.equal(linter.fix('./test.styl', new Content(wrongContentColon)));
 			});
 		});
@@ -379,6 +379,57 @@ describe('Test fix option', () => {
 					'\tabsolute left 10px top 20px\n' +
 					'\tbackground: #ccc;\n' +
 					'\tcolor: #ccc;').to.be.equal(linter.fix('./test.styl', new Content(wrongContentWithVar)));
+			});
+		});
+	});
+	describe('Fix semicolons', () => {
+		describe('Never', () => {
+			it('should remove semicolon after property and value', () => {
+				const linter = new Linter({
+					rules: {
+						semicolons: {
+							conf: 'never'
+						}
+					},
+					grep: 'semicolons',
+					reporter: 'silent',
+					fix: true
+				});
+
+				linter.lint('./test.styl', wrongContent);
+				linter.display(false);
+
+				const response = linter.reporter.response;
+
+				expect(response.passed).to.be.false;
+				expect(response.errors && response.errors.length).to.be.equal(1);
+				expect('.tab\n\tcolor: #ccc').to.be.equal(linter.fix('./test.styl', new Content(wrongContent)));
+			});
+		});
+		describe('Always', () => {
+			it('should add semicolon after property and value', () => {
+				const linter = new Linter({
+					rules: {
+						semicolons: {
+							conf: 'always'
+						}
+					},
+					grep: 'semicolons',
+					reporter: 'silent',
+					fix: true
+				});
+
+				linter.lint('./test.styl', wrongContentColon);
+				linter.display(false);
+
+				const response = linter.reporter.response;
+
+				expect(response.passed).to.be.false;
+				expect(response.errors && response.errors.length).to.be.equal(1);
+
+				expect(
+					'.tab\n\tcolor #ccc;'
+				).to.be.equal(linter.fix('./test.styl', new Content(wrongContentColon)));
 			});
 		});
 	});

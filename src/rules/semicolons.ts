@@ -34,9 +34,9 @@ export class Semicolons extends Rule {
 		}
 
 		if (this.state.conf === 'never' && semicolon === true) {
-			this.msg('unnecessary semicolon found', line.lineno, index);
+			this.msg('unnecessary semicolon found', line.lineno, index + 1, index + 1, '');
 		} else if (this.state.conf === 'always' && semicolon === false) {
-			this.msg('missing semicolon', line.lineno, line.line.length);
+			this.msg('missing semicolon', line.lineno, line.line.length + 1, line.line.length + 1, ';');
 		}
 
 		return semicolon;

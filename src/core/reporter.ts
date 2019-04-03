@@ -63,7 +63,7 @@ export abstract class Reporter implements IReporter {
 				endline: endLine,
 				start,
 				end: end > start ? end : start,
-				fix: fix ? {
+				fix: (fix !== undefined && fix !== null) ? {
 					replace: fix.toString()
 				} : null
 			}]
