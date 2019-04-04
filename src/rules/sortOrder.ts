@@ -9,7 +9,7 @@ interface IOrderState extends IState {
 	startGroupChecking?: number
 }
 
-interface TmpOrderItem {
+interface PropertyNameAndBound {
 	name: string;
 	startLine: number;
 	endLine: number;
@@ -30,7 +30,7 @@ export class SortOrder extends Rule<IOrderState> {
 
 	checkNode(node: Block, content: Content): void {
 		const
-			properties: TmpOrderItem[] = [],
+			properties: PropertyNameAndBound[] = [],
 			propertyToLine: Dictionary<Line> = {};
 
 		this.fillPropertiesNameAndLine(node, properties, propertyToLine, content);
@@ -69,7 +69,7 @@ export class SortOrder extends Rule<IOrderState> {
 
 	private fillPropertiesNameAndLine(
 		node: Block,
-		properties: TmpOrderItem[],
+		properties: PropertyNameAndBound[],
 		propertyToLine: Dictionary<Line>,
 		content: Content
 	): void {
@@ -91,7 +91,7 @@ export class SortOrder extends Rule<IOrderState> {
 		});
 	}
 
-	private sort(properties: TmpOrderItem[]): void {
+	private sort(properties: PropertyNameAndBound[]): void {
 		if (this.state.conf === 'alphabetical') {
 			this.sortAlphabetical(properties);
 		} else {
@@ -100,7 +100,7 @@ export class SortOrder extends Rule<IOrderState> {
 		}
 	}
 
-	private sortAlphabetical(properties: TmpOrderItem[]): void {
+	private sortAlphabetical(properties: PropertyNameAndBound[]): void {
 		properties.sort((a, b) => {
 			if (a.name === b.name) {
 				return 0;
@@ -129,7 +129,7 @@ export class SortOrder extends Rule<IOrderState> {
 		}
 	}
 
-	private sortByGroupedOrder(properties: TmpOrderItem[]): void {
+	private sortByGroupedOrder(properties: PropertyNameAndBound[]): void {
 		properties.sort((keyA, keyB) => {
 			const
 				values = <Dictionary<string>>{
@@ -173,7 +173,7 @@ export class SortOrder extends Rule<IOrderState> {
 		});
 	}
 
-	private hasSortError(node: Node, properties: TmpOrderItem[]): boolean {
+	private hasSortError(node: Node, properties: PropertyNameAndBound[]): boolean {
 		let child: Node;
 
 		for (let i = 0; i < node.nodes.length; i += 1) {
@@ -191,7 +191,14 @@ export class SortOrder extends Rule<IOrderState> {
 		return false;
 	}
 
-	private getFixObject(node: Node, properties: TmpOrderItem[], content: Content): FixObject {
+	/**
+	 * Returns fix object for fix some part of stylus file
+	 *
+	 * @param node
+	 * @param properties
+	 * @param content
+	 */
+	private getFixObject(node: Node, properties: PropertyNameAndBound[], content: Content): FixObject {
 		let
 			index = 0,
 			indexNoOrdered = 0,
@@ -290,7 +297,7 @@ export class SortOrder extends Rule<IOrderState> {
 
 	private checkSeparatorLines(
 		hasOrderError: boolean,
-		properties: TmpOrderItem[],
+		properties: PropertyNameAndBound[],
 		propertyToLine: Dictionary<Line>,
 		fixObject: FixObject
 	): void {

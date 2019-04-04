@@ -3603,6 +3603,13 @@ class SortOrder extends rule_1.Rule {
         }
         return false;
     }
+    /**
+     * Returns fix object for fix some part of stylus file
+     *
+     * @param node
+     * @param properties
+     * @param content
+     */
     getFixObject(node, properties, content) {
         let index = 0, indexNoOrdered = 0, last = void (0), first = void (0), child;
         const fix = [];
