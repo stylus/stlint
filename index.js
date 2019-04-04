@@ -3492,93 +3492,121 @@ class SortOrder extends rule_1.Rule {
         this.nodesFilter = ['block'];
     }
     checkNode(node, content) {
-        const getLastLine = (child) => (child.value && child.value instanceof index_1.Node) ? child.value.lineno : child.lineno, properties = [], order = this.state.order || [], propertyToLine = {}, startGroupChecking = this.state.startGroupChecking || 6;
+        const properties = [], propertyToLine = {};
+        this.fillPropertiesNameAndLine(node, properties, propertyToLine, content);
+        // sort only 2 and more properties
+        if (properties.length < 2) {
+            return;
+        }
+        this.sort(properties);
+        const hasOrderError = this.hasSortError(node, properties), fixObject = this.getFixObject(node, properties, content);
+        if (hasOrderError && fixObject.last && fixObject.first) {
+            const lastLine = this.getLastLine(fixObject.last);
+            this.msg(`Properties have wrong order -  ${properties.map((item) => item.name).join(', ')}`, fixObject.first.lineno, 1, content.getLine(lastLine).line.length, fixObject, // We can change 'fix' array in checkSeparatorLines
+            lastLine);
+        }
+        this.checkSeparatorLines(hasOrderError, properties, propertyToLine, fixObject);
+    }
+    getLastLine(child) {
+        return (child.value && child.value instanceof index_1.Node) ? child.value.lineno : child.lineno;
+    }
+    fillPropertiesNameAndLine(node, properties, propertyToLine, content) {
         node.nodes.forEach((child) => {
             if (child instanceof index_1.Property || child instanceof index_1.Value) {
                 const name = child.key.toString().toLowerCase();
                 properties.push({
                     name,
                     startLine: child.lineno,
-                    endLine: getLastLine(child)
+                    endLine: this.getLastLine(child)
                 });
                 propertyToLine[name] = content.getLine(child.lineno);
             }
         });
-        // sort only 2 and more properties
-        if (properties.length < 2) {
-            return;
-        }
+    }
+    sort(properties) {
         if (this.state.conf === 'alphabetical') {
-            properties.sort((a, b) => {
-                if (a.name === b.name) {
-                    return 0;
-                }
-                return a.name > b.name ? 1 : -1;
-            });
+            this.sortAlphabetical(properties);
         }
         else {
-            if (!this.cache.order) {
-                this.cache.keyToGroup = {};
-                let groupIndex = 0;
-                this.cache.order = order.reduce((sort, key) => {
-                    if (typeof key === 'string') {
-                        sort.push(key.toLowerCase());
-                    }
-                    else {
-                        sort.push.apply(sort, key.map((subkey) => subkey.toLowerCase()));
-                        key.forEach((subkey) => this.cache.keyToGroup[subkey.toLowerCase()] = groupIndex);
-                        groupIndex += 1;
-                    }
-                    return sort;
-                }, []);
-            }
-            properties.sort((keyA, keyB) => {
-                const values = {
-                    keyA: keyA.name,
-                    keyB: keyB.name
-                }, index = {
-                    keyA: this.cache.order.indexOf(keyA.name),
-                    keyB: this.cache.order.indexOf(keyB.name)
-                }, keys = Object.keys(index);
-                for (const key of keys) {
-                    if (index[key] === -1) {
-                        const parts = values[key].split('-');
-                        if (parts.length > 1) {
-                            let l = parts.length - 1;
-                            while (l > 0 && index[key] === -1) {
-                                index[key] = this.cache.order.indexOf(parts.slice(0, l).join('-'));
-                                if (index[key] !== -1) {
-                                    index[key] += 1;
-                                }
-                                l -= 1;
-                            }
-                        }
-                    }
-                    if (index[key] === -1) {
-                        return values.keyA > values.keyB ? 1 : -1;
-                    }
-                }
-                if (index.keyA === index.keyB) {
-                    return values.keyA > values.keyB ? 1 : -1;
-                }
-                return index.keyA - index.keyB;
-            });
+            this.fillCacheOrder(this.state.order || []);
+            this.sortByGroupedOrder(properties);
         }
-        let index = 0, indexNoOrdered = 0, hasOrderError = false, last = void (0), first = void (0), child, fix = [];
-        const fixObject = {}, partLines = [];
-        Object.defineProperty(fixObject, 'toString', {
-            value: () => fix
-                .reduce((array, line) => {
-                if (Array.isArray(line)) {
-                    array.push(...line);
+    }
+    sortAlphabetical(properties) {
+        properties.sort((a, b) => {
+            if (a.name === b.name) {
+                return 0;
+            }
+            return a.name > b.name ? 1 : -1;
+        });
+    }
+    fillCacheOrder(order) {
+        if (!this.cache.order) {
+            this.cache.keyToGroup = {};
+            let groupIndex = 0;
+            this.cache.order = order.reduce((sort, key) => {
+                if (typeof key === 'string') {
+                    sort.push(key.toLowerCase());
                 }
                 else {
-                    array.push(line);
+                    sort.push.apply(sort, key.map((subkey) => subkey.toLowerCase()));
+                    key.forEach((subkey) => this.cache.keyToGroup[subkey.toLowerCase()] = groupIndex);
+                    groupIndex += 1;
                 }
-                return array;
-            }, [])
-                .map((line) => typeof line === 'string' ? line : line.line).join('\n')
+                return sort;
+            }, []);
+        }
+    }
+    sortByGroupedOrder(properties) {
+        properties.sort((keyA, keyB) => {
+            const values = {
+                keyA: keyA.name,
+                keyB: keyB.name
+            }, index = {
+                keyA: this.cache.order.indexOf(keyA.name),
+                keyB: this.cache.order.indexOf(keyB.name)
+            }, keys = Object.keys(index);
+            for (const key of keys) {
+                if (index[key] === -1) {
+                    const parts = values[key].split('-');
+                    if (parts.length > 1) {
+                        let l = parts.length - 1;
+                        while (l > 0 && index[key] === -1) {
+                            index[key] = this.cache.order.indexOf(parts.slice(0, l).join('-'));
+                            if (index[key] !== -1) {
+                                index[key] += 1;
+                            }
+                            l -= 1;
+                        }
+                    }
+                }
+                if (index[key] === -1) {
+                    return values.keyA > values.keyB ? 1 : -1;
+                }
+            }
+            if (index.keyA === index.keyB) {
+                return values.keyA > values.keyB ? 1 : -1;
+            }
+            return index.keyA - index.keyB;
         });
+    }
+    hasSortError(node, properties) {
+        let child;
+        for (let i = 0; i < node.nodes.length; i += 1) {
+            child = node.nodes[i];
+            if (child instanceof index_1.Property || child instanceof index_1.Value) {
+                const name = child.key.toString().toLowerCase();
+                if (properties[i].name !== name) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    getFixObject(node, properties, content) {
+        let index = 0, indexNoOrdered = 0, last = void (0), first = void (0), child;
+        const fix = [];
+        const partLines = [];
         for (let i = 0; i < node.nodes.length; i += 1) {
             child = node.nodes[i];
             if (child instanceof index_1.Property || child instanceof index_1.Value) {
@@ -3588,7 +3616,6 @@ class SortOrder extends rule_1.Rule {
                         first = child;
                     }
                     last = child;
-                    hasOrderError = true;
                     let start = properties[index].startLine;
                     if (start !== properties[index].endLine) {
                         const st = [];
@@ -3602,7 +3629,7 @@ class SortOrder extends rule_1.Rule {
                     }
                 }
                 if (first) {
-                    const end = getLastLine(child);
+                    const end = this.getLastLine(child);
                     let start = child.lineno;
                     if (start !== end) {
                         const st = [];
@@ -3624,45 +3651,72 @@ class SortOrder extends rule_1.Rule {
                 fix[i] = partLines[i];
             }
         }
-        if (hasOrderError && last && first) {
-            const lastLine = getLastLine(last);
-            this.msg(`Properties have wrong order -  ${properties.map((item) => item.name).join(', ')}`, first.lineno, 1, content.getLine(lastLine).line.length, fixObject, // We can change 'fix' array below
-            lastLine);
-        }
+        const result = {
+            first,
+            last,
+            fix,
+            toString() {
+                return result.fix
+                    .reduce((array, line) => {
+                    if (Array.isArray(line)) {
+                        array.push(...line);
+                    }
+                    else {
+                        array.push(line);
+                    }
+                    return array;
+                }, [])
+                    .map((line) => typeof line === 'string' ? line : line.line)
+                    .join('\n');
+            }
+        };
+        return result;
+    }
+    checkSeparatorLines(hasOrderError, properties, propertyToLine, fixObject) {
+        const startGroupChecking = this.state.startGroupChecking || 6;
         if (properties.length >= startGroupChecking &&
             this.state.conf === 'grouped') {
             let lastGroup = null;
             properties.forEach((property) => {
-                let group = this.cache.keyToGroup[property.name];
-                if (group === undefined) {
-                    const parts = property.name.split('-');
-                    if (parts.length > 1) {
-                        let l = parts.length - 1;
-                        while (l > 0 && group === undefined) {
-                            group = this.cache.keyToGroup[parts.slice(0, l).join('-')];
-                            l -= 1;
-                        }
-                    }
-                }
+                const group = this.getGroupByName(property.name);
                 if (group !== undefined && group !== lastGroup) {
                     if (lastGroup !== null) {
                         const line = propertyToLine[property.name];
-                        if (!hasOrderError && line) {
-                            const prev = line.prev();
-                            if (prev && prev.line.trim().length !== 0) {
-                                this.msg('Need new line after group', prev.lineno, 1, prev.line.length, prev.line + '\n');
+                        if (line) {
+                            if (!hasOrderError) {
+                                const prev = line.prev();
+                                if (prev && prev.line.trim().length !== 0) {
+                                    this.msg('Need new line after group', prev.lineno, 1, prev.line.length, prev.line + '\n');
+                                }
                             }
-                        }
-                        if (hasOrderError && line) {
-                            const index = fix.indexOf(line) - 1, prev = fix[index];
-                            if (index > 0 && prev && prev instanceof line_1.Line && prev.line && prev.line.trim().length) {
-                                fix = [...fix.slice(0, index + 1), '', ...fix.slice(index + 1)];
+                            else {
+                                this.addSeparateLineAfterLine(fixObject, line);
                             }
                         }
                     }
                     lastGroup = group;
                 }
             });
+        }
+    }
+    getGroupByName(name) {
+        let group = this.cache.keyToGroup[name];
+        if (group === undefined) {
+            const parts = name.split('-');
+            if (parts.length > 1) {
+                let l = parts.length - 1;
+                while (l > 0 && group === undefined) {
+                    group = this.cache.keyToGroup[parts.slice(0, l).join('-')];
+                    l -= 1;
+                }
+            }
+        }
+        return group;
+    }
+    addSeparateLineAfterLine(fixObject, line) {
+        const index = fixObject.fix.indexOf(line) - 1, prev = fixObject.fix[index];
+        if (index > 0 && prev && prev instanceof line_1.Line && prev.line && prev.line.trim().length) {
+            fixObject.fix = [...fixObject.fix.slice(0, index + 1), '', ...fixObject.fix.slice(index + 1)];
         }
     }
 }
