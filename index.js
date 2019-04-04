@@ -3492,36 +3492,70 @@ class SortOrder extends rule_1.Rule {
         this.nodesFilter = ['block'];
     }
     checkNode(node, content) {
-        const properties = [], propertyToLine = {};
-        this.fillPropertiesNameAndLine(node, properties, propertyToLine, content);
+        const propertiesGroups = [], propertyToLine = {};
+        this.fillPropertiesNameAndLine(node, propertiesGroups, propertyToLine, content);
         // sort only 2 and more properties
-        if (properties.length < 2) {
+        if (propertiesGroups.reduce((cnt, array) => {
+            cnt += array.length;
+            return cnt;
+        }, 0) < 2) {
             return;
         }
-        this.sort(properties);
-        const hasOrderError = this.hasSortError(node, properties), fixObject = this.getFixObject(node, properties, content);
-        if (hasOrderError && fixObject.last && fixObject.first) {
-            const lastLine = this.getLastLine(fixObject.last);
-            this.msg(`Properties have wrong order -  ${properties.map((item) => item.name).join(', ')}`, fixObject.first.lineno, 1, content.getLine(lastLine).line.length, fixObject, // We can change 'fix' array in checkSeparatorLines
-            lastLine);
+        this.sort(propertiesGroups);
+        propertiesGroups.forEach((properties, group) => {
+            const hasOrderError = this.hasSortError(node, properties, group), fixObject = this.getFixObject(node, properties, content, group);
+            if (hasOrderError && fixObject.last && fixObject.first) {
+                const lastLine = this.getLastLine(fixObject.last);
+                this.msg(`Properties have wrong order -  ${properties.map((item) => item.name).join(', ')}`, fixObject.first.lineno, 1, content.getLine(lastLine).line.length, fixObject, // We can change 'fix' array in checkSeparatorLines
+                lastLine);
+            }
+            this.checkSeparatorLines(hasOrderError, properties, propertyToLine, fixObject);
+        });
+    }
+    forEachProperty(node, groupId, callback) {
+        let child, group = 0, indexInGroup = 0, result;
+        for (let i = 0; i < node.nodes.length; i += 1) {
+            child = node.nodes[i];
+            if (child instanceof index_1.Property || child instanceof index_1.Value) {
+                if (group === groupId) {
+                    result = callback(child, indexInGroup);
+                    if (result !== undefined) {
+                        return result;
+                    }
+                    indexInGroup += 1;
+                }
+            }
+            else {
+                group += 1;
+                indexInGroup = 0;
+            }
         }
-        this.checkSeparatorLines(hasOrderError, properties, propertyToLine, fixObject);
     }
     getLastLine(child) {
         return (child.value && child.value instanceof index_1.Node) ? child.value.lineno : child.lineno;
     }
     fillPropertiesNameAndLine(node, properties, propertyToLine, content) {
+        let group = [];
         node.nodes.forEach((child) => {
             if (child instanceof index_1.Property || child instanceof index_1.Value) {
                 const name = child.key.toString().toLowerCase();
-                properties.push({
+                group.push({
                     name,
                     startLine: child.lineno,
                     endLine: this.getLastLine(child)
                 });
                 propertyToLine[name] = content.getLine(child.lineno);
             }
+            else {
+                if (group.length) {
+                    properties.push(group);
+                }
+                group = [];
+            }
         });
+        if (group.length) {
+            properties.push(group);
+        }
     }
     sort(properties) {
         if (this.state.conf === 'alphabetical') {
@@ -3533,12 +3567,13 @@ class SortOrder extends rule_1.Rule {
         }
     }
     sortAlphabetical(properties) {
-        properties.sort((a, b) => {
+        properties
+            .forEach((group) => group.sort((a, b) => {
             if (a.name === b.name) {
                 return 0;
             }
             return a.name > b.name ? 1 : -1;
-        });
+        }));
     }
     fillCacheOrder(order) {
         if (!this.cache.order) {
@@ -3558,7 +3593,8 @@ class SortOrder extends rule_1.Rule {
         }
     }
     sortByGroupedOrder(properties) {
-        properties.sort((keyA, keyB) => {
+        properties
+            .forEach((group) => group.sort((keyA, keyB) => {
             const values = {
                 keyA: keyA.name,
                 keyB: keyB.name
@@ -3588,20 +3624,15 @@ class SortOrder extends rule_1.Rule {
                 return values.keyA > values.keyB ? 1 : -1;
             }
             return index.keyA - index.keyB;
-        });
+        }));
     }
-    hasSortError(node, properties) {
-        let child;
-        for (let i = 0; i < node.nodes.length; i += 1) {
-            child = node.nodes[i];
-            if (child instanceof index_1.Property || child instanceof index_1.Value) {
-                const name = child.key.toString().toLowerCase();
-                if (properties[i].name !== name) {
-                    return true;
-                }
+    hasSortError(node, properties, groupId) {
+        return this.forEachProperty(node, groupId, (child, index) => {
+            const name = child.key.toString().toLowerCase();
+            if (properties[index].name !== name) {
+                return true;
             }
-        }
-        return false;
+        }) || false;
     }
     /**
      * Returns fix object for fix some part of stylus file
@@ -3609,50 +3640,48 @@ class SortOrder extends rule_1.Rule {
      * @param node
      * @param properties
      * @param content
+     * @param groupId
      */
-    getFixObject(node, properties, content) {
-        let index = 0, indexNoOrdered = 0, last = void (0), first = void (0), child;
+    getFixObject(node, properties, content, groupId) {
+        let index = 0, indexNoOrdered = 0, last = void (0), first = void (0);
         const fix = [];
         const partLines = [];
-        for (let i = 0; i < node.nodes.length; i += 1) {
-            child = node.nodes[i];
-            if (child instanceof index_1.Property || child instanceof index_1.Value) {
-                const name = child.key.toString().toLowerCase();
-                if (properties[index].name !== name) {
-                    if (!first) {
-                        first = child;
-                    }
-                    last = child;
-                    let start = properties[index].startLine;
-                    if (start !== properties[index].endLine) {
-                        const st = [];
-                        for (; start <= properties[index].endLine; start += 1) {
-                            st.push(content.getLine(start));
-                        }
-                        fix[indexNoOrdered] = st;
-                    }
-                    else {
-                        fix[indexNoOrdered] = content.getLine(start);
-                    }
+        this.forEachProperty(node, groupId, (child) => {
+            const name = child.key.toString().toLowerCase();
+            if (properties[index].name !== name) {
+                if (!first) {
+                    first = child;
                 }
-                if (first) {
-                    const end = this.getLastLine(child);
-                    let start = child.lineno;
-                    if (start !== end) {
-                        const st = [];
-                        for (; start <= end; start += 1) {
-                            st.push(content.getLine(start));
-                        }
-                        partLines[indexNoOrdered] = st;
+                last = child;
+                let start = properties[index].startLine;
+                if (start !== properties[index].endLine) {
+                    const st = [];
+                    for (; start <= properties[index].endLine; start += 1) {
+                        st.push(content.getLine(start));
                     }
-                    else {
-                        partLines[indexNoOrdered] = content.getLine(start);
-                    }
-                    indexNoOrdered += 1;
+                    fix[indexNoOrdered] = st;
                 }
-                index += 1;
+                else {
+                    fix[indexNoOrdered] = content.getLine(start);
+                }
             }
-        }
+            if (first) {
+                const end = this.getLastLine(child);
+                let start = child.lineno;
+                if (start !== end) {
+                    const st = [];
+                    for (; start <= end; start += 1) {
+                        st.push(content.getLine(start));
+                    }
+                    partLines[indexNoOrdered] = st;
+                }
+                else {
+                    partLines[indexNoOrdered] = content.getLine(start);
+                }
+                indexNoOrdered += 1;
+            }
+            index += 1;
+        });
         for (let i = 0; i < fix.length; i += 1) {
             if (fix[i] === undefined) {
                 fix[i] = partLines[i];

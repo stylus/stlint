@@ -48,6 +48,25 @@ const
 		'\tbackground: #ccc;\n' +
 		'\tcolor: #ccc;' +
 		'',
+
+	wrongContentWithSelectorDivider = '$p = {\n' +
+		'\tclr: #CCC\n' +
+		'}\n' +
+		'.tab\n' +
+		'\tabsolute left 10px\n' +
+		'\ttop 20px\n' +
+		'\tmargin 20px\n' +
+		'\tpadding: 20px;\n' +
+
+		'\tinput\n' +
+		'\t\tfont-size: 12px;\n' +
+
+		'\tfont-size: 12px;\n' +
+		'\tline-height: 10px;\n' +
+		'\tbackground: #ccc;\n' +
+		'\tcolor: #ccc;' +
+		'',
+
 	wrongContent = '.tab\n\tcolor: #ccc;',
 	wrongContentColon = '.tab\n\tcolor #ccc';
 
@@ -546,6 +565,46 @@ describe('Test fix option', () => {
 					'\tabsolute left 10px top 20px\n' +
 					'\tbackground: #ccc;\n' +
 					'\tcolor: #ccc;').to.be.equal(linter.fix('./test.styl', new Content(wrongContentWithVar)));
+			});
+			describe('Properties divide with some selector', () => {
+				it('should fix properties order in every divided groups', () => {
+					const linter = new Linter({
+						rules: {
+							sortOrder: {
+								conf: 'alphabetical'
+							}
+						},
+						grep: 'sortOrder',
+						reporter: 'silent',
+						fix: true
+					});
+
+					linter.lint('./test.styl', wrongContentWithSelectorDivider);
+					linter.display(false);
+
+					const response = linter.reporter.response;
+
+					expect(response.passed).to.be.false;
+					expect(response.errors && response.errors.length).to.be.equal(2);
+
+					expect('$p = {\n' +
+						'\tclr: #CCC\n' +
+						'}\n' +
+						'.tab\n' +
+						'\tabsolute left 10px\n' +
+						'\tmargin 20px\n' +
+						'\tpadding: 20px;\n' +
+						'\ttop 20px\n' +
+
+						'\tinput\n' +
+						'\t\tfont-size: 12px;\n' +
+
+						'\tbackground: #ccc;\n' +
+						'\tcolor: #ccc;\n' +
+						'\tfont-size: 12px;\n' +
+						'\tline-height: 10px;' +
+						'').to.be.equal(linter.fix('./test.styl', new Content(wrongContentWithSelectorDivider)));
+				});
 			});
 		});
 	});

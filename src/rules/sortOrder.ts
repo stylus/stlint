@@ -15,6 +15,9 @@ interface PropertyNameAndBound {
 	endLine: number;
 }
 
+type Properties = PropertyNameAndBound[];
+type PropertiesGroups = Array<Properties>;
+
 interface FixObject {
 	first?: Property | Value | void;
 	last?: Property | Value | void;
@@ -30,37 +33,69 @@ export class SortOrder extends Rule<IOrderState> {
 
 	checkNode(node: Block, content: Content): void {
 		const
-			properties: PropertyNameAndBound[] = [],
+			propertiesGroups: PropertiesGroups = [],
 			propertyToLine: Dictionary<Line> = {};
 
-		this.fillPropertiesNameAndLine(node, properties, propertyToLine, content);
+		this.fillPropertiesNameAndLine(node, propertiesGroups, propertyToLine, content);
 
 		// sort only 2 and more properties
-		if (properties.length < 2) {
+		if (propertiesGroups.reduce((cnt, array) => {
+			cnt += array.length;
+			return cnt;
+		}, 0) < 2) {
 			return;
 		}
 
-		this.sort(properties);
+		this.sort(propertiesGroups);
 
-		const
-			hasOrderError = this.hasSortError(node, properties),
-			fixObject: FixObject = this.getFixObject(node, properties, content);
-
-		if (hasOrderError && fixObject.last && fixObject.first) {
+		propertiesGroups.forEach((properties, group) => {
 			const
-				lastLine = this.getLastLine(fixObject.last);
+				hasOrderError = this.hasSortError(node, properties, group),
+				fixObject: FixObject = this.getFixObject(node, properties, content, group);
 
-			this.msg(
-				`Properties have wrong order -  ${properties.map((item) => item.name).join(', ')}`,
-				fixObject.first.lineno,
-				1,
-				content.getLine(lastLine).line.length,
-				<any>fixObject, // We can change 'fix' array in checkSeparatorLines
-				lastLine
-			);
+			if (hasOrderError && fixObject.last && fixObject.first) {
+				const
+					lastLine = this.getLastLine(fixObject.last);
+
+				this.msg(
+					`Properties have wrong order -  ${properties.map((item) => item.name).join(', ')}`,
+					fixObject.first.lineno,
+					1,
+					content.getLine(lastLine).line.length,
+					<any>fixObject, // We can change 'fix' array in checkSeparatorLines
+					lastLine
+				);
+			}
+
+			this.checkSeparatorLines(hasOrderError, properties, propertyToLine, fixObject);
+		});
+	}
+
+	private forEachProperty(
+		node: Node,
+		groupId: number,
+		callback: (child: Property | Value, indexInGroup: number) => void | boolean
+	): void | boolean {
+		let child: Node, group = 0, indexInGroup = 0, result: void | boolean;
+
+		for (let i = 0; i < node.nodes.length; i += 1) {
+			child = node.nodes[i];
+
+			if (child instanceof Property || child instanceof Value) {
+				if (group === groupId) {
+					result = callback(child, indexInGroup);
+
+					if (result	!== undefined) {
+						return result;
+					}
+
+					indexInGroup += 1;
+				}
+			} else {
+				group += 1;
+				indexInGroup = 0;
+			}
 		}
-
-		this.checkSeparatorLines(hasOrderError, properties, propertyToLine, fixObject);
 	}
 
 	private getLastLine(child: Node): number {
@@ -69,16 +104,18 @@ export class SortOrder extends Rule<IOrderState> {
 
 	private fillPropertiesNameAndLine(
 		node: Block,
-		properties: PropertyNameAndBound[],
+		properties: PropertiesGroups,
 		propertyToLine: Dictionary<Line>,
 		content: Content
 	): void {
+		let group: PropertyNameAndBound[] = [];
+
 		node.nodes.forEach((child) => {
 			if (child instanceof Property || child instanceof Value) {
 				const
 					name = child.key.toString().toLowerCase();
 
-				properties.push(
+				group.push(
 					{
 						name,
 						startLine: child.lineno,
@@ -87,11 +124,21 @@ export class SortOrder extends Rule<IOrderState> {
 				);
 
 				propertyToLine[name] = content.getLine(child.lineno);
+			} else {
+				if (group.length) {
+					properties.push(group);
+				}
+
+				group = [];
 			}
 		});
+
+		if (group.length) {
+			properties.push(group);
+		}
 	}
 
-	private sort(properties: PropertyNameAndBound[]): void {
+	private sort(properties: PropertiesGroups): void {
 		if (this.state.conf === 'alphabetical') {
 			this.sortAlphabetical(properties);
 		} else {
@@ -100,14 +147,15 @@ export class SortOrder extends Rule<IOrderState> {
 		}
 	}
 
-	private sortAlphabetical(properties: PropertyNameAndBound[]): void {
-		properties.sort((a, b) => {
-			if (a.name === b.name) {
-				return 0;
-			}
+	private sortAlphabetical(properties: PropertiesGroups): void {
+		properties
+			.forEach((group) => group.sort((a, b) => {
+				if (a.name === b.name) {
+					return 0;
+				}
 
-			return a.name > b.name ? 1 : -1;
-		});
+				return a.name > b.name ? 1 : -1;
+			}));
 	}
 
 	private fillCacheOrder(order: Array<string[] | string>): void {
@@ -129,66 +177,60 @@ export class SortOrder extends Rule<IOrderState> {
 		}
 	}
 
-	private sortByGroupedOrder(properties: PropertyNameAndBound[]): void {
-		properties.sort((keyA, keyB) => {
-			const
-				values = <Dictionary<string>>{
-					keyA: keyA.name,
-					keyB: keyB.name
-				},
-				index = <Dictionary<number>>{
-					keyA: this.cache.order.indexOf(keyA.name),
-					keyB: this.cache.order.indexOf(keyB.name)
-				},
-				keys = Object.keys(index);
+	private sortByGroupedOrder(properties: PropertiesGroups): void {
+		properties
+			.forEach((group) => group.sort((keyA, keyB) => {
+				const
+					values = <Dictionary<string>>{
+						keyA: keyA.name,
+						keyB: keyB.name
+					},
+					index = <Dictionary<number>>{
+						keyA: this.cache.order.indexOf(keyA.name),
+						keyB: this.cache.order.indexOf(keyB.name)
+					},
+					keys = Object.keys(index);
 
-			for (const key of keys) {
-				if (index[key] === -1) {
-					const parts = values[key].split('-');
+				for (const key of keys) {
+					if (index[key] === -1) {
+						const parts = values[key].split('-');
 
-					if (parts.length > 1) {
-						let l = parts.length - 1;
+						if (parts.length > 1) {
+							let l = parts.length - 1;
 
-						while (l > 0 && index[key] === -1) {
-							index[key] = this.cache.order.indexOf(parts.slice(0, l).join('-'));
+							while (l > 0 && index[key] === -1) {
+								index[key] = this.cache.order.indexOf(parts.slice(0, l).join('-'));
 
-							if (index[key] !== -1) {
-								index[key] += 1;
+								if (index[key] !== -1) {
+									index[key] += 1;
+								}
+								l -= 1;
 							}
-							l -= 1;
 						}
+					}
+
+					if (index[key] === -1) {
+						return values.keyA > values.keyB ? 1 : -1;
 					}
 				}
 
-				if (index[key] === -1) {
+				if (index.keyA === index.keyB) {
 					return values.keyA > values.keyB ? 1 : -1;
 				}
-			}
 
-			if (index.keyA === index.keyB) {
-				return values.keyA > values.keyB ? 1 : -1;
-			}
-
-			return index.keyA - index.keyB;
-		});
+				return index.keyA - index.keyB;
+			})
+		);
 	}
 
-	private hasSortError(node: Node, properties: PropertyNameAndBound[]): boolean {
-		let child: Node;
+	private hasSortError(node: Node, properties: Properties, groupId: number): boolean {
+		return this.forEachProperty(node, groupId, (child, index) => {
+			const name = child.key.toString().toLowerCase();
 
-		for (let i = 0; i < node.nodes.length; i += 1) {
-			child = node.nodes[i];
-
-			if (child instanceof Property || child instanceof Value) {
-				const name = child.key.toString().toLowerCase();
-
-				if (properties[i].name !== name) {
-					return true;
-				}
+			if (properties[index].name !== name) {
+				return true;
 			}
-		}
-
-		return false;
+		}) || false;
 	}
 
 	/**
@@ -197,73 +239,69 @@ export class SortOrder extends Rule<IOrderState> {
 	 * @param node
 	 * @param properties
 	 * @param content
+	 * @param groupId
 	 */
-	private getFixObject(node: Node, properties: PropertyNameAndBound[], content: Content): FixObject {
+	private getFixObject(node: Node, properties: Properties, content: Content, groupId: number): FixObject {
 		let
 			index = 0,
 			indexNoOrdered = 0,
 			last: Property | Value | void = void (0),
-			first: Property | Value | void = void (0),
-			child;
+			first: Property | Value | void = void (0);
 		const
 			fix: Array<Line | string | Array<Line>> = [];
 
 		const
 			partLines: Array<Line | Array<Line>> = [];
 
-		for (let i = 0; i < node.nodes.length; i += 1) {
-			child = node.nodes[i];
+		this.forEachProperty(node, groupId, (child) => {
+			const name = child.key.toString().toLowerCase();
 
-			if (child instanceof Property || child instanceof Value) {
-				const name = child.key.toString().toLowerCase();
-
-				if (properties[index].name !== name) {
-					if (!first) {
-						first = child;
-					}
-
-					last = child;
-
-					let
-						start = properties[index].startLine;
-
-					if (start !== properties[index].endLine) {
-						const st = [];
-
-						for (; start <= properties[index].endLine; start += 1) {
-							st.push(content.getLine(start));
-						}
-
-						fix[indexNoOrdered] = st;
-					} else {
-						fix[indexNoOrdered] = content.getLine(start);
-					}
+			if (properties[index].name !== name) {
+				if (!first) {
+					first = child;
 				}
 
-				if (first) {
-					const end = this.getLastLine(child);
+				last = child;
 
-					let
-						start = child.lineno;
+				let
+					start = properties[index].startLine;
 
-					if (start !== end) {
-						const st = [];
+				if (start !== properties[index].endLine) {
+					const st = [];
 
-						for (; start <= end; start += 1) {
-							st.push(content.getLine(start));
-						}
-
-						partLines[indexNoOrdered] = st;
-					} else {
-						partLines[indexNoOrdered] = content.getLine(start);
+					for (; start <= properties[index].endLine; start += 1) {
+						st.push(content.getLine(start));
 					}
 
-					indexNoOrdered += 1;
+					fix[indexNoOrdered] = st;
+				} else {
+					fix[indexNoOrdered] = content.getLine(start);
 				}
-
-				index += 1;
 			}
-		}
+
+			if (first) {
+				const end = this.getLastLine(child);
+
+				let
+					start = child.lineno;
+
+				if (start !== end) {
+					const st = [];
+
+					for (; start <= end; start += 1) {
+						st.push(content.getLine(start));
+					}
+
+					partLines[indexNoOrdered] = st;
+				} else {
+					partLines[indexNoOrdered] = content.getLine(start);
+				}
+
+				indexNoOrdered += 1;
+			}
+
+			index += 1;
+		});
 
 		for (let i = 0; i < fix.length; i += 1) {
 			if (fix[i] === undefined) {
@@ -297,7 +335,7 @@ export class SortOrder extends Rule<IOrderState> {
 
 	private checkSeparatorLines(
 		hasOrderError: boolean,
-		properties: PropertyNameAndBound[],
+		properties: Properties,
 		propertyToLine: Dictionary<Line>,
 		fixObject: FixObject
 	): void {
