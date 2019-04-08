@@ -17,12 +17,19 @@ export class StylusParser {
 	 * @returns {Tree}
 	 */
 	parse(content: Content): Tree {
-		const parser = new Parser(content.toString(), this.options);
+		const
+			parser = new Parser(content.toString(), this.options);
 
 		try {
-			const stylusAST: ISNode = parser.parse();
+			const
+				stylusAST: ISNode = parser.parse({
+					resolver: (path: string) => {
+						console.log(path);
+					}
+				});
 
-			const translator = new Translator(stylusAST, content);
+			const
+				translator = new Translator(stylusAST, content);
 
 			return translator.transpile();
 		} catch (err) {

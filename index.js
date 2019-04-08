@@ -1804,7 +1804,11 @@ class StylusParser {
     parse(content) {
         const parser = new Parser(content.toString(), this.options);
         try {
-            const stylusAST = parser.parse();
+            const stylusAST = parser.parse({
+                resolver: (path) => {
+                    console.log(path);
+                }
+            });
             const translator = new translator_1.Translator(stylusAST, content);
             return translator.transpile();
         }
