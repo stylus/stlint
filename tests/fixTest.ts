@@ -1,6 +1,8 @@
 import { Linter } from '../src/linter';
 import { expect } from 'chai';
 import { Content } from '../src/core/content';
+import { Color } from '../src/rules/color';
+import { parseAndRun } from './staff/bootstrap';
 
 const
 	wrongContentWithVar = '$p = {\n' +
@@ -121,6 +123,36 @@ describe('Test fix option', () => {
 				expect(response.errors && response.errors.length).to.be.equal(4);
 				expect(
 					wrongContentWithVar.replace(/#ccc/g, '$p.clr')
+				).to.be.equal(linter.fix('./test.styl', new Content(wrongContentWithVar)));
+			});
+		});
+
+		describe('Deny rgb notation', () => {
+			it('Should fix RGB node with rgb or rgba color notation to HEX', () => {
+				const wrongContentWithVar = '.tab\n\tcolor rgba(127, 127, 127, 0.6)\n\tbackground-color rgb(0, 0, 0)';
+
+				const linter = new Linter({
+					rules: {
+						color: {
+							conf: 'uppercase',
+							allowOnlyInVar: false,
+							denyRGB: true
+						}
+					},
+					grep: /^color$/,
+					reporter: 'silent',
+					fix: true
+				});
+
+				linter.lint('./test.styl', wrongContentWithVar);
+				linter.display(false);
+
+				const response = linter.reporter.response;
+
+				expect(response.passed).to.be.false;
+				expect(response.errors && response.errors.length).to.be.equal(2);
+				expect(
+					'.tab\n\tcolor rgba(#7f7f7f, 1)\n\tbackground-color #000000'
 				).to.be.equal(linter.fix('./test.styl', new Content(wrongContentWithVar)));
 			});
 		});

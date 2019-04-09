@@ -54,6 +54,32 @@ describe('Color test', () => {
 			expect(rule.errors.length).to.be.equal(1);
 		});
 	});
+	describe('RGB notation', () => {
+		describe('Deny rgb notation', () => {
+			it('Should find error in RGB node with rgb or rgba color notation', () => {
+				const rule = new Color({
+					conf: 'uppercase',
+					denyRGB: true
+				});
+
+				parseAndRun('.tab\n\tcolor: rgba(127, 127, 127, 0.6)\n\tbackground-color rgb(0, 0, 0)', rule);
+
+				expect(rule.errors.length).to.be.equal(2);
+			});
+		});
+		describe('Allow rgb notation', () => {
+			it('Should not find error in RGB node with rgb or rgba color notation', () => {
+				const rule = new Color({
+					conf: 'uppercase',
+					denyRGB: false
+				});
+
+				parseAndRun('.tab\n\tcolor: rgba(127, 127, 127, 0.6)\n\tbackground-color rgb(0, 0, 0)', rule);
+
+				expect(rule.errors.length).to.be.equal(0);
+			});
+		});
+	});
 	describe('Only in variable', () => {
 		it('Should check RGB node only in variable', () => {
 			const rule = new Color({
