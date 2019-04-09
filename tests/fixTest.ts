@@ -152,7 +152,7 @@ describe('Test fix option', () => {
 				expect(response.passed).to.be.false;
 				expect(response.errors && response.errors.length).to.be.equal(2);
 				expect(
-					'.tab\n\tcolor rgba(#7f7f7f, 1)\n\tbackground-color #000000'
+					'.tab\n\tcolor rgba(#7F7F7F, 1)\n\tbackground-color #000000'
 				).to.be.equal(linter.fix('./test.styl', new Content(wrongContentWithVar)));
 			});
 		});

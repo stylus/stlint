@@ -62,7 +62,10 @@ describe('Color test', () => {
 					denyRGB: true
 				});
 
-				parseAndRun('.tab\n\tcolor: rgba(127, 127, 127, 0.6)\n\tbackground-color rgb(0, 0, 0)', rule);
+				parseAndRun(
+					'.tab\n\tcolor: rgba(127, 127, 127, 0.6)\n\tbackground-color rgb(0, 0, 0)\n\tborder-color rgba(#CCC, 1)',
+					rule
+				);
 
 				expect(rule.errors.length).to.be.equal(2);
 			});

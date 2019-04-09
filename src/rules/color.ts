@@ -86,17 +86,27 @@ export class Color extends Rule<IColorState> {
 	private checkRGB(node: Call): void {
 		if (this.state.denyRGB) {
 			if (node.key && /^rgb(a)?$/i.test(node.key)) {
-				let fix = '';
+				let
+					fix = '';
 
-				const hex = this.RGBToHex(
-					parseInt(node.nodes[0] ? node.nodes[0].toString() : '0', 10),
+				const
+					firstValue = node.nodes[0] ? node.nodes[0].toString() : '0';
+
+				let hex = this.RGBToHex(
+					parseInt(firstValue, 10),
 					parseInt(node.nodes[1] ? node.nodes[1].toString() : '0', 10),
 					parseInt(node.nodes[2] ? node.nodes[2].toString() : '0', 10)
 				);
 
+				hex = this.state.conf === 'uppercase' ? hex.toUpperCase() : hex.toLowerCase();
+
 				if (node.key === 'rgb') {
 					fix = hex;
 				} else {
+					if (/^#[0-9a-f]+/i.test(firstValue)) {
+						return;
+					}
+
 					fix = `rgba(${hex}, ${node.nodes[4] ? node.nodes[4].toString() : '1'})`;
 				}
 
