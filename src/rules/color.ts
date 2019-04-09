@@ -107,7 +107,7 @@ export class Color extends Rule<IColorState> {
 						return;
 					}
 
-					fix = `rgba(${hex}, ${node.nodes[4] ? node.nodes[4].toString() : '1'})`;
+					fix = `rgba(${hex}, ${node.nodes[3] ? node.nodes[3].toString() : '1'})`;
 				}
 
 				const
