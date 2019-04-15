@@ -28,6 +28,12 @@ const options = yargs
 		describe: 'Only run rules matching this string or regexp',
 		type: 'string'
 	})
+	.option('newline', {
+		alias: 'nl',
+		describe: 'Character for replacing newline',
+		default: '',
+		type: 'string'
+	})
 	.option('fix', {
 		alias: 'f',
 		describe: 'Try fix some rules',
@@ -53,6 +59,10 @@ const options = yargs
 	.example('$0 ./directory --watch', 'Check all .styl files in directory after some of these was changed')
 	.epilogue('MIT')
 	.argv;
+
+if (options.newline) {
+	options.content = options.content.replace(new RegExp(`${options.newline}`, 'g'), '\n');
+}
 
 if (options.info) {
 	const linter = new Linter(options);
