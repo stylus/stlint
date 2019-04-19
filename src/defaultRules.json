@@ -34,7 +34,8 @@
   "useMixinInsteadUnit": {
     "conf": "always",
     "mixin": "basis",
-    "unitType": "px"
+    "unitType": "px",
+    "allowOneUnit": false
   },
 
   "sortOrder": {

@@ -5,6 +5,7 @@ import { IState } from '../core/types/state';
 interface IUseMixinInsteadunitState extends IState {
 	mixin: string;
 	unitType: string;
+	allowOneUnit?: boolean;
 }
 
 /**
@@ -20,12 +21,18 @@ export class useMixinInsteadUnit extends Rule<IUseMixinInsteadunitState> {
 				const unit = RegExp('([\\d]+)' + this.state.unitType).exec(node.value);
 
 				if (unit) {
+					const
+						unitSize: number = Number(unit[1]);
+
+					if (this.state.allowOneUnit && unitSize === 1) {
+						return false;
+					}
+
 					let
 						fix = '';
 
 					if (this.state.mixin === 'basis') {
 						const
-							unitSize: number = Number(unit[1]),
 							basis = (unitSize / 8);
 
 						fix = `basis(${basis})`;

@@ -235,6 +235,10 @@ export class Translator extends  Visitor<ISNode, Node> {
 
 		node.value = typeof block.raw === 'string' ? block.raw : '';
 
+		if (!node.value.length && typeof  block.type === 'string' && block.val !== '') {
+			node.value = block.val + block.type;
+		}
+
 		return node;
 	}
 

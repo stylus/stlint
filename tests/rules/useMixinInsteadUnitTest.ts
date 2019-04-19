@@ -60,6 +60,40 @@ describe('Use basis mixin test', () => {
 				});
 			});
 		});
+		describe('One unit', () => {
+			describe('Enable', () => {
+				it('Should check the AST has Unit node with wrong unit notation but ignore it', () => {
+
+					const rule = new useMixinInsteadUnit({
+						conf: 'always',
+						mixin: 'basis',
+						unitType: 'px',
+						allowOneUnit: true
+					});
+
+					parseAndRun('.tab\n\tfontsize 1px', rule);
+
+					expect(rule.errors.length).to.be.equal(0);
+				});
+			});
+			describe('Disable', () => {
+				it('Should check the AST has Unit node with wrong unit notation', () => {
+
+					const rule = new useMixinInsteadUnit({
+						conf: 'always',
+						mixin: 'basis',
+						unitType: 'px',
+						allowOneUnit: false
+					});
+
+					parseAndRun('.tab\n\tfontsize 1px', rule);
+
+					expect(rule.errors.length).to.be.equal(1);
+					expect(rule.errors[0][1]).to.be.equal('Use "basis" mixin instead "px"');
+					expect(rule.errors[0][5]).to.be.equal('basis(0.125)');
+				});
+			});
+		});
 	});
 	describe('Use another unit type', () => {
 		it('Should check the AST has Unit node with wrong unit notation', () => {
