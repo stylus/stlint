@@ -466,7 +466,8 @@ Allo or deny some mixin instead of unit statement
 {
   "conf": "always",
   "mixin": "basis",
-  "unitType": "px"
+  "unitType": "px",
+  "allowOneUnit": false
 }
 ```
 ----<!-- RULES END -->
