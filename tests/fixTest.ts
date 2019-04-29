@@ -129,7 +129,10 @@ describe('Test fix option', () => {
 
 		describe('Deny rgb notation', () => {
 			it('Should fix RGB node with rgb or rgba color notation to HEX', () => {
-				const wrongContentWithVar = '.tab\n\tcolor rgba(127, 127, 127, 0.6)\n\tbackground-color rgb(0, 0, 0)';
+				const wrongContentWithVar = '.tab\n' +
+					'\tcolor rgba(127, 127, 127, 0.6)\n' +
+					'\tbackground-color rgb(0, 0, 0)\n' +
+					'\toutline rgba(c(black, 1), 0.2)';
 
 				const linter = new Linter({
 					rules: {
@@ -150,9 +153,9 @@ describe('Test fix option', () => {
 				const response = linter.reporter.response;
 
 				expect(response.passed).to.be.false;
-				expect(response.errors && response.errors.length).to.be.equal(2);
+				// expect(response.errors && response.errors.length).to.be.equal(2);
 				expect(
-					'.tab\n\tcolor rgba(#7F7F7F, 0.6)\n\tbackground-color #000000'
+					'.tab\n\tcolor rgba(#7F7F7F, 0.6)\n\tbackground-color #000000\n\toutline rgba(c(black, 1), 0.2)'
 				).to.be.equal(linter.fix('./test.styl', new Content(wrongContentWithVar)));
 			});
 		});

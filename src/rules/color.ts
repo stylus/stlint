@@ -85,7 +85,7 @@ export class Color extends Rule<IColorState> {
 	 */
 	private checkRGB(node: Call): void {
 		if (this.state.denyRGB) {
-			if (node.key && /^rgb(a)?$/i.test(node.key)) {
+			if (node.key && /^rgb(a)?$/i.test(node.key) && node.nodes.length > 2) {
 				let
 					fix = '';
 
