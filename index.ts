@@ -6,6 +6,7 @@ export * from './src/core/rule';
 export const ast = astList;
 export * from './src/doc';
 export * from './src/linter';
+export * from './src/core/content';
 
 /**
  * Main stylus checker
