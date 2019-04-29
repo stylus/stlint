@@ -8,6 +8,13 @@ export * from './src/doc';
 export * from './src/linter';
 export * from './src/core/content';
 export * from './src/core/parser';
+export * from './src/core/runner';
+export * from './src/core/visitor';
+export * from './src/core/translator';
+export * from './src/core/line';
+export * from './src/core/reader';
+export * from './src/core/checker';
+export * from './src/core/baseConfig';
 
 /**
  * Main stylus checker
