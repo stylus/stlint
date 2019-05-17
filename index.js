@@ -176,7 +176,7 @@ exports.StylusLinter = StylusLinter;
 /*! exports provided: name, version, description, main, bin, files, repository, bugs, scripts, keywords, author, license, dependencies, devDependencies, mocha, default */
 /***/ (function(module) {
 
-module.exports = {"name":"stlint","version":"1.0.41","description":"Stylus Linter","main":"index.js","bin":{"stlint":"./bin/stlint"},"files":["bin/","index.js","src/"],"repository":{"type":"git","url":"https://github.com/stylus/stlint"},"bugs":{"url":"https://github.com/stylus/stlint/issues"},"scripts":{"newversion":"npm test && npm version patch --no-git-tag-version && npm run build && npm run doc && npm run newversiongit && npm publish ./","newversiongit":"git add --all  && git commit -m \"New version $npm_package_version. Read more https://github.com/stylus/stlint/releases/tag/$npm_package_version \" && git tag $npm_package_version && git push --tags origin HEAD:master","start":"webpack --watch","build":"webpack","doc":"./bin/stlint --doc rules --fix","test2":"./bin/stlint ./test.styl","test":"mocha tests/**/**.ts tests/**.ts","fix":"tslint -c tslint.json ./src/**/*.ts ./src/**/**/*.ts ./src/*.ts --fix"},"keywords":["lint","linter","stylus","stylus-linter","stlint"],"author":"Chupurnov Valeriy<chupurnov@gmail.com>","license":"MIT","dependencies":{"async":"^2.6.2","chalk":"^2.4.2","columnify":"^1.5.4","glob":"^7.1.3","native-require":"^1.1.4","node-watch":"^0.6.1","strip-json-comments":"^2.0.1","stylus":"github:stylus/stylus#fix-column-function-call","yargs":"^13.2.2"},"devDependencies":{"@types/async":"^2.4.1","@types/chai":"^4.1.7","@types/glob":"^7.1.1","@types/mocha":"^5.2.6","@types/node":"^11.13.2","awesome-typescript-loader":"^5.2.1","chai":"^4.2.0","mocha":"^6.1.2","ts-node":"^8.0.3","tslint":"^5.15.0","tslint-config-prettier":"^1.18.0","tslint-plugin-prettier":"^2.0.1","typescript":"^3.4.2","typings":"^2.1.1","webpack":"^4.29.5","webpack-cli":"^3.3.0","webpack-node-externals":"^1.7.2"},"mocha":{"require":["ts-node/register","tests/staff/bootstrap.ts"]}};
+module.exports = {"name":"stlint","version":"1.0.42","description":"Stylus Linter","main":"index.js","bin":{"stlint":"./bin/stlint"},"files":["bin/","index.js","src/"],"repository":{"type":"git","url":"https://github.com/stylus/stlint"},"bugs":{"url":"https://github.com/stylus/stlint/issues"},"scripts":{"newversion":"npm test && npm version patch --no-git-tag-version && npm run build && npm run doc && npm run newversiongit && npm publish ./","newversiongit":"git add --all  && git commit -m \"New version $npm_package_version. Read more https://github.com/stylus/stlint/releases/tag/$npm_package_version \" && git tag $npm_package_version && git push --tags origin HEAD:master","start":"webpack --watch","build":"webpack","doc":"./bin/stlint --doc rules --fix","test2":"./bin/stlint ./test.styl","test":"mocha tests/**/**.ts tests/**.ts","fix":"tslint -c tslint.json ./src/**/*.ts ./src/**/**/*.ts ./src/*.ts --fix"},"keywords":["lint","linter","stylus","stylus-linter","stlint"],"author":"Chupurnov Valeriy<chupurnov@gmail.com>","license":"MIT","dependencies":{"async":"^2.6.2","chalk":"^2.4.2","columnify":"^1.5.4","glob":"^7.1.3","native-require":"^1.1.4","node-watch":"^0.6.1","strip-json-comments":"^2.0.1","stylus":"github:stylus/stylus#fix-column-function-call","yargs":"^13.2.2"},"devDependencies":{"@types/async":"^2.4.1","@types/chai":"^4.1.7","@types/glob":"^7.1.1","@types/mocha":"^5.2.6","@types/node":"^11.13.2","awesome-typescript-loader":"^5.2.1","chai":"^4.2.0","mocha":"^6.1.2","ts-node":"^8.0.3","tslint":"^5.15.0","tslint-config-prettier":"^1.18.0","tslint-plugin-prettier":"^2.0.1","typescript":"^3.4.2","typings":"^2.1.1","webpack":"^4.29.5","webpack-cli":"^3.3.0","webpack-node-externals":"^1.7.2"},"mocha":{"require":["ts-node/register","tests/staff/bootstrap.ts"]}};
 
 /***/ }),
 
@@ -3222,7 +3222,7 @@ class DepthControl extends rule_1.Rule {
                                 child instanceof index_1.Media ||
                                 child instanceof index_1.Condition) &&
                             child.column - indentPref !== parentNode.column) {
-                            this.msg('incorrect indent', child.lineno, 0, child.column);
+                            this.msg('incorrect indent', child.lineno, 1, child.column);
                         }
                     });
                 }
@@ -3236,7 +3236,7 @@ class DepthControl extends rule_1.Rule {
             if (needCheckPreviousSelector) {
                 prev = node.previousSibling();
                 if (!prev || prev.lineno !== node.lineno) {
-                    this.msg('incorrect indent', node.lineno, 0, node.column);
+                    this.msg('incorrect indent', node.lineno, 1, node.column);
                 }
             }
             return;
@@ -3247,7 +3247,7 @@ class DepthControl extends rule_1.Rule {
                 const parentColumn = (key instanceof index_1.Property && key.key instanceof index_1.Ident) ? key.key.column : key.column;
                 node.nodes.forEach((child) => {
                     if (child instanceof index_1.Property && child.key instanceof index_1.Ident && child.key.column - indentPref !== parentColumn) {
-                        this.msg('incorrect indent', child.key.lineno, 0, child.key.column);
+                        this.msg('incorrect indent', child.key.lineno, 1, child.key.column);
                     }
                 });
             }

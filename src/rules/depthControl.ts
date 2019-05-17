@@ -47,7 +47,7 @@ export class DepthControl extends Rule<IDepthControlState> {
 							) &&
 							child.column - indentPref !== parentNode.column
 						) {
-							this.msg('incorrect indent', child.lineno, 0, child.column);
+							this.msg('incorrect indent', child.lineno, 1, child.column);
 						}
 					});
 				} else if (node.column - indentPref !== parentNode.column) {
@@ -61,7 +61,7 @@ export class DepthControl extends Rule<IDepthControlState> {
 				prev = node.previousSibling();
 
 				if (!prev || prev.lineno !== node.lineno) {
-					this.msg('incorrect indent', node.lineno, 0, node.column);
+					this.msg('incorrect indent', node.lineno, 1, node.column);
 				}
 			}
 
@@ -77,7 +77,7 @@ export class DepthControl extends Rule<IDepthControlState> {
 
 				node.nodes.forEach((child) => {
 					if (child instanceof Property && child.key instanceof Ident && child.key.column - indentPref !== parentColumn) {
-						this.msg('incorrect indent', child.key.lineno, 0, child.key.column);
+						this.msg('incorrect indent', child.key.lineno, 1, child.key.column);
 					}
 				});
 			}
