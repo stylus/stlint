@@ -114,7 +114,7 @@ Create `.stlintrc` file in project root
 Stlint integrations with IDEs are available.
 
 * [WebStorm / PhpStorm / IntelliJ IDEA](https://github.com/stylus/stlint-idea-plugin)
-* VSCode - coming soon
+* [VSCode](https://marketplace.visualstudio.com/items?itemName=xdan.stlint-vscode-plugin)
 
 ## Ignore errors
 sometimes you want to ignore the error for this there are two directives:
