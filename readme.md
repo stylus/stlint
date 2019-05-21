@@ -191,6 +191,7 @@ $color = #CCC
   "conf": "uppercase",
   "enabled": true,
   "allowOnlyInVar": true,
+  "allowShortcut": true,
   "denyRGB": true
 }
 ```

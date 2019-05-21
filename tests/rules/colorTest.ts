@@ -26,7 +26,8 @@ describe('Color test', () => {
 		});
 		it('Should check the AST has RGB node with right color notation', () => {
 			const rule = new Color({
-				conf: 'uppercase'
+				conf: 'uppercase',
+				allowShortcut: true
 			});
 
 			parseAndRun('.tab\n\tcolor: #CCC', rule);
@@ -37,7 +38,8 @@ describe('Color test', () => {
 	describe('Need lowercase notation', () => {
 		it('Should check the AST has RGB node with right color notation', () => {
 			const rule = new Color({
-				conf: 'lowercase'
+				conf: 'lowercase',
+				allowShortcut: true
 			});
 
 			parseAndRun('.tab\n\tcolor: #ccc\n\tbackground-color #fff', rule);
@@ -59,7 +61,8 @@ describe('Color test', () => {
 			it('Should find error in RGB node with rgb or rgba color notation', () => {
 				const rule = new Color({
 					conf: 'uppercase',
-					denyRGB: true
+					denyRGB: true,
+					allowShortcut: true
 				});
 
 				parseAndRun(
@@ -87,7 +90,8 @@ describe('Color test', () => {
 		it('Should check RGB node only in variable', () => {
 			const rule = new Color({
 				conf: 'uppercase',
-				allowOnlyInVar: true
+				allowOnlyInVar: true,
+				allowShortcut: true
 			});
 
 			parseAndRun('$stop = #FFF\n' +
@@ -104,7 +108,8 @@ describe('Color test', () => {
 			it('Should check RGB node only in variable', () => {
 				const rule = new Color({
 					conf: 'uppercase',
-					allowOnlyInVar: true
+					allowOnlyInVar: true,
+					allowShortcut: true
 				});
 
 				parseAndRun('$stop = #FFF\n' +
@@ -122,7 +127,8 @@ describe('Color test', () => {
 			it('Should not check RGB node only in variable', () => {
 				const rule = new Color({
 					conf: 'uppercase',
-					allowOnlyInVar: false
+					allowOnlyInVar: false,
+					allowShortcut: true
 				});
 
 				parseAndRun('$stop = #FFF\n' +
