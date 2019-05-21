@@ -159,6 +159,65 @@ describe('Test fix option', () => {
 				).to.be.equal(linter.fix('./test.styl', new Content(wrongContentWithVar)));
 			});
 		});
+
+		describe('Shortcut', () => {
+			describe('Allow shortcut', () => {
+				describe('Wrong value', () => {
+					it('should replace long color to shortcut version', () => {
+						const
+							wrongContent = '$p = {\n\tcolor: #cccccc\n}\n.test\n\tcolor $p.color';
+
+						const linter = new Linter({
+							rules: {
+								color: {
+									conf: 'lowercase',
+									allowShortcut: true
+								}
+							},
+							grep: 'color',
+							reporter: 'silent',
+							fix: true
+						});
+
+						linter.lint('./test.styl', wrongContent);
+						linter.display(false);
+
+						const response = linter.reporter.response;
+
+						expect(response.passed).to.be.false;
+						expect(response.errors && response.errors.length).to.be.equal(1);
+						expect(wrongContent.replace('#cccccc', '#ccc')).to.be.equal(linter.fix('./test.styl', new Content(wrongContent)));
+					});
+				});
+				describe('Right value', () => {
+					it('should replace shortcut color to long version', () => {
+						const
+							wrongContent = '$p = {\n\tcolor: #ccc\n}\n.test\n\tcolor $p.color';
+
+						const linter = new Linter({
+							rules: {
+								color: {
+									conf: 'lowercase',
+									allowShortcut: false
+								}
+							},
+							grep: 'color',
+							reporter: 'silent',
+							fix: true
+						});
+
+						linter.lint('./test.styl', wrongContent);
+						linter.display(false);
+
+						const response = linter.reporter.response;
+
+						expect(response.passed).to.be.false;
+						expect(response.errors && response.errors.length).to.be.equal(1);
+						expect(wrongContent.replace('#ccc', '#cccccc')).to.be.equal(linter.fix('./test.styl', new Content(wrongContent)));
+					});
+				});
+			});
+		});
 	});
 	describe('Fix colon', () => {
 		describe('Never', () => {

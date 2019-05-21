@@ -1,9 +1,11 @@
 import { Rule } from '../core/rule';
 import { IState } from '../core/types/state';
 import { Call, RGB } from '../core/ast/index';
+import { shortcutColor } from '../core/helpers/shortcutColor';
 
 interface IColorState extends IState {
 	allowOnlyInVar?: boolean
+	allowShortcut?: boolean
 	denyRBG?: boolean
 }
 
@@ -32,6 +34,7 @@ export class Color extends Rule<IColorState> {
 		}
 
 		const checkReg = this.state.conf !== 'lowercase' ? /[a-z]/ : /[A-Z]/;
+
 		let fixed = false;
 
 		if (this.state.allowOnlyInVar && node.closest('block')) {
@@ -60,6 +63,10 @@ export class Color extends Rule<IColorState> {
 				fixed ? null : this.state.conf === 'uppercase' ? fix.toUpperCase() : fix.toLowerCase()
 			);
 
+			return true;
+		}
+
+		if (this.checkShortcutErrors(node) === true) {
 			return true;
 		}
 
@@ -121,6 +128,44 @@ export class Color extends Rule<IColorState> {
 					endIndex,
 					fix
 				);
+			}
+		}
+	}
+
+	private checkShortcutErrors(node: RGB): void | true {
+		if (node.value && typeof node.value === 'string') {
+			if (this.state.allowShortcut) {
+				const shortcut =  shortcutColor(node.value);
+
+				if (shortcut !== node.value) {
+					const fix = this.state.conf === 'uppercase' ? shortcut.toUpperCase() : shortcut.toLowerCase();
+
+					this.msg(
+						`Color ${ node.value } can have shortcut`,
+						node.lineno,
+						node.column,
+						node.column + node.value.length - 1,
+						fix
+					);
+
+					return true;
+				}
+			} else {
+				if (node.value.length < 5) {
+					const
+						color = node.value.replace(/([a-f0-9])([a-f0-9])([a-f0-9])/i, '$1$1$2$2$3$3'),
+						fix = this.state.conf === 'uppercase' ? color.toUpperCase() : color.toLowerCase();
+
+					this.msg(
+						'Color must not have shortcut',
+						node.lineno,
+						node.column,
+						node.column + node.value.length - 1,
+						fix
+					);
+
+					return true;
+				}
 			}
 		}
 	}

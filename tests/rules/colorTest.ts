@@ -137,4 +137,58 @@ describe('Color test', () => {
 			});
 		});
 	});
+	describe('Shortcut', () => {
+		describe('Allow shortcut', () => {
+			describe('Wrong value', () => {
+				it('Should throw the error if content can have shortcut color notation', () => {
+					const rule = new Color({
+						conf: 'lowercase',
+						allowShortcut: true
+					});
+
+					parseAndRun('.tab\n\tcolor: #cccccc\n\tbackground-color #ffffff', rule);
+
+					expect(rule.errors.length).to.be.equal(2);
+				});
+			});
+			describe('Right value', () => {
+				it('Should not throw the error if content has shortcut color notation', () => {
+					const rule = new Color({
+						conf: 'lowercase',
+						allowShortcut: true
+					});
+
+					parseAndRun('.tab\n\tcolor: #ccc\n\tbackground-color #fffffd', rule);
+
+					expect(rule.errors.length).to.be.equal(0);
+				});
+			});
+		});
+		describe('Deny shortcut', () => {
+			describe('Wrong value', () => {
+				it('Should throw the error if content have shortcut color notation', () => {
+					const rule = new Color({
+						conf: 'lowercase',
+						allowShortcut: false
+					});
+
+					parseAndRun('.tab\n\tcolor: #ccc\n\tbackground-color #fff', rule);
+
+					expect(rule.errors.length).to.be.equal(2);
+				});
+			});
+			describe('Right value', () => {
+				it('Should not throw the error if content have not shortcut color notation', () => {
+					const rule = new Color({
+						conf: 'lowercase',
+						allowShortcut: false
+					});
+
+					parseAndRun('.tab\n\tcolor: #cccccc\n\tbackground-color #fffffd', rule);
+
+					expect(rule.errors.length).to.be.equal(0);
+				});
+			});
+		});
+	});
 });
