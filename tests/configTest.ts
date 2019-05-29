@@ -102,4 +102,21 @@ describe('Test extends options', () => {
 			});
 		});
 	});
+	describe('Preprocess content', () => {
+		it('Should load preprocessor function and apply this to content before lint', () => {
+			const
+				linter = new Linter({
+					preprocessors: [path.join(__dirname, './staff/preprocessor.js')]
+				});
+
+			const rightContent = '.c\n\tabsolute left right 0';
+
+			linter.lint('./test.styl', rightContent);
+
+			const response = linter.reporter.response;
+
+			expect(response.passed).to.be.false;
+			expect(response.errors && response.errors.length).to.be.equal(3);
+		});
+	});
 });

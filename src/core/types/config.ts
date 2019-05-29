@@ -2,7 +2,6 @@ import { State } from './state';
 import { ReporterType } from './reporter';
 
 export interface IConfig {
-
 	[key: string]: any;
 	configName: string
 	configFile: string
@@ -11,6 +10,8 @@ export interface IConfig {
 	reporter: ReporterType
 
 	path: string
+	preprocessors: string[];
+
 	grep: string
 	doc: string
 	fix: boolean

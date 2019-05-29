@@ -1,6 +1,7 @@
 import { Reporter } from './core/reporter';
 import { StylusParser } from './core/parser';
 import { Checker } from './core/checker';
+import { Preprocessor } from './core/preprocessor';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
 import { IReporter } from './core/types/reporter';
@@ -21,6 +22,7 @@ export class Linter {
 	reporter: IReporter;
 	parser: StylusParser;
 	checker: Checker;
+	preprocessor: Preprocessor;
 
 	/**
 	 * @param options
@@ -33,6 +35,8 @@ export class Linter {
 		}
 
 		this.config = new Config(this.options);
+
+		this.preprocessor = new Preprocessor(this.config.preprocessors);
 
 		this.reporter = Reporter.getInstance(this.config.reporter, this.config.reportOptions);
 
@@ -54,7 +58,9 @@ export class Linter {
 			str = readFileSync(path, 'utf8');
 		}
 
-		const content = new Content(str);
+		let content = new Content(str);
+
+		content = this.preprocessor.apply(content);
 
 		try {
 

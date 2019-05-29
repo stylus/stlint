@@ -207,6 +207,7 @@ class Config extends baseConfig_1.BaseConfig {
         this.grep = '';
         this.doc = '';
         this.fix = false;
+        this.preprocessors = [];
         this.stylusParserOptions = {};
         this.extends = '';
         this.reportOptions = {
@@ -1895,6 +1896,55 @@ exports.StylusParser = StylusParser;
 
 /***/ }),
 
+/***/ "./src/core/preprocessor.ts":
+/*!**********************************!*\
+  !*** ./src/core/preprocessor.ts ***!
+  \**********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const content_1 = __webpack_require__(/*! ./content */ "./src/core/content.ts");
+const _require = __webpack_require__(/*! native-require */ "native-require");
+class Preprocessor {
+    constructor(files) {
+        this.list = [];
+        if (files.length) {
+            this.list = files.map((file) => {
+                try {
+                    const func = _require(file);
+                    if (typeof func === 'function') {
+                        return func;
+                    }
+                }
+                catch (_a) { }
+                return null;
+            })
+                .filter((f) => f);
+        }
+    }
+    /**
+     * Apply some preprocessors function to content
+     * @param content
+     */
+    apply(content) {
+        if (!this.list.length) {
+            return content;
+        }
+        const str = this.list.reduce((str, func) => func(str), content.content);
+        if (str !== content.content) {
+            return new content_1.Content(str);
+        }
+        return content;
+    }
+}
+exports.Preprocessor = Preprocessor;
+
+
+/***/ }),
+
 /***/ "./src/core/reader.ts":
 /*!****************************!*\
   !*** ./src/core/reader.ts ***!
@@ -2912,6 +2962,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const reporter_1 = __webpack_require__(/*! ./core/reporter */ "./src/core/reporter.ts");
 const parser_1 = __webpack_require__(/*! ./core/parser */ "./src/core/parser.ts");
 const checker_1 = __webpack_require__(/*! ./core/checker */ "./src/core/checker.ts");
+const preprocessor_1 = __webpack_require__(/*! ./core/preprocessor */ "./src/core/preprocessor.ts");
 const fs_1 = __webpack_require__(/*! fs */ "fs");
 const path_1 = __webpack_require__(/*! path */ "path");
 const rule_1 = __webpack_require__(/*! ./core/rule */ "./src/core/rule.ts");
@@ -2930,6 +2981,7 @@ class Linter {
             options.configFile = options.config;
         }
         this.config = new config_1.Config(this.options);
+        this.preprocessor = new preprocessor_1.Preprocessor(this.config.preprocessors);
         this.reporter = reporter_1.Reporter.getInstance(this.config.reporter, this.config.reportOptions);
         this.parser = new parser_1.StylusParser(this.config.stylusParserOptions);
         this.checker = new checker_1.Checker(this);
@@ -2945,7 +2997,8 @@ class Linter {
         if (typeof str !== 'string') {
             str = fs_1.readFileSync(path, 'utf8');
         }
-        const content = new content_1.Content(str);
+        let content = new content_1.Content(str);
+        content = this.preprocessor.apply(content);
         try {
             this.checker.loadAndInitRules();
             this.reporter.setPath(path);
