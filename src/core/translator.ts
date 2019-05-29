@@ -27,6 +27,7 @@ import {
 	Querylist,
 	Query,
 	Feature,
+	Supports,
 	Keyframes, Atrule, Ternary
 } from './ast/index';
 
@@ -372,6 +373,21 @@ export class Translator extends  Visitor<ISNode, Node> {
 	 */
 	visitBoolean(block: ISNode, parent: Node): Node {
 		return new Bool(block, parent);
+	}
+
+	/**
+	 * Visit supports block
+	 * @param block
+	 * @param parent
+	 */
+	visitSupports(block: ISNode, parent: Node): Node {
+		const node = new Supports(block, parent);
+
+		if (block.block) {
+			node.nodes.push(new Block(block.block, node));
+		}
+
+		return node;
 	}
 
 	/**

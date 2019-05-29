@@ -218,15 +218,17 @@ class Config extends baseConfig_1.BaseConfig {
         if (!this.configFile) {
             this.configFile = path_1.resolve(process.cwd(), this.configName);
         }
-        this.readConfig(this.configFile);
-        if (this.extends) {
-            if (Array.isArray(this.extends)) {
-                this.extends.forEach(this.extendsByPath.bind(this));
+        const customConfig = this.readFile(this.configFile);
+        this.extendsOption(options, customConfig);
+        if (customConfig.extends) {
+            if (Array.isArray(customConfig.extends)) {
+                customConfig.extends.forEach(this.extendsByPath.bind(this));
             }
             else {
-                this.extendsByPath(this.extends);
+                this.extendsByPath(customConfig.extends);
             }
         }
+        this.applyConfig(this.configFile, customConfig);
         delete options.extraRules;
         this.extendsOption(options, this); // options are main
     }
@@ -562,6 +564,7 @@ __export(__webpack_require__(/*! ./feature */ "./src/core/ast/feature.ts"));
 __export(__webpack_require__(/*! ./keyframes */ "./src/core/ast/keyframes.ts"));
 __export(__webpack_require__(/*! ./atrule */ "./src/core/ast/atrule.ts"));
 __export(__webpack_require__(/*! ./ternary */ "./src/core/ast/ternary.ts"));
+__export(__webpack_require__(/*! ./supports */ "./src/core/ast/supports.ts"));
 
 
 /***/ }),
@@ -924,6 +927,24 @@ exports.Selector = Selector;
 
 /***/ }),
 
+/***/ "./src/core/ast/supports.ts":
+/*!**********************************!*\
+  !*** ./src/core/ast/supports.ts ***!
+  \**********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
+class Supports extends node_1.Node {
+}
+exports.Supports = Supports;
+
+
+/***/ }),
+
 /***/ "./src/core/ast/ternary.ts":
 /*!*********************************!*\
   !*** ./src/core/ast/ternary.ts ***!
@@ -1051,6 +1072,7 @@ const fs_1 = __webpack_require__(/*! fs */ "fs");
 const stripJsonComments = __webpack_require__(/*! strip-json-comments */ "strip-json-comments");
 const path_1 = __webpack_require__(/*! path */ "path");
 const mergeArray_1 = __webpack_require__(/*! ./helpers/mergeArray */ "./src/core/helpers/mergeArray.ts");
+const _require = __webpack_require__(/*! native-require */ "native-require");
 class BaseConfig {
     constructor() {
         this.configName = '.stlintrc';
@@ -1063,6 +1085,23 @@ class BaseConfig {
      */
     statSync(path) {
         return fs_1.statSync(path);
+    }
+    /**
+     * Read some file format
+     * @param configFile
+     */
+    readFile(configFile) {
+        const ext = path_1.extname(configFile) || '';
+        try {
+            switch (ext.toLowerCase()) {
+                case '.js':
+                    return _require(configFile);
+                default:
+                    return this.readJSONFile(configFile);
+            }
+        }
+        catch (_a) { }
+        return {};
     }
     /**
      * Read JSON File
@@ -1079,15 +1118,12 @@ class BaseConfig {
     /**
      * Try read config file .stlintrc
      */
-    readConfig(configFile) {
-        const customConfig = this.readJSONFile(configFile);
-        if (customConfig) {
-            this.extendsOption(customConfig, this);
-            if (this.extraRules) {
-                const dir = path_1.dirname(configFile), normalizePath = (extra) => path_1.resolve(dir, extra);
-                this.extraRules = Array.isArray(this.extraRules) ?
-                    this.extraRules.map(normalizePath) : normalizePath(this.extraRules);
-            }
+    applyConfig(configFile, customConfig) {
+        this.extendsOption(customConfig, this);
+        if (this.extraRules) {
+            const dir = path_1.dirname(configFile), normalizePath = (extra) => path_1.resolve(dir, extra);
+            this.extraRules = Array.isArray(this.extraRules) ?
+                this.extraRules.map(normalizePath) : normalizePath(this.extraRules);
         }
     }
     /**
@@ -1117,12 +1153,8 @@ class BaseConfig {
     extendsByPath(pathOrPackage) {
         const path = /^\./.test(pathOrPackage) ?
             path_1.resolve(process.cwd(), pathOrPackage) : path_1.resolve(process.cwd(), 'node_modules', pathOrPackage), stat = this.statSync(path);
-        if (stat.isFile()) {
-            this.readConfig(path);
-        }
-        else {
-            this.readConfig(path_1.resolve(path, this.configName));
-        }
+        const file = stat.isFile() ? path : path_1.resolve(path, this.configName);
+        this.applyConfig(file, this.readFile(file));
     }
 }
 exports.BaseConfig = BaseConfig;
@@ -2629,6 +2661,18 @@ class Translator extends visitor_1.Visitor {
      */
     visitBoolean(block, parent) {
         return new index_1.Bool(block, parent);
+    }
+    /**
+     * Visit supports block
+     * @param block
+     * @param parent
+     */
+    visitSupports(block, parent) {
+        const node = new index_1.Supports(block, parent);
+        if (block.block) {
+            node.nodes.push(new index_1.Block(block.block, node));
+        }
+        return node;
     }
     /**
      * Cycle value
