@@ -42,15 +42,20 @@ export class Config extends BaseConfig implements IConfig {
 			this.configFile = resolve(process.cwd(), this.configName);
 		}
 
-		this.readConfig(this.configFile);
+		const
+			customConfig = this.readFile(this.configFile);
 
-		if (this.extends) {
-			if (Array.isArray(this.extends)) {
-				this.extends.forEach(this.extendsByPath.bind(this));
+		this.extendsOption(options, customConfig);
+
+		if (customConfig.extends) {
+			if (Array.isArray(customConfig.extends)) {
+				customConfig.extends.forEach(this.extendsByPath.bind(this));
 			} else {
-				this.extendsByPath(this.extends);
+				this.extendsByPath(customConfig.extends);
 			}
 		}
+
+		this.applyConfig(this.configFile, customConfig);
 
 		delete options.extraRules;
 		this.extendsOption(options, this); // options are main

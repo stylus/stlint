@@ -1,9 +1,10 @@
 import { isPlainObject } from './helpers/isPlainObject';
 import { existsSync, readFileSync, statSync } from 'fs';
 import stripJsonComments = require('strip-json-comments');
-import { resolve, dirname } from 'path';
+import { resolve, dirname, extname } from 'path';
 import { IStats } from './types/IStats';
 import { mergeArray } from './helpers/mergeArray';
+import _require = require('native-require');
 
 export class BaseConfig {
 	configName: string = '.stlintrc';
@@ -16,6 +17,25 @@ export class BaseConfig {
 	 */
 	statSync(path: string): IStats {
 		return statSync(path);
+	}
+
+	/**
+	 * Read some file format
+	 * @param configFile
+	 */
+	readFile(configFile: string): Dictionary {
+		const ext = extname(configFile) || '';
+
+		try {
+			switch (ext.toLowerCase()) {
+				case '.js':
+					return _require(configFile);
+				default:
+					return this.readJSONFile(configFile);
+			}
+		} catch {}
+
+		return {};
 	}
 
 	/**
@@ -34,22 +54,17 @@ export class BaseConfig {
 	/**
 	 * Try read config file .stlintrc
 	 */
-	readConfig(configFile: string): void {
-		const
-			customConfig = this.readJSONFile(configFile);
+	applyConfig(configFile: string, customConfig: Dictionary): void {
+		this.extendsOption(customConfig, this);
 
-		if (customConfig) {
-			this.extendsOption(customConfig, this);
+		if (this.extraRules) {
+			const
+				dir = dirname(configFile),
+				normalizePath = (extra: string): string => resolve(dir, extra);
 
-			if (this.extraRules) {
-				const
-					dir = dirname(configFile),
-					normalizePath = (extra: string): string => resolve(dir, extra);
+			this.extraRules = Array.isArray(this.extraRules) ?
+					this.extraRules.map(normalizePath) : normalizePath(this.extraRules);
 
-				this.extraRules = Array.isArray(this.extraRules) ?
-						this.extraRules.map(normalizePath) : normalizePath(this.extraRules);
-
-			}
 		}
 	}
 
@@ -86,10 +101,9 @@ export class BaseConfig {
 					resolve(process.cwd(), pathOrPackage) : resolve(process.cwd(), 'node_modules', pathOrPackage),
 			stat = this.statSync(path);
 
-		if (stat.isFile()) {
-			this.readConfig(path);
-		} else {
-			this.readConfig(resolve(path, this.configName));
-		}
+		const
+			file = stat.isFile() ? path : resolve(path, this.configName);
+
+		this.applyConfig(file, this.readFile(file));
 	}
 }

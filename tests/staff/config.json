@@ -1,0 +1,12 @@
+{
+  "extends": "./tests/staff/extends.json",
+  "rules": {
+    "color": 	{
+      "conf": "test-config",
+      "enabled": false,
+      "allowOnlyInVar": 3
+    }
+  },
+  "grep": "color",
+  "reporter": "raw"
+}
