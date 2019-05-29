@@ -22,7 +22,7 @@ export class Linter {
 	reporter: IReporter;
 	parser: StylusParser;
 	checker: Checker;
-	preprocessor: Preprocessor;
+	preprocessor!: Preprocessor;
 
 	/**
 	 * @param options
@@ -36,18 +36,22 @@ export class Linter {
 
 		this.config = new Config(this.options);
 
-		this.preprocessor = new Preprocessor(this.config.preprocessors);
-
 		this.reporter = Reporter.getInstance(this.config.reporter, this.config.reportOptions);
 
 		this.parser = new StylusParser(this.config.stylusParserOptions);
 		this.checker = new Checker(this);
+
+		try {
+			this.preprocessor = new Preprocessor(this.config.preprocessors);
+		} catch (e) {
+			this.reporter.add('preprocessorError', e.message, e.lineno || 1, e.startOffset || 1);
+		}
 	}
 
 	/**
 	 * Parse styl file and check rules
 	 */
-	lint(path: string, str: string | null = null): void {
+	lint(path: string, str: string | null = null): Content {
 		path = resolve(path);
 
 		if (!existsSync(path)) {
@@ -60,7 +64,9 @@ export class Linter {
 
 		let content = new Content(str);
 
-		content = this.preprocessor.apply(content);
+		if (this.preprocessor) {
+			content = this.preprocessor.apply(content);
+		}
 
 		try {
 
@@ -94,6 +100,8 @@ export class Linter {
 				this.fix(path, content);
 			}
 		}
+
+		return content;
 	}
 
 	protected fillIgnoredLines(content: Content): void {

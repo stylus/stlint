@@ -7,13 +7,11 @@ export class Preprocessor {
 	constructor(files: string[]) {
 		if (files.length) {
 			this.list = files.map((file) => {
-					try {
-						const func = _require(file);
+					const func = _require(file);
 
-						if (typeof func === 'function') {
-							return func;
-						}
-					} catch {}
+					if (typeof func === 'function') {
+						return func;
+					}
 
 					return null;
 				})
@@ -32,7 +30,7 @@ export class Preprocessor {
 
 		const str = this.list.reduce((str, func) => func(str), content.content);
 
-		if (str !== content.content) {
+		if (typeof str === 'string' && str !== content.content) {
 			return new Content(str);
 		}
 

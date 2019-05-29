@@ -22,8 +22,6 @@ export class Config extends BaseConfig implements IConfig {
 	doc: string = '';
 	fix: boolean = false;
 
-	preprocessors: string[] = [];
-
 	stylusParserOptions: Dictionary = {};
 
 	extends: string | string[] = '';

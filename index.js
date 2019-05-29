@@ -176,7 +176,7 @@ exports.StylusLinter = StylusLinter;
 /*! exports provided: name, version, description, main, bin, files, repository, bugs, scripts, keywords, author, license, dependencies, devDependencies, mocha, default */
 /***/ (function(module) {
 
-module.exports = {"name":"stlint","version":"1.0.45","description":"Stylus Linter","main":"index.js","bin":{"stlint":"./bin/stlint"},"files":["bin/","index.js","src/"],"repository":{"type":"git","url":"https://github.com/stylus/stlint"},"bugs":{"url":"https://github.com/stylus/stlint/issues"},"scripts":{"newversion":"npm test && npm version patch --no-git-tag-version && npm run build && npm run doc && npm run newversiongit && npm publish ./","newversiongit":"git add --all  && git commit -m \"New version $npm_package_version. Read more https://github.com/stylus/stlint/releases/tag/$npm_package_version \" && git tag $npm_package_version && git push --tags origin HEAD:master","start":"webpack --watch","build":"webpack","doc":"./bin/stlint --doc rules --fix","test2":"./bin/stlint ./test.styl","test":"mocha tests/**/**.ts tests/**.ts","fix":"tslint -c tslint.json ./src/**/*.ts ./src/**/**/*.ts ./src/*.ts --fix"},"keywords":["lint","linter","stylus","stylus-linter","stlint"],"author":"Chupurnov Valeriy<chupurnov@gmail.com>","license":"MIT","dependencies":{"async":"^2.6.2","chalk":"^2.4.2","columnify":"^1.5.4","glob":"^7.1.3","native-require":"^1.1.4","node-watch":"^0.6.1","strip-json-comments":"^2.0.1","stylus":"github:stylus/stylus#fix-column-function-call","yargs":"^13.2.2"},"devDependencies":{"@types/async":"^2.4.1","@types/chai":"^4.1.7","@types/glob":"^7.1.1","@types/mocha":"^5.2.6","@types/node":"^11.13.2","awesome-typescript-loader":"^5.2.1","chai":"^4.2.0","mocha":"^6.1.2","ts-node":"^8.0.3","tslint":"^5.15.0","tslint-config-prettier":"^1.18.0","tslint-plugin-prettier":"^2.0.1","typescript":"^3.4.2","typings":"^2.1.1","webpack":"^4.29.5","webpack-cli":"^3.3.0","webpack-node-externals":"^1.7.2"},"mocha":{"require":["ts-node/register","tests/staff/bootstrap.ts"]}};
+module.exports = {"name":"stlint","version":"1.0.47","description":"Stylus Linter","main":"index.js","bin":{"stlint":"./bin/stlint"},"files":["bin/","index.js","src/"],"repository":{"type":"git","url":"https://github.com/stylus/stlint"},"bugs":{"url":"https://github.com/stylus/stlint/issues"},"scripts":{"newversion":"npm test && npm version patch --no-git-tag-version && npm run build && npm run doc && npm run newversiongit && npm publish ./","newversiongit":"git add --all  && git commit -m \"New version $npm_package_version. Read more https://github.com/stylus/stlint/releases/tag/$npm_package_version \" && git tag $npm_package_version && git push --tags origin HEAD:master","start":"webpack --watch","build":"webpack","doc":"./bin/stlint --doc rules --fix","test2":"./bin/stlint ./test.styl","test":"mocha tests/**/**.ts tests/**.ts","fix":"tslint -c tslint.json ./src/**/*.ts ./src/**/**/*.ts ./src/*.ts --fix"},"keywords":["lint","linter","stylus","stylus-linter","stlint"],"author":"Chupurnov Valeriy<chupurnov@gmail.com>","license":"MIT","dependencies":{"async":"^2.6.2","chalk":"^2.4.2","columnify":"^1.5.4","glob":"^7.1.3","native-require":"^1.1.4","node-watch":"^0.6.1","strip-json-comments":"^2.0.1","stylus":"github:stylus/stylus#fix-column-function-call","yargs":"^13.2.2"},"devDependencies":{"@types/async":"^2.4.1","@types/chai":"^4.1.7","@types/glob":"^7.1.1","@types/mocha":"^5.2.6","@types/node":"^11.13.2","awesome-typescript-loader":"^5.2.1","chai":"^4.2.0","mocha":"^6.1.2","ts-node":"^8.0.3","tslint":"^5.15.0","tslint-config-prettier":"^1.18.0","tslint-plugin-prettier":"^2.0.1","typescript":"^3.4.2","typings":"^2.1.1","webpack":"^4.29.5","webpack-cli":"^3.3.0","webpack-node-externals":"^1.7.2"},"mocha":{"require":["ts-node/register","tests/staff/bootstrap.ts"]}};
 
 /***/ }),
 
@@ -207,7 +207,6 @@ class Config extends baseConfig_1.BaseConfig {
         this.grep = '';
         this.doc = '';
         this.fix = false;
-        this.preprocessors = [];
         this.stylusParserOptions = {};
         this.extends = '';
         this.reportOptions = {
@@ -1079,6 +1078,7 @@ class BaseConfig {
         this.configName = '.stlintrc';
         this.configFile = '';
         this.extraRules = '';
+        this.preprocessors = [];
     }
     /**
      * Wrapper for path.statSync
@@ -1120,12 +1120,15 @@ class BaseConfig {
      * Try read config file .stlintrc
      */
     applyConfig(configFile, customConfig) {
-        this.extendsOption(customConfig, this);
-        if (this.extraRules) {
-            const dir = path_1.dirname(configFile), normalizePath = (extra) => path_1.resolve(dir, extra);
-            this.extraRules = Array.isArray(this.extraRules) ?
-                this.extraRules.map(normalizePath) : normalizePath(this.extraRules);
+        const dir = path_1.dirname(configFile), normalizePath = (extra) => path_1.resolve(dir, extra);
+        if (customConfig.extraRules) {
+            customConfig.extraRules = Array.isArray(customConfig.extraRules) ?
+                customConfig.extraRules.map(normalizePath) : normalizePath(customConfig.extraRules);
         }
+        if (customConfig.preprocessors) {
+            customConfig.preprocessors = customConfig.preprocessors.map(normalizePath);
+        }
+        this.extendsOption(customConfig, this);
     }
     /**
      * Extends default options by some object
@@ -1913,13 +1916,10 @@ class Preprocessor {
         this.list = [];
         if (files.length) {
             this.list = files.map((file) => {
-                try {
-                    const func = _require(file);
-                    if (typeof func === 'function') {
-                        return func;
-                    }
+                const func = _require(file);
+                if (typeof func === 'function') {
+                    return func;
                 }
-                catch (_a) { }
                 return null;
             })
                 .filter((f) => f);
@@ -1934,7 +1934,7 @@ class Preprocessor {
             return content;
         }
         const str = this.list.reduce((str, func) => func(str), content.content);
-        if (str !== content.content) {
+        if (typeof str === 'string' && str !== content.content) {
             return new content_1.Content(str);
         }
         return content;
@@ -2981,10 +2981,15 @@ class Linter {
             options.configFile = options.config;
         }
         this.config = new config_1.Config(this.options);
-        this.preprocessor = new preprocessor_1.Preprocessor(this.config.preprocessors);
         this.reporter = reporter_1.Reporter.getInstance(this.config.reporter, this.config.reportOptions);
         this.parser = new parser_1.StylusParser(this.config.stylusParserOptions);
         this.checker = new checker_1.Checker(this);
+        try {
+            this.preprocessor = new preprocessor_1.Preprocessor(this.config.preprocessors);
+        }
+        catch (e) {
+            this.reporter.add('preprocessorError', e.message, e.lineno || 1, e.startOffset || 1);
+        }
     }
     /**
      * Parse styl file and check rules
@@ -2998,7 +3003,9 @@ class Linter {
             str = fs_1.readFileSync(path, 'utf8');
         }
         let content = new content_1.Content(str);
-        content = this.preprocessor.apply(content);
+        if (this.preprocessor) {
+            content = this.preprocessor.apply(content);
+        }
         try {
             this.checker.loadAndInitRules();
             this.reporter.setPath(path);
@@ -3026,6 +3033,7 @@ class Linter {
                 this.fix(path, content);
             }
         }
+        return content;
     }
     fillIgnoredLines(content) {
         let ignoreBlock = false;

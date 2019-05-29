@@ -1,0 +1,3 @@
+{
+  "preprocessors": ["./preprocessors/preprocessor.js"]
+}

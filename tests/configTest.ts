@@ -106,7 +106,9 @@ describe('Test extends options', () => {
 		it('Should load preprocessor function and apply this to content before lint', () => {
 			const
 				linter = new Linter({
-					preprocessors: [path.join(__dirname, './staff/preprocessor.js')]
+					preprocessors: [
+						path.join(__dirname, './staff/preprocessor.js')
+					]
 				});
 
 			const rightContent = '.c\n\tabsolute left right 0';
@@ -117,6 +119,22 @@ describe('Test extends options', () => {
 
 			expect(response.passed).to.be.false;
 			expect(response.errors && response.errors.length).to.be.equal(3);
+		});
+		describe('Path to preprocessor', () => {
+			it('Should calculate by config file', () => {
+				const
+					linter = new Linter({
+						extends: [
+							path.join(__dirname, './staff/subfolder/extends.json')
+						]
+					});
+
+				const rightContent = '.c\n\tabsolute left right 0';
+
+				const content = linter.lint('./test.styl', rightContent);
+
+				expect(content.content).to.be.equal(rightContent + 'i work');
+			});
 		});
 	});
 });

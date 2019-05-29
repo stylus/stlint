@@ -10,6 +10,7 @@ export class BaseConfig {
 	configName: string = '.stlintrc';
 	configFile: string = '';
 	extraRules: string | string[] = '';
+	preprocessors: string[] = [];
 
 	/**
 	 * Wrapper for path.statSync
@@ -55,17 +56,20 @@ export class BaseConfig {
 	 * Try read config file .stlintrc
 	 */
 	applyConfig(configFile: string, customConfig: Dictionary): void {
-		this.extendsOption(customConfig, this);
+		const
+			dir = dirname(configFile),
+			normalizePath = (extra: string): string => resolve(dir, extra);
 
-		if (this.extraRules) {
-			const
-				dir = dirname(configFile),
-				normalizePath = (extra: string): string => resolve(dir, extra);
-
-			this.extraRules = Array.isArray(this.extraRules) ?
-					this.extraRules.map(normalizePath) : normalizePath(this.extraRules);
-
+		if (customConfig.extraRules) {
+			customConfig.extraRules = Array.isArray(customConfig.extraRules) ?
+				customConfig.extraRules.map(normalizePath) : normalizePath(customConfig.extraRules);
 		}
+
+		if (customConfig.preprocessors) {
+			customConfig.preprocessors = customConfig.preprocessors.map(normalizePath);
+		}
+
+		this.extendsOption(customConfig, this);
 	}
 
 	/**
