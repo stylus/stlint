@@ -257,7 +257,8 @@ Check that $ is used when declaring vars
 ```json
 {
   "conf": "always",
-  "prefix": "$"
+  "prefix": "$",
+  "allowConst": true
 }
 ```
 ----

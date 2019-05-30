@@ -176,7 +176,7 @@ exports.StylusLinter = StylusLinter;
 /*! exports provided: name, version, description, main, bin, files, repository, bugs, scripts, keywords, author, license, dependencies, devDependencies, mocha, default */
 /***/ (function(module) {
 
-module.exports = {"name":"stlint","version":"1.0.47","description":"Stylus Linter","main":"index.js","bin":{"stlint":"./bin/stlint"},"files":["bin/","index.js","src/"],"repository":{"type":"git","url":"https://github.com/stylus/stlint"},"bugs":{"url":"https://github.com/stylus/stlint/issues"},"scripts":{"newversion":"npm test && npm version patch --no-git-tag-version && npm run build && npm run doc && npm run newversiongit && npm publish ./","newversiongit":"git add --all  && git commit -m \"New version $npm_package_version. Read more https://github.com/stylus/stlint/releases/tag/$npm_package_version \" && git tag $npm_package_version && git push --tags origin HEAD:master","start":"webpack --watch","build":"webpack","doc":"./bin/stlint --doc rules --fix","test2":"./bin/stlint ./test.styl","test":"mocha tests/**/**.ts tests/**.ts","fix":"tslint -c tslint.json ./src/**/*.ts ./src/**/**/*.ts ./src/*.ts --fix"},"keywords":["lint","linter","stylus","stylus-linter","stlint"],"author":"Chupurnov Valeriy<chupurnov@gmail.com>","license":"MIT","dependencies":{"async":"^2.6.2","chalk":"^2.4.2","columnify":"^1.5.4","glob":"^7.1.3","native-require":"^1.1.4","node-watch":"^0.6.1","strip-json-comments":"^2.0.1","stylus":"github:stylus/stylus#fix-column-function-call","yargs":"^13.2.2"},"devDependencies":{"@types/async":"^2.4.1","@types/chai":"^4.1.7","@types/glob":"^7.1.1","@types/mocha":"^5.2.6","@types/node":"^11.13.2","awesome-typescript-loader":"^5.2.1","chai":"^4.2.0","mocha":"^6.1.2","ts-node":"^8.0.3","tslint":"^5.15.0","tslint-config-prettier":"^1.18.0","tslint-plugin-prettier":"^2.0.1","typescript":"^3.4.2","typings":"^2.1.1","webpack":"^4.29.5","webpack-cli":"^3.3.0","webpack-node-externals":"^1.7.2"},"mocha":{"require":["ts-node/register","tests/staff/bootstrap.ts"]}};
+module.exports = {"name":"stlint","version":"1.0.48","description":"Stylus Linter","main":"index.js","bin":{"stlint":"./bin/stlint"},"files":["bin/","index.js","src/"],"repository":{"type":"git","url":"https://github.com/stylus/stlint"},"bugs":{"url":"https://github.com/stylus/stlint/issues"},"scripts":{"newversion":"npm test && npm version patch --no-git-tag-version && npm run build && npm run doc && npm run newversiongit && npm publish ./","newversiongit":"git add --all  && git commit -m \"New version $npm_package_version. Read more https://github.com/stylus/stlint/releases/tag/$npm_package_version \" && git tag $npm_package_version && git push --tags origin HEAD:master","start":"webpack --watch","build":"webpack","doc":"./bin/stlint --doc rules --fix","test2":"./bin/stlint ./test.styl","test":"mocha tests/**/**.ts tests/**.ts","fix":"tslint -c tslint.json ./src/**/*.ts ./src/**/**/*.ts ./src/*.ts --fix"},"keywords":["lint","linter","stylus","stylus-linter","stlint"],"author":"Chupurnov Valeriy<chupurnov@gmail.com>","license":"MIT","dependencies":{"async":"^2.6.2","chalk":"^2.4.2","columnify":"^1.5.4","escaper":"^3.0.2","glob":"^7.1.3","native-require":"^1.1.4","node-watch":"^0.6.1","strip-json-comments":"^2.0.1","stylus":"github:stylus/stylus#fix-column-function-call","yargs":"^13.2.2"},"devDependencies":{"@types/async":"^2.4.1","@types/chai":"^4.1.7","@types/glob":"^7.1.1","@types/mocha":"^5.2.6","@types/node":"^11.13.2","awesome-typescript-loader":"^5.2.1","chai":"^4.2.0","mocha":"^6.1.2","ts-node":"^8.0.3","tslint":"^5.15.0","tslint-config-prettier":"^1.18.0","tslint-plugin-prettier":"^2.0.1","typescript":"^3.4.2","typings":"^2.1.1","webpack":"^4.29.5","webpack-cli":"^3.3.0","webpack-node-externals":"^1.7.2"},"mocha":{"require":["ts-node/register","tests/staff/bootstrap.ts"]}};
 
 /***/ }),
 
@@ -1911,6 +1911,7 @@ exports.StylusParser = StylusParser;
 Object.defineProperty(exports, "__esModule", { value: true });
 const content_1 = __webpack_require__(/*! ./content */ "./src/core/content.ts");
 const _require = __webpack_require__(/*! native-require */ "native-require");
+const safeComments_1 = __webpack_require__(/*! ../preprocessors/safeComments */ "./src/preprocessors/safeComments.ts");
 class Preprocessor {
     constructor(files) {
         this.list = [];
@@ -1924,6 +1925,7 @@ class Preprocessor {
             })
                 .filter((f) => f);
         }
+        this.list.push(safeComments_1.safeComments);
     }
     /**
      * Apply some preprocessors function to content
@@ -2926,7 +2928,7 @@ module.exports = {"css":["{","}","*","&","~/","/","../",":root","::selection","*
 /*! exports provided: mixedSpaces, prefixVarsWithDollar, emptyLines, commaInObject, depthControl, quotePref, semicolons, colons, color, leadingZero, useMixinInsteadUnit, sortOrder, default */
 /***/ (function(module) {
 
-module.exports = {"mixedSpaces":{"indentPref":"tab"},"prefixVarsWithDollar":{"conf":"always","prefix":"$"},"emptyLines":true,"commaInObject":["never"],"depthControl":{"indentPref":"tab"},"quotePref":["double"],"semicolons":["never"],"colons":["never"],"color":{"conf":"uppercase","enabled":true,"allowOnlyInVar":true,"allowShortcut":true,"denyRGB":true},"leadingZero":["always"],"useMixinInsteadUnit":{"conf":"always","mixin":"basis","unitType":"px","allowOneUnit":false},"sortOrder":{"conf":"grouped","startGroupChecking":6,"order":[["absolute","position","z-index","top","right","bottom","left"],["content","display","flexbox","flex","flex-grow","flex-shrink","flex-basis","flex-direction","order","flex-order","flex-wrap","flex-flow","justify-content","align-self","align-items","align-content","flex-pack","flex-align","box-sizing","vertical-align","size","width","height","max-width","min-width","max-height","min-height","overflow","overflow-x","overflow-y","float","clear","visibility","opacity","margin","margin-top","margin-right","margin-bottom","margin-left","padding","padding-top","padding-right","padding-bottom","padding-left"],["font","font-family","font-size","font-weight","font-style","font-variant","font-size-adjust","font-stretch","line-height","letter-spacing","text-align","text-align-last","text-decoration","text-emphasis","text-emphasis-position","text-emphasis-style","text-emphasis-color","text-indent","text-justify","text-outline","text-transform","text-wrap","text-overflow","text-overflow-ellipsis","text-overflow-mode","word-spacing","word-wrap","word-break","tab-size","hyphens"],["pointer-events","border","border-spacing","border-collapse","border-width","border-style","border-color","border-top","border-top-width","border-top-style","border-top-color","border-right","border-right-width","border-right-style","border-right-color","border-bottom","border-bottom-width","border-bottom-style","border-bottom-color","border-left","border-left-width","border-left-style","border-left-color","border-radius","border-top-left-radius","border-top-right-radius","border-bottom-right-radius","border-bottom-left-radius","border-image","border-image-source","border-image-slice","border-image-width","border-image-outset","border-image-repeat","border-top-image","border-right-image","border-bottom-image","border-left-image","border-corner-image","border-top-left-image","border-top-right-image","border-bottom-right-image","border-bottom-left-image","color","background","filter","background-color","background-image","background-attachment","background-position","background-position-x","background-position-y","background-clip","background-origin","background-size","background-repeat","clip","list-style","outline","outline-width","outline-style","outline-color","outline-offset","cursor","box-shadow","text-shadow","table-layout","backface-visibility","will-change","transition","transform","animation"]]}};
+module.exports = {"mixedSpaces":{"indentPref":"tab"},"prefixVarsWithDollar":{"conf":"always","prefix":"$","allowConst":true},"emptyLines":true,"commaInObject":["never"],"depthControl":{"indentPref":"tab"},"quotePref":["double"],"semicolons":["never"],"colons":["never"],"color":{"conf":"uppercase","enabled":true,"allowOnlyInVar":true,"allowShortcut":true,"denyRGB":true},"leadingZero":["always"],"useMixinInsteadUnit":{"conf":"always","mixin":"basis","unitType":"px","allowOneUnit":false},"sortOrder":{"conf":"grouped","startGroupChecking":6,"order":[["absolute","position","z-index","top","right","bottom","left"],["content","display","flexbox","flex","flex-grow","flex-shrink","flex-basis","flex-direction","order","flex-order","flex-wrap","flex-flow","justify-content","align-self","align-items","align-content","flex-pack","flex-align","box-sizing","vertical-align","size","width","height","max-width","min-width","max-height","min-height","overflow","overflow-x","overflow-y","float","clear","visibility","opacity","margin","margin-top","margin-right","margin-bottom","margin-left","padding","padding-top","padding-right","padding-bottom","padding-left"],["font","font-family","font-size","font-weight","font-style","font-variant","font-size-adjust","font-stretch","line-height","letter-spacing","text-align","text-align-last","text-decoration","text-emphasis","text-emphasis-position","text-emphasis-style","text-emphasis-color","text-indent","text-justify","text-outline","text-transform","text-wrap","text-overflow","text-overflow-ellipsis","text-overflow-mode","word-spacing","word-wrap","word-break","tab-size","hyphens"],["pointer-events","border","border-spacing","border-collapse","border-width","border-style","border-color","border-top","border-top-width","border-top-style","border-top-color","border-right","border-right-width","border-right-style","border-right-color","border-bottom","border-bottom-width","border-bottom-style","border-bottom-color","border-left","border-left-width","border-left-style","border-left-color","border-radius","border-top-left-radius","border-top-right-radius","border-bottom-right-radius","border-bottom-left-radius","border-image","border-image-source","border-image-slice","border-image-width","border-image-outset","border-image-repeat","border-top-image","border-right-image","border-bottom-image","border-left-image","border-corner-image","border-top-left-image","border-top-right-image","border-bottom-right-image","border-bottom-left-image","color","background","filter","background-color","background-image","background-attachment","background-position","background-position-x","background-position-y","background-clip","background-origin","background-size","background-repeat","clip","list-style","outline","outline-width","outline-style","outline-color","outline-offset","cursor","box-shadow","text-shadow","table-layout","backface-visibility","will-change","transition","transform","animation"]]}};
 
 /***/ }),
 
@@ -3030,7 +3032,7 @@ class Linter {
                 this.reporter.filterErrors(this.config.grep);
             }
             if (this.config.fix && str !== null && this.reporter.errors && this.reporter.errors.length) {
-                this.fix(path, content);
+                this.fix(path, new content_1.Content(str));
             }
         }
         return content;
@@ -3114,6 +3116,44 @@ class Linter {
     }
 }
 exports.Linter = Linter;
+
+
+/***/ }),
+
+/***/ "./src/preprocessors/safeComments.ts":
+/*!*******************************************!*\
+  !*** ./src/preprocessors/safeComments.ts ***!
+  \*******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const Escaper = __webpack_require__(/*! escaper */ "escaper");
+/**
+ * Replace all comments to safe (without error) value
+ * @param content
+ */
+function safeComments(content) {
+    const replacedText = [], str = Escaper.replace(content, {
+        strings: [
+            'comments'
+        ]
+    }, replacedText);
+    if (replacedText.length && str !== content && typeof str === 'string') {
+        return Escaper.paste(str, replacedText.map((comment) => {
+            if (comment.indexOf('/*') === 0) {
+                return comment.replace(/(\/\*)(.*)(\*\/)/s, (res, ...match) => match[0] +
+                    match[1].split(/\n/).fill('empty').join('\n') +
+                    match[2]);
+            }
+            return /@stlint/.test(comment) ? comment : '// empty';
+        }));
+    }
+    return content;
+}
+exports.safeComments = safeComments;
 
 
 /***/ }),
@@ -3567,7 +3607,9 @@ class PrefixVarsWithDollar extends rule_1.Rule {
         }
         const hasDollar = node.key.indexOf(this.state.prefix) === 0;
         if (this.state.conf === 'always' && hasDollar === false) {
-            //console.log(node.key.length);
+            if (this.state.allowConst && /^[A-Z0-9_]+$/.test(node.key)) {
+                return;
+            }
             this.msg(`Variables and parameters must be prefixed with the ${this.state.prefix} sign (${node.key})`, node.lineno, node.column, node.column + node.key.length - 1);
         }
         else if (this.state.conf === 'never' && hasDollar === true) {
@@ -4053,6 +4095,17 @@ module.exports = require("chalk");
 /***/ (function(module, exports) {
 
 module.exports = require("columnify");
+
+/***/ }),
+
+/***/ "escaper":
+/*!**************************!*\
+  !*** external "escaper" ***!
+  \**************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("escaper");
 
 /***/ }),
 
