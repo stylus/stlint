@@ -3,7 +3,8 @@ import { Func, Ident, Tree } from '../core/ast/index';
 import { IState } from '../core/types/state';
 
 interface IPrefixVarState extends IState {
-	prefix: string
+	prefix: string;
+	allowConst?: boolean;
 }
 
 /**
@@ -21,7 +22,10 @@ export class PrefixVarsWithDollar extends Rule<IPrefixVarState> {
 			hasDollar = node.key.indexOf(this.state.prefix) === 0;
 
 		if (this.state.conf === 'always' && hasDollar === false) {
-			//console.log(node.key.length);
+			if (this.state.allowConst && /^[A-Z0-9_]+$/.test(node.key)) {
+				return;
+			}
+
 			this.msg(
 				`Variables and parameters must be prefixed with the ${this.state.prefix} sign (${node.key})`,
 				node.lineno,

@@ -105,5 +105,18 @@ describe('Test prefixVarsWithDollar rule', () => {
 				expect(rule.errors.length).to.be.equal(0);
 			});
 		});
+		describe('Allow constant', () => {
+			it('should allow use variable in uppercase', () => {
+				const rule = new PrefixVarsWithDollar({
+					conf: 'always',
+					prefix: '$',
+					allowConst: true
+				});
+
+				parseAndRun('COLOR_GRAY = #ccc', rule);
+
+				expect(rule.errors.length).to.be.equal(0);
+			});
+		});
 	});
 });

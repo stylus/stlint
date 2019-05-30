@@ -5,7 +5,8 @@
 
   "prefixVarsWithDollar": {
     "conf": "always",
-    "prefix": "$"
+    "prefix": "$",
+    "allowConst": true
   },
 
   "emptyLines": true,
