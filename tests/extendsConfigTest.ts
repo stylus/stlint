@@ -44,6 +44,7 @@ describe('Test extends option', () => {
 				expect((<IState>config.rules.color)).to.be.true; // redefine
 				expect((<IState>config.rules.colons)).to.be.false; // from extends config
 				expect((<IState>config.rules.prefixVarsWithDollar)).to.be.deep.equal({
+					allowConst: true,
 					conf: 'always',
 					prefix: '$'
 				}); // default option
@@ -93,6 +94,7 @@ describe('Test extends option', () => {
 
 				expect((<IState>config.rules.color).conf).to.be.equal('test'); // redefine
 				expect((<IState>config.rules.prefixVarsWithDollar)).to.be.deep.equal({
+					allowConst: true,
 					conf: 'always',
 					prefix: '$'
 				}); // default option
@@ -145,6 +147,7 @@ describe('Test extends option', () => {
 				expect((<IState>config.rules.color).conf).to.be.equal('test'); // redefine
 				expect((<IState>config.rules.prefixVarsWithDollar)).to.be.deep.equal({
 					conf: 'always',
+					allowConst: true,
 					prefix: '$'
 				}); // default option
 

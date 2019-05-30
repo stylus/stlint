@@ -4,6 +4,7 @@ declare module 'columnify';
 declare module 'chalk';
 declare module 'node-watch';
 declare module 'native-require';
+declare module 'escaper';
 
 declare module '*.json' {
 	const value: any;

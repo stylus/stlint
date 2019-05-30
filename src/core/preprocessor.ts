@@ -1,5 +1,6 @@
 import { Content } from './content';
 import _require = require('native-require');
+import { safeComments } from '../preprocessors/safeComments';
 
 export class Preprocessor {
 	private list: Array<(str: string) => string> = [];
@@ -17,6 +18,8 @@ export class Preprocessor {
 				})
 				.filter((f) => f);
 		}
+
+		this.list.push(safeComments);
 	}
 
 	/**

@@ -97,7 +97,7 @@ export class Linter {
 			}
 
 			if (this.config.fix && str !== null && this.reporter.errors && this.reporter.errors.length) {
-				this.fix(path, content);
+				this.fix(path, new Content(str));
 			}
 		}
 

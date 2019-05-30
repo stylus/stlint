@@ -39,6 +39,7 @@ describe('Test extends options', () => {
 			expect(linter.config.fix).to.be.true;
 		});
 	});
+
 	describe('Use JS file as config', () => {
 		it('Should replace default rule', () => {
 			const
@@ -53,6 +54,7 @@ describe('Test extends options', () => {
 			expect(state2.conf).to.be.equal('test-extends');
 		});
 	});
+
 	describe('Extends rules', () => {
 		it('Should replace default rule', () => {
 			const
@@ -66,6 +68,7 @@ describe('Test extends options', () => {
 			expect(state1.conf).to.be.equal('uppercase');
 			expect(state2.conf).to.be.equal('test-extends');
 		});
+
 		describe('With custom rules', () => {
 			it('Should not replace custom rule', () => {
 				const
