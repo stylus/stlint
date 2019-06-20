@@ -60,7 +60,7 @@ export abstract class Reporter implements IReporter {
 				descr: message,
 				path: this.path,
 				line,
-				endline: endLine,
+				endline: endLine >= line ? endLine : line,
 				start,
 				end: end > start ? end : start,
 				fix: (fix !== undefined && fix !== null) ? {
