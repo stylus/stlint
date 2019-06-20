@@ -81,6 +81,10 @@ export class SortOrder extends Rule<IOrderState> {
 		for (let i = 0; i < node.nodes.length; i += 1) {
 			child = node.nodes[i];
 
+			if (child.line && child.line.isIgnored) {
+				continue;
+			}
+
 			if (child instanceof Property || child instanceof Value) {
 				if (group === groupId) {
 					result = callback(child, indexInGroup);
@@ -111,6 +115,10 @@ export class SortOrder extends Rule<IOrderState> {
 		let group: PropertyNameAndBound[] = [];
 
 		node.nodes.forEach((child) => {
+			if (child.line && child.line.isIgnored) {
+				return;
+			}
+
 			if (child instanceof Property || child instanceof Value) {
 				const
 					name = child.key.toString().toLowerCase();

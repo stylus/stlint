@@ -1,5 +1,6 @@
 import { Linter } from '../src/linter';
 import { expect } from 'chai';
+import { IMessage, IMessagePack } from '../src/core/types/message';
 
 describe('Test ignore directives', () => {
 	describe('Multiline', () => {
@@ -89,6 +90,65 @@ describe('Test ignore directives', () => {
 
 			expect(response.passed).to.be.false;
 			expect(response.errors && response.errors.length).to.be.equal(4);
+		});
+		describe('Ignore line in order rule', () => {
+			it('should ignore error in line after @stlint-ignore directive', () => {
+				const
+					linter = new Linter({
+						debug: true
+					}),
+					getOrderError = (errors?: IMessagePack[]): IMessage => {
+						if (!errors) {
+							throw new Error('We do not have any errors');
+						}
+
+						const [error] = errors.filter((value) => value.message[0].rule === 'sortOrder');
+
+						if (!error || !error.message || !error.message[0]) {
+							throw new Error('We do not have sortOrder error');
+						}
+
+						return error && error.message && error.message[0];
+					};
+
+				linter.lint('./test.styl',
+					'.test\n' +
+					'\tborder 10px\n' +
+					'\tmax-height $headerHeight\n' +
+					'\tcolor red\n' +
+					'\tmargin-bottom 10px\n'
+				);
+
+				let response = linter.reporter.response;
+
+				expect(response.passed).to.be.false;
+				expect(response.errors && response.errors.length).to.be.equal(3);
+
+				let orderError = getOrderError(response.errors);
+
+				expect(orderError.line).to.be.equal(2);
+
+				linter.reporter.reset();
+
+				linter.lint('./test.styl',
+					'.test\n' +
+					'\t// @stlint-ignore\n' +
+					'\tborder 10px\n' +
+					'\tmax-height $headerHeight\n' +
+					'\tcolor red\n' +
+					'\tmargin-bottom 10px\n'
+				);
+
+				response = linter.reporter.response;
+
+				expect(response.passed).to.be.false;
+
+				expect(response.errors && response.errors.length).to.be.equal(2);
+
+				orderError = getOrderError(response.errors);
+
+				expect(orderError.line).to.be.equal(5);
+			});
 		});
 	});
 });

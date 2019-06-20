@@ -38,6 +38,10 @@ export class DepthControl extends Rule<IDepthControlState> {
 			if (parentNode) {
 				if (node instanceof Block) {
 					node.nodes.forEach((child) => {
+						if (child.line && child.line.isIgnored) {
+							return;
+						}
+
 						if (
 							parentNode &&
 							(
@@ -76,6 +80,10 @@ export class DepthControl extends Rule<IDepthControlState> {
 				const parentColumn = (key instanceof Property && key.key instanceof Ident) ? key.key.column : key.column;
 
 				node.nodes.forEach((child) => {
+					if (child.line && child.line.isIgnored) {
+						return;
+					}
+
 					if (child instanceof Property && child.key instanceof Ident && child.key.column - indentPref !== parentColumn) {
 						this.msg('incorrect indent', child.key.lineno, 1, child.key.column);
 					}

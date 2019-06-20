@@ -83,6 +83,10 @@ export class Linter {
 				this.checker.checkASTRules(ast, content);
 
 			} catch (e) {
+				if (this.config.debug) {
+					throw e;
+				}
+
 				this.reporter.add('syntaxError', e.message, e.lineno, e.startOffset);
 			}
 
