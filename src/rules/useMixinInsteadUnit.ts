@@ -51,7 +51,21 @@ export class useMixinInsteadUnit extends Rule<IUseMixinInsteadunitState> {
 			}
 		} else {
 			if (node.nodeName === 'call' && typeof node.key === 'string' && node.key === this.state.mixin) {
-				this.msg(`Do not use "${this.state.mixin}" mixin`, node.lineno, node.column, node.column + node.key.length - 1);
+				let fix = null;
+
+				if (this.state.mixin === 'basis' && node.nodes[0].toString()) {
+					const
+						unitSize: number = Number(node.nodes[0].toString()),
+						basis = (unitSize * 8);
+
+					fix = `${basis}px`;
+				}
+
+				this.msg(`Do not use "${this.state.mixin}" mixin`,
+					node.lineno,
+					node.column,
+					node.column + node.toString().length - 1,
+					fix || null);
 			}
 		}
 

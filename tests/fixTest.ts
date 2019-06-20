@@ -70,6 +70,8 @@ const
 		'',
 
 	wrongContent = '.tab\n\tcolor: #ccc;',
+	wrongContentUnit = '.tab\n\tcolor: #ccc;\n\tmargin: 10px;',
+	wrongContentBasis = '.tab\n\tcolor: #ccc;\n\tmargin: basis(1.25);',
 	wrongContentColon = '.tab\n\tcolor #ccc';
 
 Linter.prototype.saveFix = (): void => {
@@ -77,6 +79,57 @@ Linter.prototype.saveFix = (): void => {
 };
 
 describe('Test fix option', () => {
+	describe('Fix useMixinInsteadUnit', () => {
+		it('should replace PX unit to basis mixin', () => {
+			const linter = new Linter({
+				rules: {
+					useMixinInsteadUnit: {
+						conf: 'always',
+						enabled: true
+					}
+				},
+				grep: 'useMixinInsteadUnit',
+				reporter: 'silent',
+				fix: true
+			});
+
+			linter.lint('./test.styl', wrongContentUnit);
+			linter.display(false);
+
+			const response = linter.reporter.response;
+
+			expect(response.passed).to.be.false;
+			expect(response.errors && response.errors.length).to.be.equal(1);
+			expect(wrongContentUnit.replace('10px', 'basis(1.25)'))
+				.to.be.equal(linter.fix('./test.styl', new Content(wrongContentUnit)));
+		});
+
+		describe('Deny use basis mixin', () => {
+			it('should replace basis mixin to PX', () => {
+				const linter = new Linter({
+					rules: {
+						useMixinInsteadUnit: {
+							conf: 'never',
+							enabled: true
+						}
+					},
+					grep: 'useMixinInsteadUnit',
+					reporter: 'silent',
+					fix: true
+				});
+
+				linter.lint('./test.styl', wrongContentBasis);
+				linter.display(false);
+
+				const response = linter.reporter.response;
+
+				expect(response.passed).to.be.false;
+				expect(response.errors && response.errors.length).to.be.equal(1);
+				expect(wrongContentUnit.replace('basis(1.25)', '10px'))
+					.to.be.equal(linter.fix('./test.styl', new Content(wrongContentBasis)));
+			});
+		});
+	});
 	describe('Fix color', () => {
 		it('should replace lowercase color to uppercase', () => {
 			const linter = new Linter({
