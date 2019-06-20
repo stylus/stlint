@@ -118,7 +118,7 @@ Stlint integrations with IDEs are available.
 
 ## Ignore errors
 sometimes you want to ignore the error for this there are two directives:
-* `@stline-ignore` - ignores only one line after it
+* `@stlint-ignore` - ignores only one line after it
 * `@stlint-disable` `@stlint-enable` - ignore block (@stlint-enable is optional)
 
 For example, in the following code, some errors will be ignored.

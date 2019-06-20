@@ -46,6 +46,7 @@ describe('Color test', () => {
 
 			expect(rule.errors.length).to.be.equal(0);
 		});
+
 		it('Should check the AST has RGB node with wrong color notation', () => {
 			const rule = new Color({
 				conf: 'lowercase'
