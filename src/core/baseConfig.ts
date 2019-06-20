@@ -73,7 +73,7 @@ export class BaseConfig {
 	}
 
 	/**
-	 * Extends default options by some object
+	 * Extends second object from first
 	 *
 	 * @param from
 	 * @param to

@@ -94,13 +94,15 @@ describe('Test extends options', () => {
 						linter = new Linter({
 							config: path.join(__dirname, './staff/config.json')
 						}),
-						state = <IState>linter.config.rules.color;
+						state = <IState>linter.config.rules.color,
+						someTestRuleState = linter.config.rules.someTestRule;
 
 					expect(state.conf).to.be.equal('test-config'); 	// from config.json
 					expect(state.enabled).to.be.equal(false);				// from config.json
 					expect(state.allowOnlyInVar).to.be.equal(3);		// from config.json
 					expect(state.denyRGB).to.be.equal(true);				// default
 					expect(state.allowShortcut).to.be.equal(7);			// from extends.json
+					expect(someTestRuleState).to.be.equal(false);	// from config.json
 				});
 			});
 		});

@@ -5,6 +5,10 @@
       "enabled": false,
       "allowOnlyInVar": 5,
       "allowShortcut": 7
+    },
+    "someTestRule": {
+      "conf": "always",
+      "enabled": false
     }
   },
   "grep": "sortOrder",

@@ -99,7 +99,11 @@ export class Rule<T extends IState = IState> implements IRule<T> {
 	hashErrors: Dictionary<boolean> = {};
 	errors: ErrorArray[] = [];
 
-	constructor(readonly conf: T) {
+	constructor(readonly conf?: T | false) {
+		if (conf === undefined) {
+			return;
+		}
+
 		if (typeof conf !== 'boolean') {
 			if (Array.isArray(conf)) {
 				this.state.conf = conf[0];

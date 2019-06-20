@@ -94,9 +94,7 @@ describe('Test ignore directives', () => {
 		describe('Ignore line in order rule', () => {
 			it('should ignore error in line after @stlint-ignore directive', () => {
 				const
-					linter = new Linter({
-						debug: true
-					}),
+					linter = new Linter(),
 					getOrderError = (errors?: IMessagePack[]): IMessage => {
 						if (!errors) {
 							throw new Error('We do not have any errors');

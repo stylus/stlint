@@ -12,6 +12,7 @@ import { statSync, readdirSync } from 'fs';
 import { resolve } from 'path';
 import _require = require('native-require');
 import { IContent } from './types/content';
+import { IState } from './types/state';
 
 export class Checker {
 	rulesListForNodes: IRule[] = [];
@@ -47,19 +48,16 @@ export class Checker {
 
 		return rulesNames
 			.filter((key) => typeof rulesConstructors[key] === 'function')
-			.map((key) => {
-				if (!(rulesConstructors[key].prototype instanceof Rule)) {
-					rulesConstructors[key].prototype = new Rule({conf: 'always'});
-					rulesConstructors[key].prototype.constructor = rulesConstructors[key];
-				}
-
-				return key;
-			})
 			.map((key: string): IRule => {
 				let options = config.rules[lcfirst(key)];
 
 				if (options === true && config.defaultRules[lcfirst(key)]) {
 					options = config.defaultRules[lcfirst(key)];
+				}
+
+				if (!(rulesConstructors[key].prototype instanceof Rule)) {
+					rulesConstructors[key].prototype = new Rule(<IState>options);
+					rulesConstructors[key].prototype.constructor = rulesConstructors[key];
 				}
 
 				return new (<any>rulesConstructors)[key](options);

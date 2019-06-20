@@ -5,7 +5,8 @@
       "conf": "test-config",
       "enabled": false,
       "allowOnlyInVar": 3
-    }
+    },
+    "someTestRule": false
   },
   "grep": "color",
   "reporter": "raw"

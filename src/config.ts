@@ -58,6 +58,7 @@ export class Config extends BaseConfig implements IConfig {
 		this.applyConfig(this.configFile, customConfig);
 
 		delete options.extraRules;
+
 		this.extendsOption(options, this); // options are main
 	}
 }
