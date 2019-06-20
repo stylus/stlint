@@ -48,9 +48,9 @@ export abstract class Reporter implements IReporter {
 	add(
 		rule: string,
 		message: string,
-		line: number = 0,
-		start: number = 0,
-		end: number = 0,
+		line: number = 1,
+		start: number = 1,
+		end: number = 1,
 		fix: string | null = null,
 		endLine: number = line
 	): void {
