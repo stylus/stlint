@@ -176,7 +176,7 @@ exports.StylusLinter = StylusLinter;
 /*! exports provided: name, version, description, main, bin, files, repository, bugs, scripts, keywords, author, license, dependencies, devDependencies, mocha, default */
 /***/ (function(module) {
 
-module.exports = {"name":"stlint","version":"1.0.50","description":"Stylus Linter","main":"index.js","bin":{"stlint":"./bin/stlint"},"files":["bin/","index.js","src/"],"repository":{"type":"git","url":"https://github.com/stylus/stlint"},"bugs":{"url":"https://github.com/stylus/stlint/issues"},"scripts":{"newversion":"npm test && npm version patch --no-git-tag-version && npm run build && npm run doc && npm run newversiongit && npm publish ./","newversiongit":"git add --all  && git commit -m \"New version $npm_package_version. Read more https://github.com/stylus/stlint/releases/tag/$npm_package_version \" && git tag $npm_package_version && git push --tags origin HEAD:master","start":"webpack --watch","build":"webpack","doc":"./bin/stlint --doc rules --fix","test2":"./bin/stlint ./test.styl","test":"mocha tests/**/**.ts tests/**.ts","fix":"tslint -c tslint.json ./src/**/*.ts ./src/**/**/*.ts ./src/*.ts --fix"},"keywords":["lint","linter","stylus","stylus-linter","stlint"],"author":"Chupurnov Valeriy<chupurnov@gmail.com>","license":"MIT","dependencies":{"async":"^2.6.2","chalk":"^2.4.2","columnify":"^1.5.4","escaper":"^3.0.2","glob":"^7.1.3","native-require":"^1.1.4","node-watch":"^0.6.1","strip-json-comments":"^2.0.1","stylus":"github:stylus/stylus#fix-column-function-call","yargs":"^13.2.2"},"devDependencies":{"@types/async":"^2.4.1","@types/chai":"^4.1.7","@types/glob":"^7.1.1","@types/mocha":"^5.2.6","@types/node":"^11.13.2","awesome-typescript-loader":"^5.2.1","chai":"^4.2.0","mocha":"^6.1.2","ts-node":"^8.0.3","tslint":"^5.15.0","tslint-config-prettier":"^1.18.0","tslint-plugin-prettier":"^2.0.1","typescript":"^3.4.2","typings":"^2.1.1","webpack":"^4.29.5","webpack-cli":"^3.3.0","webpack-node-externals":"^1.7.2"},"mocha":{"require":["ts-node/register","tests/staff/bootstrap.ts"]}};
+module.exports = {"name":"stlint","version":"1.0.51","description":"Stylus Linter","main":"index.js","bin":{"stlint":"./bin/stlint"},"files":["bin/","index.js","src/"],"repository":{"type":"git","url":"https://github.com/stylus/stlint"},"bugs":{"url":"https://github.com/stylus/stlint/issues"},"scripts":{"newversion":"npm test && npm version patch --no-git-tag-version && npm run build && npm run doc && npm run newversiongit && npm publish ./","newversiongit":"git add --all  && git commit -m \"New version $npm_package_version. Read more https://github.com/stylus/stlint/releases/tag/$npm_package_version \" && git tag $npm_package_version && git push --tags origin HEAD:master","start":"webpack --watch","build":"webpack","doc":"./bin/stlint --doc rules --fix","test2":"./bin/stlint ./test.styl","test":"mocha tests/**/**.ts tests/**.ts","fix":"tslint -c tslint.json ./src/**/*.ts ./src/**/**/*.ts ./src/*.ts --fix"},"keywords":["lint","linter","stylus","stylus-linter","stlint"],"author":"Chupurnov Valeriy<chupurnov@gmail.com>","license":"MIT","dependencies":{"async":"^2.6.2","chalk":"^2.4.2","columnify":"^1.5.4","escaper":"^3.0.2","glob":"^7.1.3","native-require":"^1.1.4","node-watch":"^0.6.1","strip-json-comments":"^2.0.1","stylus":"github:stylus/stylus#fix-column-function-call","yargs":"^13.2.2"},"devDependencies":{"@types/async":"^2.4.1","@types/chai":"^4.1.7","@types/glob":"^7.1.1","@types/mocha":"^5.2.6","@types/node":"^11.13.2","awesome-typescript-loader":"^5.2.1","chai":"^4.2.0","mocha":"^6.1.2","ts-node":"^8.0.3","tslint":"^5.15.0","tslint-config-prettier":"^1.18.0","tslint-plugin-prettier":"^2.0.1","typescript":"^3.4.2","typings":"^2.1.1","webpack":"^4.29.5","webpack-cli":"^3.3.0","webpack-node-externals":"^1.7.2"},"mocha":{"require":["ts-node/register","tests/staff/bootstrap.ts"]}};
 
 /***/ }),
 
@@ -1131,7 +1131,7 @@ class BaseConfig {
         this.extendsOption(customConfig, this);
     }
     /**
-     * Extends default options by some object
+     * Extends second object from first
      *
      * @param from
      * @param to
@@ -1211,16 +1211,13 @@ class Checker {
         return rulesNames
             .filter((key) => typeof rulesConstructors[key] === 'function')
             .map((key) => {
-            if (!(rulesConstructors[key].prototype instanceof rule_1.Rule)) {
-                rulesConstructors[key].prototype = new rule_1.Rule({ conf: 'always' });
-                rulesConstructors[key].prototype.constructor = rulesConstructors[key];
-            }
-            return key;
-        })
-            .map((key) => {
             let options = config.rules[lcfirst_1.lcfirst(key)];
             if (options === true && config.defaultRules[lcfirst_1.lcfirst(key)]) {
                 options = config.defaultRules[lcfirst_1.lcfirst(key)];
+            }
+            if (!(rulesConstructors[key].prototype instanceof rule_1.Rule)) {
+                rulesConstructors[key].prototype = new rule_1.Rule(options);
+                rulesConstructors[key].prototype.constructor = rulesConstructors[key];
             }
             return new rulesConstructors[key](options);
         })
@@ -2314,6 +2311,9 @@ class Rule {
         this.cache = {};
         this.hashErrors = {};
         this.errors = [];
+        if (conf === undefined) {
+            return;
+        }
         if (typeof conf !== 'boolean') {
             if (Array.isArray(conf)) {
                 this.state.conf = conf[0];
