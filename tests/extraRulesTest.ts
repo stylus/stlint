@@ -15,6 +15,7 @@ describe('Test `extraRules` options', () => {
 			expect(errors && errors[0].message[0].rule).to.be.equal('testRule');
 		});
 	});
+
 	describe('like files', () => {
 		it('Should load rules from path and check these', () => {
 			const linter = new Linter({
@@ -28,6 +29,7 @@ describe('Test `extraRules` options', () => {
 			expect(errors && errors[0].message[0].rule).to.be.equal('testRule');
 		});
 	});
+
 	describe('like list of files', () => {
 		it('Should load rules from all paths and check these', () => {
 			const linter = new Linter({

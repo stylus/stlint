@@ -2,6 +2,8 @@ import { SortOrder } from '../../src/rules/index';
 import { parseAndRun } from '../staff/bootstrap';
 import { expect } from 'chai';
 import data = require('../../src/defaultRules.json');
+import { Linter } from '../../src/linter';
+import * as path from 'path';
 
 const content = '.tab\n' +
 	'\tcolor #CCC\n' +
@@ -10,6 +12,42 @@ const content = '.tab\n' +
 	'';
 
 describe('Test order rule', () => {
+	describe('Disable order rule', () => {
+		it('should not check properties order', () => {
+			const linter = new Linter({
+				rules: {
+					sortOrder: false
+				},
+				grep: 'sortOrder',
+				reporter: 'silent'
+			});
+
+			linter.lint('./test.styl', content);
+			linter.display(false);
+
+			const response = linter.reporter.response;
+
+			expect(response.passed).to.be.true;
+		});
+
+		describe('Use config', () => {
+			it('should not check properties order', () => {
+				const linter = new Linter({
+					config:  path.join(__dirname, '../staff/disable-sort-order-rule.json'),
+					grep: 'sortOrder',
+					reporter: 'silent'
+				});
+
+				linter.lint('./test.styl', content);
+				linter.display(false);
+
+				const response = linter.reporter.response;
+
+				expect(response.passed).to.be.true;
+			});
+		});
+	});
+
 	describe('Alphabetical order', () => {
 		it('should check properties in alphabetical order', () => {
 			const rule = new SortOrder({
@@ -21,6 +59,7 @@ describe('Test order rule', () => {
 			expect(rule.errors.length).to.be.equal(1);
 		});
 	});
+
 	describe('Custom order', () => {
 		describe('Matched order', () => {
 			it('should check properties sorted in custom order', () => {
