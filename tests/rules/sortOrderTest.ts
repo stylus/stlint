@@ -77,6 +77,7 @@ describe('Test order rule', () => {
 				expect(rule.errors.length).to.be.equal(0);
 			});
 		});
+
 		describe('Not matched order', () => {
 			it('should check properties sorted in custom order', () => {
 				const rule = new SortOrder({
@@ -94,6 +95,7 @@ describe('Test order rule', () => {
 			});
 		});
 	});
+
 	describe('Grouped order', () => {
 		it('should check properties order by list positions', () => {
 			const rule = new SortOrder({
