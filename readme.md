@@ -82,6 +82,9 @@ linter.lint('./test.styl', 'content');
 
 // if you want check file
 linter.lint('./test.styl');
+
+// and display errors.
+linter.display();
 ```
 
 ## Config file
