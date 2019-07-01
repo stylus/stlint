@@ -8,14 +8,14 @@ export class Preprocessor {
 	constructor(files: string[]) {
 		if (files.length) {
 			this.list = files.map((file) => {
-					const func = _require(file);
+				const func = _require(file);
 
-					if (typeof func === 'function') {
-						return func;
-					}
+				if (typeof func === 'function') {
+					return func;
+				}
 
-					return null;
-				})
+				return null;
+			})
 				.filter((f) => f);
 		}
 

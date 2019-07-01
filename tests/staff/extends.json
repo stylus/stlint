@@ -1,6 +1,6 @@
 {
   "rules": {
-    "color": 	{
+    "color": {
       "conf": "test-extends",
       "enabled": false,
       "allowOnlyInVar": 5,

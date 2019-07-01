@@ -19,7 +19,8 @@ export class Checker {
 	rulesListForLines: IRule[] = [];
 	rulesList: IRule[] = [];
 
-	constructor(readonly linter: Linter) {}
+	constructor(readonly linter: Linter) {
+	}
 
 	/**
 	 * Load and init rules (and external rules too)
@@ -150,11 +151,11 @@ export class Checker {
 	checkLineRules(content: IContent): void {
 		try {
 			content.forEach((line, index) => {
-					if (index && !line.isIgnored) {
-						Rule.beforeCheckLine(line);
-						this.rulesListForLines.forEach((rule) => rule.checkLine && rule.checkLine(line, index, content));
-					}
-				});
+				if (index && !line.isIgnored) {
+					Rule.beforeCheckLine(line);
+					this.rulesListForLines.forEach((rule) => rule.checkLine && rule.checkLine(line, index, content));
+				}
+			});
 
 		} catch (e) {
 			this.linter.reporter.add('Line', e.message, e.lineno || 1, 0);

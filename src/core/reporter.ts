@@ -6,17 +6,18 @@ import { inspect } from 'util';
 export abstract class Reporter implements IReporter {
 
 	static getInstance(type: string, config: Dictionary): IReporter {
-			switch (type) {
-				case 'json':
-					return new (require('./reporters/jsonReporter').JsonReporter)(config);
+		switch (type) {
+			case 'json':
+				return new (require('./reporters/jsonReporter').JsonReporter)(config);
 
-				case 'silent':
-					return new (require('./reporters/silentReporter').SilentReporter)(config);
+			case 'silent':
+				return new (require('./reporters/silentReporter').SilentReporter)(config);
 
-				default:
-					return new (require('./reporters/rawReporter').RawReporter)(config);
-			}
+			default:
+				return new (require('./reporters/rawReporter').RawReporter)(config);
+		}
 	}
+
 	errors: IMessagePack[] = [];
 
 	response: IResponse = {
@@ -25,7 +26,8 @@ export abstract class Reporter implements IReporter {
 
 	private path: string = '';
 
-	protected constructor(readonly options: Dictionary) {}
+	protected constructor(readonly options: Dictionary) {
+	}
 
 	/**
 	 * Set current working file

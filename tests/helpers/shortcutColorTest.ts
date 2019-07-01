@@ -13,7 +13,7 @@ describe('colorCanBeShortcut helper test', () => {
 			['#abccba', '#abccba'],
 			['#cccddd', '#cccddd'],
 			['#000000', '#000'],
-			['#ddd', '#ddd'],
+			['#ddd', '#ddd']
 		];
 
 		colors.forEach((pars) => {

@@ -34,7 +34,8 @@ export class BaseConfig {
 				default:
 					return this.readJSONFile(configFile);
 			}
-		} catch {}
+		} catch {
+		}
 
 		return {};
 	}
@@ -46,7 +47,8 @@ export class BaseConfig {
 		if (existsSync(configFile)) {
 			try {
 				return JSON.parse(stripJsonComments(readFileSync(configFile, 'utf8')));
-			} catch {}
+			} catch {
+			}
 		}
 
 		return {};
@@ -102,7 +104,7 @@ export class BaseConfig {
 	extendsByPath(pathOrPackage: string): void {
 		const
 			path: string = /^\./.test(pathOrPackage) ?
-					resolve(process.cwd(), pathOrPackage) : resolve(process.cwd(), 'node_modules', pathOrPackage),
+				resolve(process.cwd(), pathOrPackage) : resolve(process.cwd(), 'node_modules', pathOrPackage),
 			stat = this.statSync(path);
 
 		const

@@ -13,7 +13,7 @@ export function safeComments(content: string): string {
 			]
 		}, replacedText);
 
-	if (replacedText.length && str !== content && typeof  str === 'string') {
+	if (replacedText.length && str !== content && typeof str === 'string') {
 		return Escaper.paste(str, replacedText.map((comment) => {
 			if (comment.indexOf('/*') === 0) {
 				return comment.replace(/(\/\*)(.*)(\*\/)/s, (res, ...match) =>

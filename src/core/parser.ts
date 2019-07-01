@@ -8,7 +8,8 @@ export class StylusParser {
 	/**
 	 * @param options Stylus parser options
 	 */
-	constructor(readonly options: Dictionary = {}) {}
+	constructor(readonly options: Dictionary = {}) {
+	}
 
 	/**
 	 * Parse use native stylus parser into StylusAST and convert it in our AST

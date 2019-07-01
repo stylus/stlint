@@ -34,7 +34,7 @@ import {
 import { ISNode } from './types/ast/snode';
 import { IContent } from './types/content';
 
-export class Translator extends  Visitor<ISNode, Node> {
+export class Translator extends Visitor<ISNode, Node> {
 	constructor(root: ISNode, readonly content: IContent) {
 		super(root);
 	}
@@ -236,7 +236,7 @@ export class Translator extends  Visitor<ISNode, Node> {
 
 		node.value = typeof block.raw === 'string' ? block.raw : '';
 
-		if (!node.value.length && typeof  block.type === 'string' && block.val !== '') {
+		if (!node.value.length && typeof block.type === 'string' && block.val !== '') {
 			node.value = block.val + block.type;
 		}
 

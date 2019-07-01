@@ -12,6 +12,7 @@ import watch = require('node-watch');
 import { Content } from './core/content';
 import { IContent } from './core/types/content';
 import { IMessage } from './core/types/message';
+
 const pkg = require('../package.json');
 
 export class Linter {
@@ -141,7 +142,7 @@ export class Linter {
 	 */
 	watch(path: string, callback: () => void): void {
 		watch(path, {
-			encoding : 'utf-8',
+			encoding: 'utf-8',
 			recursive: true,
 			filter: /\.styl$/
 		}, callback);

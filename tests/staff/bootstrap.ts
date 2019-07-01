@@ -44,11 +44,11 @@ export const splitAndRun = (text: string, rule: IRule, content: Content = new Co
 		Rule.clearContext();
 
 		content.forEach((line, index) => {
-				if (index) {
-					Rule.beforeCheckLine(line);
-					rule.checkLine && rule.checkLine(line, index, content);
-				}
-			});
+			if (index) {
+				Rule.beforeCheckLine(line);
+				rule.checkLine && rule.checkLine(line, index, content);
+			}
+		});
 	}
 };
 

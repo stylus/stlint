@@ -7,7 +7,8 @@ import { IConfig } from './types/config';
 type ReaderCallback = (file: string, content: string) => void;
 
 export class Reader {
-	constructor(readonly config: IConfig) {}
+	constructor(readonly config: IConfig) {
+	}
 
 	/**
 	 * Check `dir` parameter for folder or file call `readFolder` or `readFiles`

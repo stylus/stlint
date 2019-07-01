@@ -1,7 +1,7 @@
 {
   "extends": "./tests/staff/extends.json",
   "rules": {
-    "color": 	{
+    "color": {
       "conf": "test-config",
       "enabled": false,
       "allowOnlyInVar": 3

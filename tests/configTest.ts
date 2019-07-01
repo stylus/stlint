@@ -75,7 +75,7 @@ describe('Test extends options', () => {
 					linter = new Linter({
 						extends: [path.join(__dirname, './staff/extends.json')],
 						rules: {
-							color: 	{
+							color: {
 								conf: 'test-sign',
 								enabled: 2
 							}

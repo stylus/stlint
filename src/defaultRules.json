@@ -11,19 +11,27 @@
 
   "emptyLines": true,
 
-  "commaInObject": ["never"],
+  "commaInObject": [
+    "never"
+  ],
 
   "depthControl": {
     "indentPref": "tab"
   },
 
-  "quotePref": ["double"],
+  "quotePref": [
+    "double"
+  ],
 
-  "semicolons": ["never"],
+  "semicolons": [
+    "never"
+  ],
 
-  "colons": ["never"],
+  "colons": [
+    "never"
+  ],
 
-  "color": 	{
+  "color": {
     "conf": "uppercase",
     "enabled": true,
     "allowOnlyInVar": true,
@@ -31,7 +39,9 @@
     "denyRGB": true
   },
 
-  "leadingZero": ["always"],
+  "leadingZero": [
+    "always"
+  ],
 
   "useMixinInsteadUnit": {
     "conf": "always",

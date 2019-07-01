@@ -8,7 +8,7 @@ import { Ident, Obj, Value } from './ast/index';
 import { objTohash } from './helpers/objToHash';
 import { unwrapObject } from './helpers/unwrapObject';
 
-const initContext: () => IContext  = () => ({
+const initContext: () => IContext = () => ({
 	hashDeep: 0,
 	inHash: false,
 	inComment: false,
