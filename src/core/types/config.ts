@@ -9,6 +9,7 @@ export interface IConfig {
 	debug: boolean
 	reporter: ReporterType
 
+	basepath: string
 	path: string
 	preprocessors: string[];
 

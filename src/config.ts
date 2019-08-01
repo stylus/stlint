@@ -17,7 +17,9 @@ export class Config extends BaseConfig implements IConfig {
 
 	watch: boolean = false;
 
+	basepath: string = '';
 	path: string = '';
+
 	grep: string = '';
 	doc: string = '';
 	fix: boolean = false;
@@ -39,8 +41,12 @@ export class Config extends BaseConfig implements IConfig {
 
 		this.extendsOption(options, this);
 
+		if (!this.basepath) {
+			this.basepath = process.cwd();
+		}
+
 		if (!this.configFile) {
-			this.configFile = resolve(process.cwd(), this.configName);
+			this.configFile = resolve(this.basepath, this.configName);
 		}
 
 		const
