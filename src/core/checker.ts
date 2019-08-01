@@ -61,7 +61,11 @@ export class Checker {
 					rulesConstructors[key].prototype.constructor = rulesConstructors[key];
 				}
 
-				return new (<any>rulesConstructors)[key](options);
+				const rule: IRule = new (<any>rulesConstructors)[key](options);
+
+				rule.setConfig(config);
+
+				return rule;
 			})
 			.filter((rule) => rule.state.enabled);
 	}

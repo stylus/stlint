@@ -13,3 +13,11 @@ declare module '*.json' {
 
 // @ts-ignore
 interface Dictionary<T = any> {[key: string]: T}
+
+interface ValidCSS {
+	css: string[];
+	html: string[];
+	prefixes: string[];
+	pseudo: string[];
+	scope: string[];
+}

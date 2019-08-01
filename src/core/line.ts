@@ -45,4 +45,22 @@ export class Line implements ILine {
 	isEmpty(): boolean {
 		return this.line.trim().length === 0;
 	}
+
+	/**
+	 * This is last line
+	 */
+	isLast(): boolean {
+		const
+			index = this.lines.indexOf(this);
+
+		let lastIndex = this.lines.length - 1;
+
+		for (let i = lastIndex; i > 0; i -= 1) {
+			if (this.lines[i].isEmpty()) {
+				lastIndex = i - 1;
+			}
+		}
+
+		return index === lastIndex;
+	}
 }

@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { shortcutColor } from '../../src/core/helpers/shortcutColor';
+import { shortcutColor } from '../../src/core/helpers/index';
 
 describe('colorCanBeShortcut helper test', () => {
 	it('Should check color can have shortcut form', () => {

@@ -1,8 +1,7 @@
 import { eachLineCallback, IContent } from './types/content';
 import { Line } from './line';
 import { IMessage } from './types/message';
-import { calcPosition } from './helpers/calcPosition';
-import { splitLines } from './helpers/splitLines';
+import { calcPosition, splitLines } from './helpers/index';
 
 export class Content implements IContent {
 	protected lines: Line[];

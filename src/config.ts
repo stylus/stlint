@@ -25,6 +25,7 @@ export class Config extends BaseConfig implements IConfig {
 	stylusParserOptions: Dictionary = {};
 
 	extends: string | string[] = '';
+	customProperties: string[] = [];
 
 	reportOptions: Dictionary = {
 		columnSplitter: ' | ',

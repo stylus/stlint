@@ -1,17 +1,17 @@
 import { ErrorArray, IRule } from './types/rule';
 import { IState } from './types/state';
-import { lcfirst } from './helpers/lcfirst';
+import { lcfirst, objTohash, unwrapObject } from './helpers/index';
 import { ILine } from './types/line';
 import { IContext } from './types/context';
 import { INode } from './types/ast/node';
 import { Ident, Obj, Value } from './ast/index';
-import { objTohash } from './helpers/objToHash';
-import { unwrapObject } from './helpers/unwrapObject';
+import { IConfig } from './types/config';
 
 const initContext: () => IContext = () => ({
 	hashDeep: 0,
 	inHash: false,
 	inComment: false,
+	openBracket: false,
 	vars: {},
 	valueToVar: {}
 });
@@ -23,6 +23,10 @@ const
 	endMultiComment = /\*\//;
 
 export class Rule<T extends IState = IState> implements IRule<T> {
+	config!: IConfig;
+	setConfig(config: IConfig): void {
+		this.config = config;
+	}
 
 	get context(): IContext {
 		return Rule.context;

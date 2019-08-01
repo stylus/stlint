@@ -130,6 +130,7 @@ describe('Test fix option', () => {
 			});
 		});
 	});
+
 	describe('Fix color', () => {
 		it('should replace lowercase color to uppercase', () => {
 			const linter = new Linter({
@@ -272,6 +273,7 @@ describe('Test fix option', () => {
 			});
 		});
 	});
+
 	describe('Fix colon', () => {
 		describe('Never', () => {
 			it('should remove colon between property and value', () => {
@@ -323,6 +325,7 @@ describe('Test fix option', () => {
 			});
 		});
 	});
+
 	describe('Fix order', () => {
 		describe('Grouped', () => {
 			it('should fix properties order', () => {
@@ -755,6 +758,7 @@ describe('Test fix option', () => {
 			});
 		});
 	});
+
 	describe('Fix semicolons', () => {
 		describe('Never', () => {
 			it('should remove semicolon after property and value', () => {
@@ -803,6 +807,82 @@ describe('Test fix option', () => {
 				expect(
 					'.tab\n\tcolor #ccc;'
 				).to.be.equal(linter.fix('./test.styl', new Content(wrongContentColon)));
+			});
+		});
+	});
+
+	describe('Fix brackets', () => {
+		describe('Never', () => {
+			it('should remove brackets', () => {
+				const wrongContent = '$p = {\n' +
+					'\tcolor: red\n' +
+					'}\n' +
+					'.test {\n' +
+					'\tborder 1px solid #ccc\n' +
+					'\tcolor red\n' +
+					'}';
+
+				const linter = new Linter({
+					rules: {
+						brackets: {
+							conf: 'never'
+						}
+					},
+					grep: 'brackets',
+					reporter: 'silent',
+					fix: true
+				});
+
+				linter.lint('./test.styl', wrongContent);
+				linter.display(false);
+
+				const response = linter.reporter.response;
+
+				expect(response.passed).to.be.false;
+				expect(response.errors && response.errors.length).to.be.equal(2);
+				expect('$p = {\n' +
+				'\tcolor: red\n' +
+				'}\n' +
+				'.test \n' +
+				'\tborder 1px solid #ccc\n' +
+				'\tcolor red\n' +
+				'').to.be.equal(linter.fix('./test.styl', new Content(wrongContent)));
+			});
+		});
+		describe('Always', () => {
+			it('should add brackets', () => {
+				const wrongContent = '$p = {\n' +
+					'\tcolor: red\n' +
+					'}\n' +
+					'.test\n' +
+					'\tborder 1px solid #ccc\n' +
+					'\tcolor red\n';
+
+				const linter = new Linter({
+					rules: {
+						brackets: {
+							conf: 'always'
+						}
+					},
+					grep: 'brackets',
+					reporter: 'silent',
+					fix: true
+				});
+
+				linter.lint('./test.styl', wrongContent);
+				linter.display(false);
+
+				const response = linter.reporter.response;
+
+				expect(response.passed).to.be.false;
+				expect(response.errors && response.errors.length).to.be.equal(1);
+				expect('$p = {\n' +
+					'\tcolor: red\n' +
+					'}\n' +
+					'.test {\n' +
+					'\tborder 1px solid #ccc\n' +
+					'\tcolor red\n' +
+					'').to.be.equal(linter.fix('./test.styl', new Content(wrongContent)));
 			});
 		});
 	});

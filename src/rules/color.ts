@@ -1,7 +1,7 @@
 import { Rule } from '../core/rule';
 import { IState } from '../core/types/state';
 import { Call, RGB } from '../core/ast/index';
-import { shortcutColor } from '../core/helpers/shortcutColor';
+import { shortcutColor } from '../core/helpers/index';
 
 interface IColorState extends IState {
 	allowOnlyInVar?: boolean

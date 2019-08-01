@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { calcPosition } from '../../src/core/helpers/calcPosition';
+import { calcPosition } from '../../src/core/helpers/index';
 
 const multyLineText = '.item2-title\n' + 							// 1 13
 	'	display flex\n' +																		// 2 27

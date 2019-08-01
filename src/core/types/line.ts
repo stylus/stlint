@@ -5,5 +5,6 @@ export interface ILine {
 	next(): null | ILine;
 	prev(): null | ILine;
 	isEmpty(): boolean;
+	isLast(): boolean;
 	isIgnored: boolean;
 }

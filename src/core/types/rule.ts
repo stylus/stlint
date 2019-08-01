@@ -2,11 +2,15 @@ import { INode } from './ast/node';
 import { ILine } from './line';
 import { IState } from './state';
 import { IContent } from './content';
+import { IConfig } from './config';
 
 export type ErrorArray = [string, string, number, number, number, null | string, number];
 
 export interface IRule<T extends IState = IState> {
 	state: T;
+	config: IConfig;
+	setConfig(config: IConfig): void;
+
 	cache: Dictionary;
 
 	nodesFilter: string[] | null;

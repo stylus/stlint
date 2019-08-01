@@ -11,6 +11,10 @@
 
   "emptyLines": true,
 
+  "brackets": [
+    "never"
+  ],
+
   "commaInObject": [
     "never"
   ],

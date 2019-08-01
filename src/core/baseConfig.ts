@@ -1,9 +1,8 @@
-import { isPlainObject } from './helpers/isPlainObject';
+import { isPlainObject, mergeArray } from './helpers/index';
 import { existsSync, readFileSync, statSync } from 'fs';
 import stripJsonComments = require('strip-json-comments');
 import { resolve, dirname, extname } from 'path';
 import { IStats } from './types/IStats';
-import { mergeArray } from './helpers/mergeArray';
 import _require = require('native-require');
 
 export class BaseConfig {

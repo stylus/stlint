@@ -107,6 +107,7 @@ describe('Test extends options', () => {
 			});
 		});
 	});
+
 	describe('Preprocess content', () => {
 		it('Should load preprocessor function and apply this to content before lint', () => {
 			const
@@ -123,8 +124,10 @@ describe('Test extends options', () => {
 			const response = linter.reporter.response;
 
 			expect(response.passed).to.be.false;
-			expect(response.errors && response.errors.length).to.be.equal(3);
+
+			expect(response.errors && response.errors.length).to.be.equal(4);
 		});
+
 		describe('Path to preprocessor', () => {
 			it('Should calculate by config file', () => {
 				const

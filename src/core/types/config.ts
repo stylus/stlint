@@ -28,6 +28,9 @@ export interface IConfig {
 
 	extends: string | string[];
 	extraRules: string | string[];
+
+	customProperties: string[];
+
 	extendsOption(from: Dictionary, to: Dictionary): void;
 	applyConfig(path: string, config: Dictionary): void;
 }
