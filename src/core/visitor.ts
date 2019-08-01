@@ -15,7 +15,7 @@ export abstract class Visitor<In = ISNode, Out = INode> {
 	}
 
 	visit(node: In, parent: Out | null): Out {
-		const method = 'visit' + node.constructor.name;
+		const method = 'visit' + (<any>node).constructor.name;
 
 		const fn: undefined | ((node: In, parent: Out | null) => Out) = (<any>this)[method];
 

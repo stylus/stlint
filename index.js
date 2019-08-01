@@ -176,7 +176,7 @@ exports.StylusLinter = StylusLinter;
 /*! exports provided: name, version, description, main, bin, files, repository, bugs, scripts, keywords, author, license, dependencies, devDependencies, mocha, default */
 /***/ (function(module) {
 
-module.exports = {"name":"stlint","version":"1.0.53","description":"Stylus Linter","main":"index.js","bin":{"stlint":"./bin/stlint"},"files":["bin/","index.js","src/"],"repository":{"type":"git","url":"https://github.com/stylus/stlint"},"bugs":{"url":"https://github.com/stylus/stlint/issues"},"scripts":{"newversion":"npm test && npm version patch --no-git-tag-version && npm run build && npm run doc && npm run newversiongit && npm publish ./","newversiongit":"git add --all  && git commit -m \"New version $npm_package_version. Read more https://github.com/stylus/stlint/releases/tag/$npm_package_version \" && git tag $npm_package_version && git push --tags origin HEAD:master","start":"webpack --watch","build":"webpack","doc":"./bin/stlint --doc rules --fix","test2":"./bin/stlint ./test.styl","test":"mocha tests/**/**.ts tests/**.ts","fix":"tslint -c tslint.json ./src/**/*.ts ./src/**/**/*.ts ./src/*.ts --fix"},"keywords":["lint","linter","stylus","stylus-linter","stlint"],"author":"Chupurnov Valeriy<chupurnov@gmail.com>","license":"MIT","dependencies":{"async":"^2.6.2","chalk":"^2.4.2","columnify":"^1.5.4","escaper":"^3.0.2","glob":"^7.1.3","native-require":"^1.1.4","node-watch":"^0.6.1","strip-json-comments":"^2.0.1","stylus":"github:stylus/stylus#fix-column-function-call","yargs":"^13.2.2"},"devDependencies":{"@types/async":"^2.4.1","@types/chai":"^4.1.7","@types/glob":"^7.1.1","@types/mocha":"^5.2.6","@types/node":"^11.13.2","awesome-typescript-loader":"^5.2.1","chai":"^4.2.0","mocha":"^6.1.2","ts-node":"^8.0.3","tslint":"^5.15.0","tslint-config-prettier":"^1.18.0","tslint-plugin-prettier":"^2.0.1","typescript":"^3.4.2","typings":"^2.1.1","webpack":"^4.29.5","webpack-cli":"^3.3.0","webpack-node-externals":"^1.7.2"},"mocha":{"require":["ts-node/register","tests/staff/bootstrap.ts"]}};
+module.exports = JSON.parse("{\"name\":\"stlint\",\"version\":\"1.0.54\",\"description\":\"Stylus Linter\",\"main\":\"index.js\",\"bin\":{\"stlint\":\"./bin/stlint\"},\"files\":[\"bin/\",\"index.js\",\"src/\"],\"repository\":{\"type\":\"git\",\"url\":\"https://github.com/stylus/stlint\"},\"bugs\":{\"url\":\"https://github.com/stylus/stlint/issues\"},\"scripts\":{\"newversion\":\"npm test && npm version patch --no-git-tag-version && npm run build && npm run doc && npm run newversiongit && npm publish ./\",\"newversiongit\":\"git add --all  && git commit -m \\\"New version $npm_package_version. Read more https://github.com/stylus/stlint/releases/tag/$npm_package_version \\\" && git tag $npm_package_version && git push --tags origin HEAD:master\",\"start\":\"webpack --watch\",\"build\":\"webpack\",\"doc\":\"./bin/stlint --doc rules --fix\",\"test2\":\"./bin/stlint ./test.styl\",\"test\":\"mocha tests/**/**.ts tests/**.ts\",\"fix\":\"tslint -c tslint.json ./src/**/*.ts ./src/**/**/*.ts ./src/*.ts --fix\"},\"keywords\":[\"lint\",\"linter\",\"stylus\",\"stylus-linter\",\"stlint\"],\"author\":\"Chupurnov Valeriy<chupurnov@gmail.com>\",\"license\":\"MIT\",\"dependencies\":{\"async\":\"^2.6.3\",\"chalk\":\"^2.4.2\",\"columnify\":\"^1.5.4\",\"escaper\":\"^3.0.3\",\"glob\":\"^7.1.4\",\"native-require\":\"^1.1.4\",\"node-watch\":\"^0.6.2\",\"strip-json-comments\":\"^2.0.1\",\"stylus\":\"github:stylus/stylus#fix-column-function-call\",\"yargs\":\"^13.3.0\"},\"devDependencies\":{\"@types/async\":\"^2.4.2\",\"@types/chai\":\"^4.1.7\",\"@types/glob\":\"^7.1.1\",\"@types/mocha\":\"^5.2.7\",\"@types/node\":\"^11.13.18\",\"awesome-typescript-loader\":\"^5.2.1\",\"chai\":\"^4.2.0\",\"mocha\":\"^6.2.0\",\"ts-node\":\"^8.3.0\",\"tslint\":\"^5.18.0\",\"tslint-config-prettier\":\"^1.18.0\",\"tslint-plugin-prettier\":\"^2.0.1\",\"typescript\":\"^3.5.3\",\"typings\":\"^2.1.1\",\"webpack\":\"^4.38.0\",\"webpack-cli\":\"^3.3.6\",\"webpack-node-externals\":\"^1.7.2\"},\"mocha\":{\"require\":[\"ts-node/register\",\"tests/staff/bootstrap.ts\"]}}");
 
 /***/ }),
 
@@ -209,6 +209,7 @@ class Config extends baseConfig_1.BaseConfig {
         this.fix = false;
         this.stylusParserOptions = {};
         this.extends = '';
+        this.customProperties = [];
         this.reportOptions = {
             columnSplitter: ' | ',
             headingTransform: (heading) => chalk_1.default.yellow(heading.toUpperCase()),
@@ -565,6 +566,7 @@ __export(__webpack_require__(/*! ./keyframes */ "./src/core/ast/keyframes.ts"));
 __export(__webpack_require__(/*! ./atrule */ "./src/core/ast/atrule.ts"));
 __export(__webpack_require__(/*! ./ternary */ "./src/core/ast/ternary.ts"));
 __export(__webpack_require__(/*! ./supports */ "./src/core/ast/supports.ts"));
+__export(__webpack_require__(/*! ./return */ "./src/core/ast/return.ts"));
 
 
 /***/ }),
@@ -676,7 +678,9 @@ class Node {
         this.lineno = 0;
         this.column = 0;
         this.nodes = [];
+        this.segments = [];
         this.source = null;
+        this.key = '';
         /**
          * Content
          */
@@ -884,6 +888,24 @@ exports.Querylist = Querylist;
 
 /***/ }),
 
+/***/ "./src/core/ast/return.ts":
+/*!********************************!*\
+  !*** ./src/core/ast/return.ts ***!
+  \********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
+class Return extends node_1.Node {
+}
+exports.Return = Return;
+
+
+/***/ }),
+
 /***/ "./src/core/ast/rgb.ts":
 /*!*****************************!*\
   !*** ./src/core/ast/rgb.ts ***!
@@ -1048,6 +1070,9 @@ class Value extends node_1.Node {
         }
         return '';
     }
+    set key(value) {
+        // do nothing
+    }
     toString() {
         return this.nodes.join(' ');
     }
@@ -1067,11 +1092,10 @@ exports.Value = Value;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const isPlainObject_1 = __webpack_require__(/*! ./helpers/isPlainObject */ "./src/core/helpers/isPlainObject.ts");
+const index_1 = __webpack_require__(/*! ./helpers/index */ "./src/core/helpers/index.ts");
 const fs_1 = __webpack_require__(/*! fs */ "fs");
 const stripJsonComments = __webpack_require__(/*! strip-json-comments */ "strip-json-comments");
 const path_1 = __webpack_require__(/*! path */ "path");
-const mergeArray_1 = __webpack_require__(/*! ./helpers/mergeArray */ "./src/core/helpers/mergeArray.ts");
 const _require = __webpack_require__(/*! native-require */ "native-require");
 class BaseConfig {
     constructor() {
@@ -1141,11 +1165,11 @@ class BaseConfig {
     extendsOption(from, to) {
         const result = to;
         Object.keys(from).forEach((key) => {
-            if (isPlainObject_1.isPlainObject(from[key]) && isPlainObject_1.isPlainObject(to[key])) {
+            if (index_1.isPlainObject(from[key]) && index_1.isPlainObject(to[key])) {
                 result[key] = Object.assign({}, this.extendsOption(from[key], Object.assign({}, to[key])));
             }
             else if (Array.isArray(from[key]) && Array.isArray(to[key])) {
-                result[key] = mergeArray_1.mergeArray(to[key], from[key]);
+                result[key] = index_1.mergeArray(to[key], from[key]);
             }
             else {
                 result[key] = from[key];
@@ -1221,7 +1245,9 @@ class Checker {
                 rulesConstructors[key].prototype = new rule_1.Rule(options);
                 rulesConstructors[key].prototype.constructor = rulesConstructors[key];
             }
-            return new rulesConstructors[key](options);
+            const rule = new rulesConstructors[key](options);
+            rule.setConfig(config);
+            return rule;
         })
             .filter((rule) => rule.state.enabled);
     }
@@ -1349,12 +1375,11 @@ exports.Checker = Checker;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const calcPosition_1 = __webpack_require__(/*! ./helpers/calcPosition */ "./src/core/helpers/calcPosition.ts");
-const splitLines_1 = __webpack_require__(/*! ./helpers/splitLines */ "./src/core/helpers/splitLines.ts");
+const index_1 = __webpack_require__(/*! ./helpers/index */ "./src/core/helpers/index.ts");
 class Content {
     constructor(content) {
         this.content = content;
-        this.lines = splitLines_1.splitLines(content);
+        this.lines = index_1.splitLines(content);
     }
     toString() {
         return this.content;
@@ -1396,7 +1421,7 @@ class Content {
         let content = this.content;
         messages.forEach((message, index) => {
             if (message.fix) {
-                const start = calcPosition_1.calcPosition(message.line, message.start, content), end = calcPosition_1.calcPosition(message.endline, message.end, content), oldPart = content.substring(start, end + 1), fix = message.fix.replace.toString(), diffLines = splitLines_1.splitLines(fix).length - splitLines_1.splitLines(oldPart).length;
+                const start = index_1.calcPosition(message.line, message.start, content), end = index_1.calcPosition(message.endline, message.end, content), oldPart = content.substring(start, end + 1), fix = message.fix.replace.toString(), diffLines = index_1.splitLines(fix).length - index_1.splitLines(oldPart).length;
                 content = content.substr(0, start) + fix + content.substr(end + 1);
                 if (diffLines) {
                     for (let i = index + 1; i < messages.length; i += 1) {
@@ -1607,6 +1632,56 @@ exports.calcPosition = (line, column, content) => {
 
 /***/ }),
 
+/***/ "./src/core/helpers/checkPrefix.ts":
+/*!*****************************************!*\
+  !*** ./src/core/helpers/checkPrefix.ts ***!
+  \*****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * Used in conjunction with the valid check (for valid css)
+ *
+ * @param [prop] the property to prepend prefixes to
+ * @param [css] the css key we're checking against (from valid.json)
+ * @param [valid] the valid.json object
+ * @returns {boolean} true if at least one match found, false if not
+ */
+exports.checkPrefix = (prop, css, valid) => valid.prefixes.some((prefix) => prop === prefix + css);
+
+
+/***/ }),
+
+/***/ "./src/core/helpers/index.ts":
+/*!***********************************!*\
+  !*** ./src/core/helpers/index.ts ***!
+  \***********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
+Object.defineProperty(exports, "__esModule", { value: true });
+__export(__webpack_require__(/*! ./calcPosition */ "./src/core/helpers/calcPosition.ts"));
+__export(__webpack_require__(/*! ./checkPrefix */ "./src/core/helpers/checkPrefix.ts"));
+__export(__webpack_require__(/*! ./isPlainObject */ "./src/core/helpers/isPlainObject.ts"));
+__export(__webpack_require__(/*! ./lcfirst */ "./src/core/helpers/lcfirst.ts"));
+__export(__webpack_require__(/*! ./mergeArray */ "./src/core/helpers/mergeArray.ts"));
+__export(__webpack_require__(/*! ./objToHash */ "./src/core/helpers/objToHash.ts"));
+__export(__webpack_require__(/*! ./shortcutColor */ "./src/core/helpers/shortcutColor.ts"));
+__export(__webpack_require__(/*! ./unwrapObject */ "./src/core/helpers/unwrapObject.ts"));
+__export(__webpack_require__(/*! ./splitLines */ "./src/core/helpers/splitLines.ts"));
+__export(__webpack_require__(/*! ./splitAndStrip */ "./src/core/helpers/splitAndStrip.ts"));
+
+
+/***/ }),
+
 /***/ "./src/core/helpers/isPlainObject.ts":
 /*!*******************************************!*\
   !*** ./src/core/helpers/isPlainObject.ts ***!
@@ -1740,6 +1815,26 @@ exports.shortcutColor = shortcutColor;
 
 /***/ }),
 
+/***/ "./src/core/helpers/splitAndStrip.ts":
+/*!*******************************************!*\
+  !*** ./src/core/helpers/splitAndStrip.ts ***!
+  \*******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * Split str by reg exp
+ * @param re
+ * @param line
+ */
+exports.splitAndStrip = (re, line) => line.split(re).filter((str) => str.length > 0);
+
+
+/***/ }),
+
 /***/ "./src/core/helpers/splitLines.ts":
 /*!****************************************!*\
   !*** ./src/core/helpers/splitLines.ts ***!
@@ -1845,6 +1940,19 @@ class Line {
      */
     isEmpty() {
         return this.line.trim().length === 0;
+    }
+    /**
+     * This is last line
+     */
+    isLast() {
+        const index = this.lines.indexOf(this);
+        let lastIndex = this.lines.length - 1;
+        for (let i = lastIndex; i > 0; i -= 1) {
+            if (this.lines[i].isEmpty()) {
+                lastIndex = i - 1;
+            }
+        }
+        return index === lastIndex;
     }
 }
 exports.Line = Line;
@@ -2290,14 +2398,13 @@ exports.SilentReporter = SilentReporter;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const lcfirst_1 = __webpack_require__(/*! ./helpers/lcfirst */ "./src/core/helpers/lcfirst.ts");
-const index_1 = __webpack_require__(/*! ./ast/index */ "./src/core/ast/index.ts");
-const objToHash_1 = __webpack_require__(/*! ./helpers/objToHash */ "./src/core/helpers/objToHash.ts");
-const unwrapObject_1 = __webpack_require__(/*! ./helpers/unwrapObject */ "./src/core/helpers/unwrapObject.ts");
+const index_1 = __webpack_require__(/*! ./helpers/index */ "./src/core/helpers/index.ts");
+const index_2 = __webpack_require__(/*! ./ast/index */ "./src/core/ast/index.ts");
 const initContext = () => ({
     hashDeep: 0,
     inHash: false,
     inComment: false,
+    openBracket: false,
     vars: {},
     valueToVar: {}
 });
@@ -2332,6 +2439,9 @@ class Rule {
             this.state.enabled = conf;
         }
     }
+    setConfig(config) {
+        this.config = config;
+    }
     get context() {
         return Rule.context;
     }
@@ -2339,7 +2449,7 @@ class Rule {
      * Rule name
      */
     get name() {
-        return lcfirst_1.lcfirst(this.constructor.name);
+        return index_1.lcfirst(this.constructor.name);
     }
     static clearContext() {
         Rule.context = initContext();
@@ -2352,10 +2462,10 @@ class Rule {
      * @param node
      */
     static beforeCheckNode(node) {
-        if (node instanceof index_1.Ident && node.value instanceof index_1.Value) {
-            const isHash = node.value.nodes && node.value.nodes.length && node.value.nodes[0] instanceof index_1.Obj;
-            this.context.vars[node.key] = isHash ? objToHash_1.objTohash(node.value.nodes[0]) : node.value.nodes[0].toString();
-            this.context.valueToVar = Object.assign({}, this.context.valueToVar, unwrapObject_1.unwrapObject(this.context.vars));
+        if (node instanceof index_2.Ident && node.value instanceof index_2.Value) {
+            const isHash = node.value.nodes && node.value.nodes.length && node.value.nodes[0] instanceof index_2.Obj;
+            this.context.vars[node.key] = isHash ? index_1.objTohash(node.value.nodes[0]) : node.value.nodes[0].toString();
+            this.context.valueToVar = Object.assign({}, this.context.valueToVar, index_1.unwrapObject(this.context.vars));
         }
     }
     /**
@@ -2866,6 +2976,13 @@ class Translator extends visitor_1.Visitor {
         }
         return node;
     }
+    visitReturn(block, parent) {
+        const node = new index_1.Return(block, parent);
+        if (block.expr) {
+            node.append(this.visit(block.expr, node));
+        }
+        return node;
+    }
     eachVisit(list, fn, parent) {
         if (Array.isArray(list)) {
             for (let i = 0, len = list.length; i < len; ++i) {
@@ -2922,7 +3039,7 @@ exports.Visitor = Visitor;
 /*! exports provided: css, html, prefixes, pseudo, scope, default */
 /***/ (function(module) {
 
-module.exports = {"css":["{","}","*","&","~/","/","../",":root","::selection","*::selection","@charset","@counter-style","@document","@font-face","@font-feature-values","@keyframes","@media","@namespace","@page","@supports","@import","@require","absolute","align-content","align-items","align-self","alignment","alignment-adjust","alignment-baseline","all","alt","animation","animation-delay","animation-direction","animation-duration","animation-fill-mode","animation-iteration-count","animation-name","animation-play-state","animation-timing-function","app-region","appearance","azimuth","backface-visibility","background","background-attachment","background-blend-mode","background-clip","background-color","background-image","background-origin","background-position","background-repeat","background-size","background-position","background-position-y","background-position-x","baseline-shift","bookmark-label","bookmark-level","bookmark-state","border","border-bottom","border-bottom-color","border-bottom-left-radius","border-bottom-right-radius","border-bottom-style","border-bottom-width","border-clip","border-clip-bottom","border-clip-left","border-clip-right","border-clip-top","border-collapse","border-color","border-image","border-image-outset","border-image-repeat","border-image-slice","border-image-source","border-image-width","border-left","border-left-color","border-left-style","border-left-width","border-limit","border-radius","border-right","border-right-color","border-right-style","border-right-width","border-spacing","border-style","border-top","border-top-color","border-top-left-radius","border-top-right-radius","border-top-style","border-top-width","border-width","bottom","box-decoration-break","box-direction","box-orient","box-flex","box-pack","box-shadow","box-sizing","box-snap","box-suppress","box-align","break-after","break-before","break-inside","caption-side","chains","child-align","clear","clear-after","clear-side","clip","clip-path","clip-rule","color","color-interpolation-filters","column-count","column-fill","column-gap","column-rule","column-rule-color","column-rule-style","column-rule-width","column-span","column-width","columns","composes","content","corner-shape","corners","counter-increment","counter-reset","counter-set","crop","cue","cue-after","cue-before","cursor","direction","display","display-inside","display-list","display-outside","dominant-baseline","drop-initial-after-adjust","drop-initial-after-align","drop-initial-before-adjust","drop-initial-before-align","drop-initial-size","drop-initial-value","elevation","empty-cells","fill","fill-opacity","fill-rule","filter","fixed","flex","flex-align","flex-basis","flex-direction","flex-flow","flex-item-align","flex-line-pack","flex-grow","flex-pack","flex-shrink","flex-wrap","float","float-defer-column","float-defer-page","float-displace","float-offset","float-wrap","flood-color","flood-opacity","flow","flow-from","flow-into","font","font-family","font-feature-settings","font-kerning","font-language-override","font-size","font-size-adjust","font-smoothing","font-stretch","font-style","font-synthesis","font-variant","font-variant-alternates","font-variant-caps","font-variant-east-asian","font-variant-ligatures","font-variant-numeric","font-variant-position","font-weight","footnote-display","footnote-policy","from","global","glyph-orientation-horizontal","glyph-orientation-vertical","grid (extra)","grid","grid-area","grid-auto-columns","grid-auto-flow","grid-auto-rows","grid-column","grid-column-end","grid-column-start","grid-row","grid-row-end","grid-row-start","grid-template (extra)","grid-template","grid-template-areas","grid-template-columns","grid-template-rows","hanging-punctuation","height","hyphens","icon","image-orientation","image-rendering","image-resolution","ime-mode","indent-edge-reset","initial-letter","initial-letter-align","inline-box-align","interpolation-mode","isolation","justify-content","justify-items","justify-self","left","letter-spacing","lighting-color","line-break","line-grid","line-height","line-snap","line-stacking","line-stacking-ruby","line-stacking-shift","line-stacking-strategy","list-style","list-style-image","list-style-position","list-style-type","local","kerning","margin","margin-bottom","margin-left","margin-right","margin-top","marker","marker-end","marker-mid","marker-side","marker-start","marquee-direction","marquee-loop","marquee-speed","marquee-style","mask","mask-border","mask-border-mode","mask-border-outset","mask-border-repeat","mask-border-slice","mask-border-source","mask-border-width","mask-clip","mask-composite","mask-image","mask-mode","mask-origin","mask-position","mask-repeat","mask-size","mask-type","max-height","max-lines","max-width","max-zoom","min-height","min-width","min-zoom","mix-blend-mode","move-to","mso-table-lspace","mso-table-rspace","nav-down","nav-index","nav-left","nav-right","nav-up","object-fit","object-position","offset-after","offset-before","offset-end","offset-start","opacity","order","orientation","orphans","osx-font-smoothing","outline","outline-color","outline-offset","outline-style","outline-width","overflow","overflow-scrolling","overflow-style","overflow-wrap","overflow-x","overflow-y","padding","padding-bottom","padding-left","padding-right","padding-top","page","page-break-after","page-break-before","page-break-inside","page-policy","pause","pause-after","pause-before","perspective","perspective-origin","pitch","pitch-range","play-during","pointer-events","position","presentation-level","quotes","region-fragment","resize","resolution","rest","rest-after","rest-before","richness","right","root","rotation","rotation-point","ruby-align","ruby-merge","ruby-position","running","selection","shape-image-threshold","shape-margin","shape-outside","shape-rendering","size","speak","speak-as","speak-header","speak-numeral","speak-punctuation","speech-rate","src","stop-color","stop-opacity","stress","string-set","stroke","stroke-width","tab","tab-align","tab-leaders","tab-leaders-alignment","tab-position","tab-size","table-baseline","table-column-span","table-layout","table-row-span","tap-highlight-color","template","text-align","text-align-all","text-align-last","text-anchor","text-combine-upright","text-decoration","text-decoration-color","text-decoration-line","text-decoration-skip","text-decoration-style","text-emphasis","text-emphasis-color","text-emphasis-position","text-emphasis-style","text-height","text-indent","text-justify","text-orientation","text-overflow","text-rendering","text-shadow","text-size-adjust","text-transform","text-underline-position","to","top","touch-action","touch-callout","transform","transform-box","transform-origin","transform-style","transition","transition-delay","transition-duration","transition-property","transition-timing-function","unicode-bidi","user-select","user-zoom","vertical-align","visibility","voice-balance","voice-duration","voice-family","voice-pitch","voice-range","voice-rate","voice-stress","voice-volume","volume","white-space","widows","width","will-change","word-break","word-spacing","word-wrap","wrap-flow","wrap-through","writing-mode","z-index","zoom"],"html":["-webkit-line-clamp","[hidden]","a","a","abbr","abel","acronym","address","altGlyph","altGlyphDef","altGlyphItem","animate","animateColor","animateMotion","animateTransform","applet","area","article","aside","audio","b","bdi","bdo","big","blockquote","body","br","button","button[disabled]","canvas","caption","circle","cite","clip-path","code","col","colgroup","color-profile","cursor","data","datalist","dd","defs","del","desc","details","dfn","div","dl","dt","ellipse","em","embed","feBlend","feColorMatrix","feComponentTransfer","feComposite","feConvolveMatrix","feDiffuseLighting","feDisplacementMap","feDistantLight","feFlood","feFuncA","feFuncB","feFuncG","feFuncR","feGaussianBlur","feImage","feMerge","feMergeNode","feMorphology","feOffset","fePointLight","feSpecularLighting","feSpotLight","feTile","feTurbulence","fieldset","figcaption","figure","filter","font","font-face","font-face-format","font-face-name","font-face-src","font-face-uri","footer","foreignObject","form","g","glyph","glyphRef","h1","h2","h3","h4","h5","h6","header","hgroup","hkern","hr","html","i","iframe","image","img","input","input[disabled]","input[type='button']","input[type='checkbox']","input[type='color']","input[type='date']","input[type='datetime']","input[type='datetime-local']","input[type='email']","input[type='file']","input[type='hidden']","input[type='image']","input[type='month']","input[type='number']","input[type='password']","input[type='radio']","input[type='range']","input[type='reset']","input[type='search']","input[type='submit']","input[type='tel']","input[type='text']","input[type='time']","input[type='url']","input[type='week']","input[type=button]","input[type=checkbox]","input[type=color]","input[type=date]","input[type=datetime-local]","input[type=datetime]","input[type=email]","input[type=file]","input[type=hidden]","input[type=image]","input[type=month]","input[type=number]","input[type=password]","input[type=radio]","input[type=range]","input[type=reset]","input[type=search]","input[type=submit]","input[type=tel]","input[type=text]","input[type=time]","input[type=url]","input[type=week]","ins","kbd","keygen","label","legend","li","line","line-clamp","linearGradient","main","map","mark","marker","mask","math","menu","menuitem","meta","meter","nav","object","ol","optgroup","option","output","p","param","path","pattern","picture","polygon","polyline","pre","progress","q","radialGradient","rect","rp","rt","ruby","s","samp","script","section","select","set","size","small","source","span","stop","strike","stroke","stroke-dasharray","stroke-dashoffset","stroke-linecap","stroke-miterlimit","stroke-opacity","stroke-width","strong","style","sub","summary","sup","svg","switch","symbol","table","tbody","td","text","textarea","textPath","tfoot","th","thead","time","title","tr","track","tref","tspan","tt","ul","use","var","video","view","vkern","wbr"],"prefixes":["-ms-","-webkit-","-o-","-moz-","-khtml-"],"pseudo":["{","::-webkit-resizer","::-webkit-scrollbar","::-webkit-scrollbar-button","::-webkit-scrollbar-corner","::-webkit-scrollbar-thumb","::-webkit-scrollbar-track","::-webkit-scrollbar-track-piece","::-moz-inner-focus","::active",":active","::after",":after","::before",":before","::checked",":checked","::disabled",":disabled","::empty",":empty","::enabled",":enabled",":first-child","::first-child","::first-letter",":first-letter","::first-line",":first-line","::first-of-type",":first-of-type","::focus",":focus","::hover",":hover","input-placeholder",":invalid","::last-child",":last-child","::last-of-type",":last-of-type","::link",":link","::not",":not","::nth-child",":nth-child","::nth-last-child",":nth-last-child","::nth-last-of-type",":nth-last-of-type","::nth-of-type",":nth-of-type","::only-child",":only-child","::only-of-type",":only-of-type","::optional",":optional",":placeholder","::placeholder",":selection","::selection","::target",":target","::valid",":valid","::visited",":visited"],"scope":[":global",":local"]};
+module.exports = JSON.parse("{\"css\":[\"{\",\"}\",\"*\",\"&\",\"~/\",\"/\",\"../\",\":root\",\"::selection\",\"*::selection\",\"@charset\",\"@counter-style\",\"@document\",\"@font-face\",\"@font-feature-values\",\"@keyframes\",\"@media\",\"@namespace\",\"@page\",\"@supports\",\"@import\",\"@require\",\"absolute\",\"align-content\",\"align-items\",\"align-self\",\"alignment\",\"alignment-adjust\",\"alignment-baseline\",\"all\",\"alt\",\"animation\",\"animation-delay\",\"animation-direction\",\"animation-duration\",\"animation-fill-mode\",\"animation-iteration-count\",\"animation-name\",\"animation-play-state\",\"animation-timing-function\",\"app-region\",\"appearance\",\"azimuth\",\"backface-visibility\",\"background\",\"background-attachment\",\"background-blend-mode\",\"background-clip\",\"background-color\",\"background-image\",\"background-origin\",\"background-position\",\"background-repeat\",\"background-size\",\"background-position\",\"background-position-y\",\"background-position-x\",\"baseline-shift\",\"bookmark-label\",\"bookmark-level\",\"bookmark-state\",\"border\",\"border-bottom\",\"border-bottom-color\",\"border-bottom-left-radius\",\"border-bottom-right-radius\",\"border-bottom-style\",\"border-bottom-width\",\"border-clip\",\"border-clip-bottom\",\"border-clip-left\",\"border-clip-right\",\"border-clip-top\",\"border-collapse\",\"border-color\",\"border-image\",\"border-image-outset\",\"border-image-repeat\",\"border-image-slice\",\"border-image-source\",\"border-image-width\",\"border-left\",\"border-left-color\",\"border-left-style\",\"border-left-width\",\"border-limit\",\"border-radius\",\"border-right\",\"border-right-color\",\"border-right-style\",\"border-right-width\",\"border-spacing\",\"border-style\",\"border-top\",\"border-top-color\",\"border-top-left-radius\",\"border-top-right-radius\",\"border-top-style\",\"border-top-width\",\"border-width\",\"bottom\",\"box-decoration-break\",\"box-direction\",\"box-orient\",\"box-flex\",\"box-pack\",\"box-shadow\",\"box-sizing\",\"box-snap\",\"box-suppress\",\"box-align\",\"break-after\",\"break-before\",\"break-inside\",\"caption-side\",\"chains\",\"child-align\",\"clear\",\"clear-after\",\"clear-side\",\"clip\",\"clip-path\",\"clip-rule\",\"color\",\"color-interpolation-filters\",\"column-count\",\"column-fill\",\"column-gap\",\"column-rule\",\"column-rule-color\",\"column-rule-style\",\"column-rule-width\",\"column-span\",\"column-width\",\"columns\",\"composes\",\"content\",\"corner-shape\",\"corners\",\"counter-increment\",\"counter-reset\",\"counter-set\",\"crop\",\"cue\",\"cue-after\",\"cue-before\",\"cursor\",\"direction\",\"display\",\"display-inside\",\"display-list\",\"display-outside\",\"dominant-baseline\",\"drop-initial-after-adjust\",\"drop-initial-after-align\",\"drop-initial-before-adjust\",\"drop-initial-before-align\",\"drop-initial-size\",\"drop-initial-value\",\"elevation\",\"empty-cells\",\"fill\",\"fill-opacity\",\"fill-rule\",\"filter\",\"fixed\",\"flex\",\"flex-align\",\"flex-basis\",\"flex-direction\",\"flex-flow\",\"flex-item-align\",\"flex-line-pack\",\"flex-grow\",\"flex-pack\",\"flex-shrink\",\"flex-wrap\",\"float\",\"float-defer-column\",\"float-defer-page\",\"float-displace\",\"float-offset\",\"float-wrap\",\"flood-color\",\"flood-opacity\",\"flow\",\"flow-from\",\"flow-into\",\"font\",\"font-family\",\"font-feature-settings\",\"font-kerning\",\"font-language-override\",\"font-size\",\"font-size-adjust\",\"font-smoothing\",\"font-stretch\",\"font-style\",\"font-synthesis\",\"font-variant\",\"font-variant-alternates\",\"font-variant-caps\",\"font-variant-east-asian\",\"font-variant-ligatures\",\"font-variant-numeric\",\"font-variant-position\",\"font-weight\",\"footnote-display\",\"footnote-policy\",\"from\",\"global\",\"glyph-orientation-horizontal\",\"glyph-orientation-vertical\",\"grid (extra)\",\"grid\",\"grid-area\",\"grid-auto-columns\",\"grid-auto-flow\",\"grid-auto-rows\",\"grid-column\",\"grid-column-end\",\"grid-column-start\",\"grid-row\",\"grid-row-end\",\"grid-row-start\",\"grid-template (extra)\",\"grid-template\",\"grid-template-areas\",\"grid-template-columns\",\"grid-template-rows\",\"hanging-punctuation\",\"height\",\"hyphens\",\"icon\",\"image-orientation\",\"image-rendering\",\"image-resolution\",\"ime-mode\",\"indent-edge-reset\",\"initial-letter\",\"initial-letter-align\",\"inline-box-align\",\"interpolation-mode\",\"isolation\",\"justify-content\",\"justify-items\",\"justify-self\",\"left\",\"letter-spacing\",\"lighting-color\",\"line-break\",\"line-grid\",\"line-height\",\"line-snap\",\"line-stacking\",\"line-stacking-ruby\",\"line-stacking-shift\",\"line-stacking-strategy\",\"list-style\",\"list-style-image\",\"list-style-position\",\"list-style-type\",\"local\",\"kerning\",\"margin\",\"margin-bottom\",\"margin-left\",\"margin-right\",\"margin-top\",\"marker\",\"marker-end\",\"marker-mid\",\"marker-side\",\"marker-start\",\"marquee-direction\",\"marquee-loop\",\"marquee-speed\",\"marquee-style\",\"mask\",\"mask-border\",\"mask-border-mode\",\"mask-border-outset\",\"mask-border-repeat\",\"mask-border-slice\",\"mask-border-source\",\"mask-border-width\",\"mask-clip\",\"mask-composite\",\"mask-image\",\"mask-mode\",\"mask-origin\",\"mask-position\",\"mask-repeat\",\"mask-size\",\"mask-type\",\"max-height\",\"max-lines\",\"max-width\",\"max-zoom\",\"min-height\",\"min-width\",\"min-zoom\",\"mix-blend-mode\",\"move-to\",\"mso-table-lspace\",\"mso-table-rspace\",\"nav-down\",\"nav-index\",\"nav-left\",\"nav-right\",\"nav-up\",\"object-fit\",\"object-position\",\"offset-after\",\"offset-before\",\"offset-end\",\"offset-start\",\"opacity\",\"order\",\"orientation\",\"orphans\",\"osx-font-smoothing\",\"outline\",\"outline-color\",\"outline-offset\",\"outline-style\",\"outline-width\",\"overflow\",\"overflow-scrolling\",\"overflow-style\",\"overflow-wrap\",\"overflow-x\",\"overflow-y\",\"padding\",\"padding-bottom\",\"padding-left\",\"padding-right\",\"padding-top\",\"page\",\"page-break-after\",\"page-break-before\",\"page-break-inside\",\"page-policy\",\"pause\",\"pause-after\",\"pause-before\",\"perspective\",\"perspective-origin\",\"pitch\",\"pitch-range\",\"play-during\",\"pointer-events\",\"position\",\"presentation-level\",\"quotes\",\"region-fragment\",\"resize\",\"resolution\",\"rest\",\"rest-after\",\"rest-before\",\"richness\",\"right\",\"root\",\"rotation\",\"rotation-point\",\"ruby-align\",\"ruby-merge\",\"ruby-position\",\"running\",\"selection\",\"shape-image-threshold\",\"shape-margin\",\"shape-outside\",\"shape-rendering\",\"size\",\"speak\",\"speak-as\",\"speak-header\",\"speak-numeral\",\"speak-punctuation\",\"speech-rate\",\"src\",\"stop-color\",\"stop-opacity\",\"stress\",\"string-set\",\"stroke\",\"stroke-width\",\"tab\",\"tab-align\",\"tab-leaders\",\"tab-leaders-alignment\",\"tab-position\",\"tab-size\",\"table-baseline\",\"table-column-span\",\"table-layout\",\"table-row-span\",\"tap-highlight-color\",\"template\",\"text-align\",\"text-align-all\",\"text-align-last\",\"text-anchor\",\"text-combine-upright\",\"text-decoration\",\"text-decoration-color\",\"text-decoration-line\",\"text-decoration-skip\",\"text-decoration-style\",\"text-emphasis\",\"text-emphasis-color\",\"text-emphasis-position\",\"text-emphasis-style\",\"text-height\",\"text-indent\",\"text-justify\",\"text-orientation\",\"text-overflow\",\"text-rendering\",\"text-shadow\",\"text-size-adjust\",\"text-transform\",\"text-underline-position\",\"to\",\"top\",\"touch-action\",\"touch-callout\",\"transform\",\"transform-box\",\"transform-origin\",\"transform-style\",\"transition\",\"transition-delay\",\"transition-duration\",\"transition-property\",\"transition-timing-function\",\"unicode-bidi\",\"user-select\",\"user-zoom\",\"vertical-align\",\"visibility\",\"voice-balance\",\"voice-duration\",\"voice-family\",\"voice-pitch\",\"voice-range\",\"voice-rate\",\"voice-stress\",\"voice-volume\",\"volume\",\"white-space\",\"widows\",\"width\",\"will-change\",\"word-break\",\"word-spacing\",\"word-wrap\",\"wrap-flow\",\"wrap-through\",\"writing-mode\",\"z-index\",\"zoom\"],\"html\":[\"-webkit-line-clamp\",\"[hidden]\",\"a\",\"a\",\"abbr\",\"abel\",\"acronym\",\"address\",\"altGlyph\",\"altGlyphDef\",\"altGlyphItem\",\"animate\",\"animateColor\",\"animateMotion\",\"animateTransform\",\"applet\",\"area\",\"article\",\"aside\",\"audio\",\"b\",\"bdi\",\"bdo\",\"big\",\"blockquote\",\"body\",\"br\",\"button\",\"button[disabled]\",\"canvas\",\"caption\",\"circle\",\"cite\",\"clip-path\",\"code\",\"col\",\"colgroup\",\"color-profile\",\"cursor\",\"data\",\"datalist\",\"dd\",\"defs\",\"del\",\"desc\",\"details\",\"dfn\",\"div\",\"dl\",\"dt\",\"ellipse\",\"em\",\"embed\",\"feBlend\",\"feColorMatrix\",\"feComponentTransfer\",\"feComposite\",\"feConvolveMatrix\",\"feDiffuseLighting\",\"feDisplacementMap\",\"feDistantLight\",\"feFlood\",\"feFuncA\",\"feFuncB\",\"feFuncG\",\"feFuncR\",\"feGaussianBlur\",\"feImage\",\"feMerge\",\"feMergeNode\",\"feMorphology\",\"feOffset\",\"fePointLight\",\"feSpecularLighting\",\"feSpotLight\",\"feTile\",\"feTurbulence\",\"fieldset\",\"figcaption\",\"figure\",\"filter\",\"font\",\"font-face\",\"font-face-format\",\"font-face-name\",\"font-face-src\",\"font-face-uri\",\"footer\",\"foreignObject\",\"form\",\"g\",\"glyph\",\"glyphRef\",\"h1\",\"h2\",\"h3\",\"h4\",\"h5\",\"h6\",\"header\",\"hgroup\",\"hkern\",\"hr\",\"html\",\"i\",\"iframe\",\"image\",\"img\",\"input\",\"input[disabled]\",\"input[type='button']\",\"input[type='checkbox']\",\"input[type='color']\",\"input[type='date']\",\"input[type='datetime']\",\"input[type='datetime-local']\",\"input[type='email']\",\"input[type='file']\",\"input[type='hidden']\",\"input[type='image']\",\"input[type='month']\",\"input[type='number']\",\"input[type='password']\",\"input[type='radio']\",\"input[type='range']\",\"input[type='reset']\",\"input[type='search']\",\"input[type='submit']\",\"input[type='tel']\",\"input[type='text']\",\"input[type='time']\",\"input[type='url']\",\"input[type='week']\",\"input[type=button]\",\"input[type=checkbox]\",\"input[type=color]\",\"input[type=date]\",\"input[type=datetime-local]\",\"input[type=datetime]\",\"input[type=email]\",\"input[type=file]\",\"input[type=hidden]\",\"input[type=image]\",\"input[type=month]\",\"input[type=number]\",\"input[type=password]\",\"input[type=radio]\",\"input[type=range]\",\"input[type=reset]\",\"input[type=search]\",\"input[type=submit]\",\"input[type=tel]\",\"input[type=text]\",\"input[type=time]\",\"input[type=url]\",\"input[type=week]\",\"ins\",\"kbd\",\"keygen\",\"label\",\"legend\",\"li\",\"line\",\"line-clamp\",\"linearGradient\",\"main\",\"map\",\"mark\",\"marker\",\"mask\",\"math\",\"menu\",\"menuitem\",\"meta\",\"meter\",\"nav\",\"object\",\"ol\",\"optgroup\",\"option\",\"output\",\"p\",\"param\",\"path\",\"pattern\",\"picture\",\"polygon\",\"polyline\",\"pre\",\"progress\",\"q\",\"radialGradient\",\"rect\",\"rp\",\"rt\",\"ruby\",\"s\",\"samp\",\"script\",\"section\",\"select\",\"set\",\"size\",\"small\",\"source\",\"span\",\"stop\",\"strike\",\"stroke\",\"stroke-dasharray\",\"stroke-dashoffset\",\"stroke-linecap\",\"stroke-miterlimit\",\"stroke-opacity\",\"stroke-width\",\"strong\",\"style\",\"sub\",\"summary\",\"sup\",\"svg\",\"switch\",\"symbol\",\"table\",\"tbody\",\"td\",\"text\",\"textarea\",\"textPath\",\"tfoot\",\"th\",\"thead\",\"time\",\"title\",\"tr\",\"track\",\"tref\",\"tspan\",\"tt\",\"ul\",\"use\",\"var\",\"video\",\"view\",\"vkern\",\"wbr\"],\"prefixes\":[\"-ms-\",\"-webkit-\",\"-o-\",\"-moz-\",\"-khtml-\"],\"pseudo\":[\"{\",\"::-webkit-resizer\",\"::-webkit-scrollbar\",\"::-webkit-scrollbar-button\",\"::-webkit-scrollbar-corner\",\"::-webkit-scrollbar-thumb\",\"::-webkit-scrollbar-track\",\"::-webkit-scrollbar-track-piece\",\"::-moz-inner-focus\",\"::active\",\":active\",\"::after\",\":after\",\"::before\",\":before\",\"::checked\",\":checked\",\"::disabled\",\":disabled\",\"::empty\",\":empty\",\"::enabled\",\":enabled\",\":first-child\",\"::first-child\",\"::first-letter\",\":first-letter\",\"::first-line\",\":first-line\",\"::first-of-type\",\":first-of-type\",\"::focus\",\":focus\",\"::hover\",\":hover\",\"input-placeholder\",\":invalid\",\"::last-child\",\":last-child\",\"::last-of-type\",\":last-of-type\",\"::link\",\":link\",\"::not\",\":not\",\"::nth-child\",\":nth-child\",\"::nth-last-child\",\":nth-last-child\",\"::nth-last-of-type\",\":nth-last-of-type\",\"::nth-of-type\",\":nth-of-type\",\"::only-child\",\":only-child\",\"::only-of-type\",\":only-of-type\",\"::optional\",\":optional\",\":placeholder\",\"::placeholder\",\":selection\",\"::selection\",\"::target\",\":target\",\"::valid\",\":valid\",\"::visited\",\":visited\"],\"scope\":[\":global\",\":local\"]}");
 
 /***/ }),
 
@@ -2930,10 +3047,10 @@ module.exports = {"css":["{","}","*","&","~/","/","../",":root","::selection","*
 /*!*******************************!*\
   !*** ./src/defaultRules.json ***!
   \*******************************/
-/*! exports provided: mixedSpaces, prefixVarsWithDollar, emptyLines, commaInObject, depthControl, quotePref, semicolons, colons, color, leadingZero, useMixinInsteadUnit, sortOrder, default */
+/*! exports provided: mixedSpaces, prefixVarsWithDollar, emptyLines, brackets, commaInObject, depthControl, quotePref, semicolons, colons, color, leadingZero, useMixinInsteadUnit, sortOrder, default */
 /***/ (function(module) {
 
-module.exports = {"mixedSpaces":{"indentPref":"tab"},"prefixVarsWithDollar":{"conf":"always","prefix":"$","allowConst":true},"emptyLines":true,"commaInObject":["never"],"depthControl":{"indentPref":"tab"},"quotePref":["double"],"semicolons":["never"],"colons":["never"],"color":{"conf":"uppercase","enabled":true,"allowOnlyInVar":true,"allowShortcut":true,"denyRGB":true},"leadingZero":["always"],"useMixinInsteadUnit":{"conf":"always","mixin":"basis","unitType":"px","allowOneUnit":false},"sortOrder":{"conf":"grouped","startGroupChecking":6,"order":[["absolute","position","z-index","top","right","bottom","left"],["content","display","flexbox","flex","flex-grow","flex-shrink","flex-basis","flex-direction","order","flex-order","flex-wrap","flex-flow","justify-content","align-self","align-items","align-content","flex-pack","flex-align","box-sizing","vertical-align","size","width","height","max-width","min-width","max-height","min-height","overflow","overflow-x","overflow-y","float","clear","visibility","opacity","margin","margin-top","margin-right","margin-bottom","margin-left","padding","padding-top","padding-right","padding-bottom","padding-left"],["font","font-family","font-size","font-weight","font-style","font-variant","font-size-adjust","font-stretch","line-height","letter-spacing","text-align","text-align-last","text-decoration","text-emphasis","text-emphasis-position","text-emphasis-style","text-emphasis-color","text-indent","text-justify","text-outline","text-transform","text-wrap","text-overflow","text-overflow-ellipsis","text-overflow-mode","word-spacing","word-wrap","word-break","tab-size","hyphens"],["pointer-events","border","border-spacing","border-collapse","border-width","border-style","border-color","border-top","border-top-width","border-top-style","border-top-color","border-right","border-right-width","border-right-style","border-right-color","border-bottom","border-bottom-width","border-bottom-style","border-bottom-color","border-left","border-left-width","border-left-style","border-left-color","border-radius","border-top-left-radius","border-top-right-radius","border-bottom-right-radius","border-bottom-left-radius","border-image","border-image-source","border-image-slice","border-image-width","border-image-outset","border-image-repeat","border-top-image","border-right-image","border-bottom-image","border-left-image","border-corner-image","border-top-left-image","border-top-right-image","border-bottom-right-image","border-bottom-left-image","color","background","filter","background-color","background-image","background-attachment","background-position","background-position-x","background-position-y","background-clip","background-origin","background-size","background-repeat","clip","list-style","outline","outline-width","outline-style","outline-color","outline-offset","cursor","box-shadow","text-shadow","table-layout","backface-visibility","will-change","transition","transform","animation"]]}};
+module.exports = JSON.parse("{\"mixedSpaces\":{\"indentPref\":\"tab\"},\"prefixVarsWithDollar\":{\"conf\":\"always\",\"prefix\":\"$\",\"allowConst\":true},\"emptyLines\":true,\"brackets\":[\"never\"],\"commaInObject\":[\"never\"],\"depthControl\":{\"indentPref\":\"tab\"},\"quotePref\":[\"double\"],\"semicolons\":[\"never\"],\"colons\":[\"never\"],\"color\":{\"conf\":\"uppercase\",\"enabled\":true,\"allowOnlyInVar\":true,\"allowShortcut\":true,\"denyRGB\":true},\"leadingZero\":[\"always\"],\"useMixinInsteadUnit\":{\"conf\":\"always\",\"mixin\":\"basis\",\"unitType\":\"px\",\"allowOneUnit\":false},\"sortOrder\":{\"conf\":\"grouped\",\"startGroupChecking\":6,\"order\":[[\"absolute\",\"position\",\"z-index\",\"top\",\"right\",\"bottom\",\"left\"],[\"content\",\"display\",\"flexbox\",\"flex\",\"flex-grow\",\"flex-shrink\",\"flex-basis\",\"flex-direction\",\"order\",\"flex-order\",\"flex-wrap\",\"flex-flow\",\"justify-content\",\"align-self\",\"align-items\",\"align-content\",\"flex-pack\",\"flex-align\",\"box-sizing\",\"vertical-align\",\"size\",\"width\",\"height\",\"max-width\",\"min-width\",\"max-height\",\"min-height\",\"overflow\",\"overflow-x\",\"overflow-y\",\"float\",\"clear\",\"visibility\",\"opacity\",\"margin\",\"margin-top\",\"margin-right\",\"margin-bottom\",\"margin-left\",\"padding\",\"padding-top\",\"padding-right\",\"padding-bottom\",\"padding-left\"],[\"font\",\"font-family\",\"font-size\",\"font-weight\",\"font-style\",\"font-variant\",\"font-size-adjust\",\"font-stretch\",\"line-height\",\"letter-spacing\",\"text-align\",\"text-align-last\",\"text-decoration\",\"text-emphasis\",\"text-emphasis-position\",\"text-emphasis-style\",\"text-emphasis-color\",\"text-indent\",\"text-justify\",\"text-outline\",\"text-transform\",\"text-wrap\",\"text-overflow\",\"text-overflow-ellipsis\",\"text-overflow-mode\",\"word-spacing\",\"word-wrap\",\"word-break\",\"tab-size\",\"hyphens\"],[\"pointer-events\",\"border\",\"border-spacing\",\"border-collapse\",\"border-width\",\"border-style\",\"border-color\",\"border-top\",\"border-top-width\",\"border-top-style\",\"border-top-color\",\"border-right\",\"border-right-width\",\"border-right-style\",\"border-right-color\",\"border-bottom\",\"border-bottom-width\",\"border-bottom-style\",\"border-bottom-color\",\"border-left\",\"border-left-width\",\"border-left-style\",\"border-left-color\",\"border-radius\",\"border-top-left-radius\",\"border-top-right-radius\",\"border-bottom-right-radius\",\"border-bottom-left-radius\",\"border-image\",\"border-image-source\",\"border-image-slice\",\"border-image-width\",\"border-image-outset\",\"border-image-repeat\",\"border-top-image\",\"border-right-image\",\"border-bottom-image\",\"border-left-image\",\"border-corner-image\",\"border-top-left-image\",\"border-top-right-image\",\"border-bottom-right-image\",\"border-bottom-left-image\",\"color\",\"background\",\"filter\",\"background-color\",\"background-image\",\"background-attachment\",\"background-position\",\"background-position-x\",\"background-position-y\",\"background-clip\",\"background-origin\",\"background-size\",\"background-repeat\",\"clip\",\"list-style\",\"outline\",\"outline-width\",\"outline-style\",\"outline-color\",\"outline-offset\",\"cursor\",\"box-shadow\",\"text-shadow\",\"table-layout\",\"backface-visibility\",\"will-change\",\"transition\",\"transform\",\"animation\"]]}}");
 
 /***/ }),
 
@@ -3166,6 +3283,76 @@ exports.safeComments = safeComments;
 
 /***/ }),
 
+/***/ "./src/rules/brackets.ts":
+/*!*******************************!*\
+  !*** ./src/rules/brackets.ts ***!
+  \*******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
+const index_1 = __webpack_require__(/*! ../core/helpers/index */ "./src/core/helpers/index.ts");
+const ignoreRe = /\(.*\)|@extend|\(|if|for(?!\w)|else|return|@block|@media|@import|@require|,$/, stripRe = /(?=\S)\[\S+]|([.#])\w+/, equalsRe = /( =|\?=|\+=|-=)+/, validJSON = __webpack_require__(/*! ../data/valid.json */ "./src/data/valid.json");
+/**
+ * Check for brackets
+ */
+class Brackets extends rule_1.Rule {
+    checkLine(line) {
+        if (this.context.inHash || line.isEmpty() || equalsRe.test(line.line) || ignoreRe.test(line.line)) {
+            return;
+        }
+        let arr = ['hint'], isCSS = false, isMixin = false, bracket = false;
+        if (this.state.conf === 'never') {
+            if (line.line.indexOf('{') !== -1 && line.line.indexOf('=') === -1 && line.line.indexOf('}') === -1) {
+                bracket = line.line.indexOf('{');
+            }
+            else if (line.line.indexOf('{') === -1 && line.line.indexOf('}') !== -1) {
+                bracket = line.line.indexOf('}');
+            }
+        }
+        else if (this.state.conf === 'always') {
+            arr = index_1.splitAndStrip(new RegExp(/[\s\t,:]/), line.line);
+            if (typeof arr[0] !== 'undefined') {
+                arr[0] = arr[0].replace(stripRe, '').trim();
+                isCSS = validJSON.css.some((css) => arr[0] === css || index_1.checkPrefix(arr[0], css, validJSON));
+                isMixin = this.config.customProperties.some((mixin) => arr[0] === mixin);
+            }
+            // basically, we don't care about properties like margin or padding
+            if (line.line.trim().indexOf('}') !== -1 || isCSS || isMixin) {
+                return;
+            }
+            if (line.line.indexOf('{') !== -1) {
+                bracket = line.line.indexOf('{');
+                this.context.openBracket = true;
+            }
+            else if (line.line.indexOf('}') !== -1 && this.context.openBracket) {
+                bracket = line.line.indexOf('}');
+                this.context.openBracket = false;
+            }
+        }
+        if (this.state.conf === 'never' && bracket !== false) {
+            this.msg('unnecessary bracket', line.lineno, bracket + 1, line.lineno, '');
+        }
+        else if (this.state.conf === 'always' && bracket === false) {
+            this.msg('always use brackets when defining selectors', line.lineno, line.line.length, line.lineno, line.line[line.line.length - 1] + (this.context.openBracket ? '}' : ' {'));
+            if (!this.context.openBracket) {
+                this.context.openBracket = true;
+            }
+        }
+        if (this.state.conf === 'always' && line.isLast() && this.context.openBracket) {
+            this.msg('need close bracket', line.lineno, line.line.length, line.lineno, line.line[line.line.length - 1] + '\n}');
+        }
+        return bracket !== false;
+    }
+}
+exports.Brackets = Brackets;
+
+
+/***/ }),
+
 /***/ "./src/rules/colons.ts":
 /*!*****************************!*\
   !*** ./src/rules/colons.ts ***!
@@ -3238,7 +3425,7 @@ exports.Colons = Colons;
 Object.defineProperty(exports, "__esModule", { value: true });
 const rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
 const index_1 = __webpack_require__(/*! ../core/ast/index */ "./src/core/ast/index.ts");
-const shortcutColor_1 = __webpack_require__(/*! ../core/helpers/shortcutColor */ "./src/core/helpers/shortcutColor.ts");
+const index_2 = __webpack_require__(/*! ../core/helpers/index */ "./src/core/helpers/index.ts");
 /**
  * Process all color values. Allow or deny use it not in variable and use uppercase or lowercase statements
  * For example this code has error - because we use only color in `uppercase`
@@ -3320,7 +3507,7 @@ class Color extends rule_1.Rule {
     checkShortcutErrors(node) {
         if (node.value && typeof node.value === 'string') {
             if (this.state.allowShortcut) {
-                const shortcut = shortcutColor_1.shortcutColor(node.value);
+                const shortcut = index_2.shortcutColor(node.value);
                 if (shortcut !== node.value) {
                     const fix = this.state.conf === 'uppercase' ? shortcut.toUpperCase() : shortcut.toLowerCase();
                     this.msg(`Color ${node.value} can have shortcut`, node.lineno, node.column, node.column + node.value.length - 1, fix);
@@ -3525,6 +3712,7 @@ __export(__webpack_require__(/*! ./mixedSpaces */ "./src/rules/mixedSpaces.ts"))
 __export(__webpack_require__(/*! ./commaInObject */ "./src/rules/commaInObject.ts"));
 __export(__webpack_require__(/*! ./depthControl */ "./src/rules/depthControl.ts"));
 __export(__webpack_require__(/*! ./emptyLines */ "./src/rules/emptyLines.ts"));
+__export(__webpack_require__(/*! ./brackets */ "./src/rules/brackets.ts"));
 
 
 /***/ }),

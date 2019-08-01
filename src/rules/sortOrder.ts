@@ -3,6 +3,7 @@ import { Block, Property, Value, Node } from '../core/ast/index';
 import { IState } from '../core/types/state';
 import { Line } from '../core/line';
 import { Content } from '../core/content';
+import { INode } from '../core/types/ast/node';
 
 interface IOrderState extends IState {
 	order?: Array<string[] | string>,
@@ -76,7 +77,7 @@ export class SortOrder extends Rule<IOrderState> {
 		groupId: number,
 		callback: (child: Property | Value, indexInGroup: number) => void | boolean
 	): void | boolean {
-		let child: Node, group = 0, indexInGroup = 0, result: void | boolean;
+		let child: INode, group = 0, indexInGroup = 0, result: void | boolean;
 
 		for (let i = 0; i < node.nodes.length; i += 1) {
 			child = node.nodes[i];

@@ -3,7 +3,6 @@ import { ILine } from '../line';
 import { IContent } from '../content';
 
 export interface INode {
-	[key: string]: unknown;
 	lineno: number;
 	column: number;
 
@@ -18,8 +17,10 @@ export interface INode {
 	block?: INode | null;
 
 	nodeName: string;
+	key: string | INode;
 
 	nodes: INode[];
+	segments: INode[];
 
 	source: ISNode | null;
 

@@ -161,6 +161,17 @@ $p = {
 ## Rules
 <!-- RULES START -->
 
+### brackets
+Check for brackets
+
+**Default value**
+```json
+[
+  "never"
+]
+```
+----
+
 ### colons
 Use/Do not use colons after property
 

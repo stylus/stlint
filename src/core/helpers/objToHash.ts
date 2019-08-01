@@ -1,6 +1,7 @@
 import { Ident, Obj, Property } from '../ast/index';
+import { INode } from '../types/ast/node';
 
-export const objTohash = (node: Obj) => {
+export const objTohash = (node: INode): Dictionary => {
 	const result: Dictionary = {};
 
 	node.nodes.forEach((prop) => {

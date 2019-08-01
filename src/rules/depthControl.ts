@@ -1,6 +1,7 @@
 import { Rule } from '../core/rule';
 import { IState } from '../core/types/state';
 import { Block, Selector, Property, Obj, Ident, Node, Media, Condition } from '../core/ast/index';
+import { INode } from '../core/types/ast/node';
 
 interface IDepthControlState extends IState {
 	indentPref?: 'tab' | number
@@ -19,9 +20,9 @@ export class DepthControl extends Rule<IDepthControlState> {
 
 		if (node instanceof Block || node instanceof Selector) {
 			let
-				parentNode: Node | null = node.closest<Node>('selector|media|condition|keyframes|func'),
+				parentNode: INode | null = node.closest<INode>('selector|media|condition|keyframes|func'),
 				needCheckPreviousSelector = false,
-				prev: Node | null = parentNode;
+				prev: INode | null = parentNode;
 
 			if (parentNode && parentNode instanceof Selector) {
 				while (prev && parentNode)  {

@@ -9,11 +9,14 @@ export class Node implements INode {
 		return this.constructor.name.toLowerCase();
 	}
 
-	parent: Node | null = null;
+	parent: INode | null = null;
 	lineno: number = 0;
 	column: number = 0;
-	nodes: Node[] = [];
+	nodes: INode[] = [];
+	segments: INode[] = [];
 	source: ISNode | null = null;
+
+	key: string | INode = '';
 
 	/**
 	 * Content
@@ -27,9 +30,9 @@ export class Node implements INode {
 		return (this.content && this.lineno && this.content.getLine(this.lineno)) || null;
 	}
 
-	value: string | Node | null = '';
+	value: string | INode | null = '';
 
-	constructor(block: ISNode, parent: Node | null) {
+	constructor(block: ISNode, parent: INode | null) {
 		this.lineno = block.lineno;
 		this.column = block.column;
 		this.source = block;
@@ -57,12 +60,12 @@ export class Node implements INode {
 		return this.value ? this.value.toString() : ' ';
 	}
 
-	getSibling(next: boolean = false): null | Node {
+	getSibling(next: boolean = false): null | INode {
 		if (this.parent && this.parent.nodes.length) {
 			const index = this.parent.nodes.indexOf(this);
 
 			if (index !== -1 && ((!next && index > 0) || (next && index < this.parent.nodes.length - 2))) {
-				return (<Node | void>this.parent.nodes[index + (next ? 1 : -1)]) || null;
+				return (<INode | void>this.parent.nodes[index + (next ? 1 : -1)]) || null;
 			}
 		}
 
@@ -72,14 +75,14 @@ export class Node implements INode {
 	/**
 	 * Get previous node in parent.nodes
 	 */
-	previousSibling(): null | Node {
+	previousSibling(): null | INode {
 		return this.getSibling();
 	}
 
 	/**
 	 * Get next node in parent.nodes
 	 */
-	nextSibling(): null | Node {
+	nextSibling(): null | INode {
 		return this.getSibling(true);
 	}
 
@@ -87,7 +90,7 @@ export class Node implements INode {
 	 * Get matched parent
 	 * @param parentClass
 	 */
-	closest<T extends Node>(parentClass: string): null | T {
+	closest<T extends INode>(parentClass: string): null | T {
 		const
 			reg = RegExp(`^(${parentClass})$`, 'i');
 
@@ -105,9 +108,9 @@ export class Node implements INode {
 		return null;
 	}
 
-	getChild(findClass?: string, last: boolean = false): null | Node {
+	getChild(findClass?: string, last: boolean | undefined = false): null | INode {
 		let
-			node: Node | null | void = <Node | null | void>this.nodes[last ? this.nodes.length - 1 : 0];
+			node: INode | null | void = <INode | null | void>this.nodes[last ? this.nodes.length - 1 : 0];
 
 		if (findClass === undefined) {
 			return node || null;
@@ -133,7 +136,7 @@ export class Node implements INode {
 	 * Get first matched child
 	 * @param findClass
 	 */
-	lastChild<T extends Node>(findClass?: string): null | T {
+	lastChild<T extends INode>(findClass?: string): null | T {
 		return <T>this.getChild(findClass, true);
 	}
 
@@ -141,7 +144,7 @@ export class Node implements INode {
 	 * Get last matched child
 	 * @param findClass
 	 */
-	firstChild<T extends Node>(findClass?: string): null | T {
+	firstChild<T extends INode>(findClass?: string): null | T {
 		return <T>this.getChild(findClass, false);
 	}
 }
