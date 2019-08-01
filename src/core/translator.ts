@@ -28,7 +28,10 @@ import {
 	Query,
 	Feature,
 	Supports,
-	Keyframes, Atrule, Ternary
+	Keyframes,
+	Atrule,
+	Ternary,
+	Return
 } from './ast/index';
 
 import { ISNode } from './types/ast/snode';
@@ -559,6 +562,16 @@ export class Translator extends Visitor<ISNode, Node> {
 
 		if (block.falseExpr) {
 			node.falseExpr = <Value>this.visit(block.falseExpr, node);
+		}
+
+		return node;
+	}
+
+	visitReturn(block: ISNode, parent: Node): Node {
+		const node = new Return(block, parent);
+
+		if (block.expr) {
+			node.append(this.visit(block.expr, node));
 		}
 
 		return node;
