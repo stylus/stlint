@@ -106,10 +106,11 @@ return /******/ (function(modules) { // webpackBootstrap
 "use strict";
 
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -176,7 +177,7 @@ exports.StylusLinter = StylusLinter;
 /*! exports provided: name, version, description, main, bin, files, repository, bugs, scripts, keywords, author, license, dependencies, devDependencies, mocha, default */
 /***/ (function(module) {
 
-module.exports = JSON.parse("{\"name\":\"stlint\",\"version\":\"1.0.58\",\"description\":\"Stylus Linter\",\"main\":\"index.js\",\"bin\":{\"stlint\":\"./bin/stlint\"},\"files\":[\"bin/\",\"index.js\",\"src/\"],\"repository\":{\"type\":\"git\",\"url\":\"https://github.com/stylus/stlint\"},\"bugs\":{\"url\":\"https://github.com/stylus/stlint/issues\"},\"scripts\":{\"newversion\":\"npm test && npm version patch --no-git-tag-version && npm run build && npm run doc && npm run newversiongit && npm publish ./\",\"newversiongit\":\"git add --all  && git commit -m \\\"New version $npm_package_version. Read more https://github.com/stylus/stlint/releases/tag/$npm_package_version \\\" && git tag $npm_package_version && git push --tags origin HEAD:master\",\"start\":\"webpack --watch\",\"build\":\"webpack\",\"doc\":\"./bin/stlint --doc rules --fix\",\"test2\":\"./bin/stlint ./test.styl\",\"test\":\"mocha tests/**/**.ts tests/**.ts\",\"fix\":\"tslint -c tslint.json ./src/**/*.ts ./src/**/**/*.ts ./src/*.ts --fix\"},\"keywords\":[\"lint\",\"linter\",\"stylus\",\"stylus-linter\",\"stlint\"],\"author\":\"Chupurnov Valeriy<chupurnov@gmail.com>\",\"license\":\"MIT\",\"dependencies\":{\"async\":\"^2.6.3\",\"chalk\":\"^2.4.2\",\"columnify\":\"^1.5.4\",\"escaper\":\"^3.0.3\",\"glob\":\"^7.1.4\",\"native-require\":\"^1.1.4\",\"node-watch\":\"^0.6.2\",\"strip-json-comments\":\"^2.0.1\",\"stylus\":\"^0.54.7\",\"yargs\":\"^13.3.0\"},\"devDependencies\":{\"@types/async\":\"^2.4.2\",\"@types/chai\":\"^4.1.7\",\"@types/glob\":\"^7.1.1\",\"@types/mocha\":\"^5.2.7\",\"@types/node\":\"^11.13.18\",\"awesome-typescript-loader\":\"^5.2.1\",\"chai\":\"^4.2.0\",\"mocha\":\"^6.2.0\",\"ts-node\":\"^8.3.0\",\"tslint\":\"^5.18.0\",\"tslint-config-prettier\":\"^1.18.0\",\"tslint-plugin-prettier\":\"^2.0.1\",\"typescript\":\"^3.5.3\",\"typings\":\"^2.1.1\",\"webpack\":\"^4.38.0\",\"webpack-cli\":\"^3.3.6\",\"webpack-node-externals\":\"^1.7.2\"},\"mocha\":{\"require\":[\"ts-node/register\",\"tests/staff/bootstrap.ts\"]}}");
+module.exports = JSON.parse("{\"name\":\"stlint\",\"version\":\"1.0.59\",\"description\":\"Stylus Linter\",\"main\":\"index.js\",\"bin\":{\"stlint\":\"./bin/stlint\"},\"files\":[\"bin/\",\"index.js\",\"src/\"],\"repository\":{\"type\":\"git\",\"url\":\"https://github.com/stylus/stlint\"},\"bugs\":{\"url\":\"https://github.com/stylus/stlint/issues\"},\"scripts\":{\"newversion\":\"npm test && npm version patch --no-git-tag-version && npm run build && npm run doc && npm run newversiongit && npm publish ./\",\"newversiongit\":\"git add --all  && git commit -m \\\"New version $npm_package_version. Read more https://github.com/stylus/stlint/releases/tag/$npm_package_version \\\" && git tag $npm_package_version && git push --tags origin HEAD:master\",\"start\":\"webpack --watch\",\"build\":\"webpack\",\"doc\":\"./bin/stlint --doc rules --fix\",\"test2\":\"./bin/stlint ./test.styl\",\"test\":\"mocha tests/**/**.ts tests/**.ts\",\"fix\":\"tslint -c tslint.json ./src/**/*.ts ./src/**/**/*.ts ./src/*.ts --fix\"},\"keywords\":[\"lint\",\"linter\",\"stylus\",\"stylus-linter\",\"stlint\"],\"author\":\"Chupurnov Valeriy<chupurnov@gmail.com>\",\"license\":\"MIT\",\"dependencies\":{\"async\":\"^2.6.3\",\"chalk\":\"^2.4.2\",\"columnify\":\"^1.5.4\",\"escaper\":\"^3.0.3\",\"glob\":\"^7.1.4\",\"native-require\":\"^1.1.4\",\"node-watch\":\"^0.6.3\",\"strip-json-comments\":\"^2.0.1\",\"stylus\":\"^0.54.7\",\"yargs\":\"^13.3.0\"},\"devDependencies\":{\"@types/async\":\"^2.4.2\",\"@types/chai\":\"^4.2.3\",\"@types/glob\":\"^7.1.1\",\"@types/mocha\":\"^5.2.7\",\"@types/node\":\"^11.13.22\",\"awesome-typescript-loader\":\"^5.2.1\",\"chai\":\"^4.2.0\",\"mocha\":\"^6.2.1\",\"ts-node\":\"^8.4.1\",\"tslint\":\"^5.20.0\",\"tslint-config-prettier\":\"^1.18.0\",\"tslint-plugin-prettier\":\"^2.0.1\",\"typescript\":\"^3.6.3\",\"typings\":\"^2.1.1\",\"webpack\":\"^4.41.0\",\"webpack-cli\":\"^3.3.9\",\"webpack-node-externals\":\"^1.7.2\"},\"mocha\":{\"require\":[\"ts-node/register\",\"tests/staff/bootstrap.ts\"]}}");
 
 /***/ }),
 
@@ -1262,18 +1263,18 @@ class Checker {
         let results = {};
         if (Array.isArray(path)) {
             path.map(this.loadRules.bind(this)).forEach((rules) => {
-                results = Object.assign({}, results, rules);
+                results = Object.assign(Object.assign({}, results), rules);
             });
             return results;
         }
         const stat = fs_1.statSync(path);
         if (stat.isFile()) {
-            results = Object.assign({}, results, this.requireRule(path));
+            results = Object.assign(Object.assign({}, results), this.requireRule(path));
         }
         else if (stat.isDirectory()) {
             fs_1.readdirSync(path).forEach((file) => {
                 // @ts-ignore
-                results = Object.assign({}, results, this.requireRule(path_1.resolve(path, file)));
+                results = Object.assign(Object.assign({}, results), this.requireRule(path_1.resolve(path, file)));
             });
         }
         return results;
@@ -1453,10 +1454,11 @@ exports.Content = Content;
 "use strict";
 
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -1888,7 +1890,7 @@ exports.unwrapObject = (obj, prefix = []) => {
             });
         }
         else if (isPlainObject_1.isPlainObject(item)) {
-            result = Object.assign({}, result, exports.unwrapObject(item, prefix.concat([_key])));
+            result = Object.assign(Object.assign({}, result), exports.unwrapObject(item, prefix.concat([_key])));
         }
         else {
             result[item] = key;
@@ -2071,10 +2073,11 @@ exports.Preprocessor = Preprocessor;
 "use strict";
 
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -2433,7 +2436,7 @@ class Rule {
                 this.state.enabled = conf[1] === undefined || Boolean(conf[1]);
             }
             else {
-                this.state = Object.assign({}, this.state, conf);
+                this.state = Object.assign(Object.assign({}, this.state), conf);
                 if (conf.enabled === undefined) {
                     this.state.enabled = true;
                 }
@@ -2469,7 +2472,7 @@ class Rule {
         if (node instanceof index_2.Ident && node.value instanceof index_2.Value) {
             const isHash = node.value.nodes && node.value.nodes.length && node.value.nodes[0] instanceof index_2.Obj;
             this.context.vars[node.key] = isHash ? index_1.objTohash(node.value.nodes[0]) : node.value.nodes[0].toString();
-            this.context.valueToVar = Object.assign({}, this.context.valueToVar, index_1.unwrapObject(this.context.vars));
+            this.context.valueToVar = Object.assign(Object.assign({}, this.context.valueToVar), index_1.unwrapObject(this.context.vars));
         }
     }
     /**
@@ -2526,8 +2529,8 @@ class Rule {
         return !this.nodesFilter || this.nodesFilter.includes(type);
     }
 }
-Rule.context = initContext();
 exports.Rule = Rule;
+Rule.context = initContext();
 
 
 /***/ }),
