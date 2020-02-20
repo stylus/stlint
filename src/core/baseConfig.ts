@@ -8,8 +8,11 @@ import _require = require('native-require');
 export class BaseConfig {
 	configName: string = '.stlintrc';
 	configFile: string = '';
+
 	extraRules: string | string[] = '';
+
 	preprocessors: string[] = [];
+	autocompletes: string[] = [];
 
 	/**
 	 * Wrapper for path.statSync
@@ -68,6 +71,10 @@ export class BaseConfig {
 
 		if (customConfig.preprocessors) {
 			customConfig.preprocessors = customConfig.preprocessors.map(normalizePath);
+		}
+
+		if (customConfig.autocompletes) {
+			customConfig.autocompletes = customConfig.autocompletes.map(normalizePath);
 		}
 
 		this.extendsOption(customConfig, this);

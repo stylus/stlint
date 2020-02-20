@@ -125,6 +125,7 @@ __export(__webpack_require__(/*! ./src/core/rule */ "./src/core/rule.ts"));
 exports.ast = astList;
 __export(__webpack_require__(/*! ./src/doc */ "./src/doc.ts"));
 __export(__webpack_require__(/*! ./src/linter */ "./src/linter.ts"));
+__export(__webpack_require__(/*! ./src/commander */ "./src/commander.ts"));
 __export(__webpack_require__(/*! ./src/core/content */ "./src/core/content.ts"));
 __export(__webpack_require__(/*! ./src/core/parser */ "./src/core/parser.ts"));
 __export(__webpack_require__(/*! ./src/core/runner */ "./src/core/runner.ts"));
@@ -177,7 +178,75 @@ exports.StylusLinter = StylusLinter;
 /*! exports provided: name, version, description, main, bin, files, repository, bugs, scripts, keywords, author, license, dependencies, devDependencies, mocha, default */
 /***/ (function(module) {
 
-module.exports = JSON.parse("{\"name\":\"stlint\",\"version\":\"1.0.59\",\"description\":\"Stylus Linter\",\"main\":\"index.js\",\"bin\":{\"stlint\":\"./bin/stlint\"},\"files\":[\"bin/\",\"index.js\",\"src/\"],\"repository\":{\"type\":\"git\",\"url\":\"https://github.com/stylus/stlint\"},\"bugs\":{\"url\":\"https://github.com/stylus/stlint/issues\"},\"scripts\":{\"newversion\":\"npm test && npm version patch --no-git-tag-version && npm run build && npm run doc && npm run newversiongit && npm publish ./\",\"newversiongit\":\"git add --all  && git commit -m \\\"New version $npm_package_version. Read more https://github.com/stylus/stlint/releases/tag/$npm_package_version \\\" && git tag $npm_package_version && git push --tags origin HEAD:master\",\"start\":\"webpack --watch\",\"build\":\"webpack\",\"doc\":\"./bin/stlint --doc rules --fix\",\"test2\":\"./bin/stlint ./test.styl\",\"test\":\"mocha tests/**/**.ts tests/**.ts\",\"fix\":\"tslint -c tslint.json ./src/**/*.ts ./src/**/**/*.ts ./src/*.ts --fix\"},\"keywords\":[\"lint\",\"linter\",\"stylus\",\"stylus-linter\",\"stlint\"],\"author\":\"Chupurnov Valeriy<chupurnov@gmail.com>\",\"license\":\"MIT\",\"dependencies\":{\"async\":\"^2.6.3\",\"chalk\":\"^2.4.2\",\"columnify\":\"^1.5.4\",\"escaper\":\"^3.0.3\",\"glob\":\"^7.1.4\",\"native-require\":\"^1.1.4\",\"node-watch\":\"^0.6.3\",\"strip-json-comments\":\"^2.0.1\",\"stylus\":\"^0.54.7\",\"yargs\":\"^13.3.0\"},\"devDependencies\":{\"@types/async\":\"^2.4.2\",\"@types/chai\":\"^4.2.3\",\"@types/glob\":\"^7.1.1\",\"@types/mocha\":\"^5.2.7\",\"@types/node\":\"^11.13.22\",\"awesome-typescript-loader\":\"^5.2.1\",\"chai\":\"^4.2.0\",\"mocha\":\"^6.2.1\",\"ts-node\":\"^8.4.1\",\"tslint\":\"^5.20.0\",\"tslint-config-prettier\":\"^1.18.0\",\"tslint-plugin-prettier\":\"^2.0.1\",\"typescript\":\"^3.6.3\",\"typings\":\"^2.1.1\",\"webpack\":\"^4.41.0\",\"webpack-cli\":\"^3.3.9\",\"webpack-node-externals\":\"^1.7.2\"},\"mocha\":{\"require\":[\"ts-node/register\",\"tests/staff/bootstrap.ts\"]}}");
+module.exports = JSON.parse("{\"name\":\"stlint\",\"version\":\"1.0.60\",\"description\":\"Stylus Linter\",\"main\":\"index.js\",\"bin\":{\"stlint\":\"./bin/stlint\"},\"files\":[\"bin/\",\"index.js\",\"src/\"],\"repository\":{\"type\":\"git\",\"url\":\"https://github.com/stylus/stlint\"},\"bugs\":{\"url\":\"https://github.com/stylus/stlint/issues\"},\"scripts\":{\"newversion\":\"npm test && npm version patch --no-git-tag-version && npm run build && npm run doc && npm run newversiongit && npm publish ./\",\"newversiongit\":\"git add --all  && git commit -m \\\"New version $npm_package_version. Read more https://github.com/stylus/stlint/releases/tag/$npm_package_version \\\" && git tag $npm_package_version && git push --tags origin HEAD:master\",\"start\":\"webpack --watch\",\"build\":\"webpack\",\"doc\":\"./bin/stlint --doc rules --fix\",\"test2\":\"./bin/stlint ./test.styl\",\"test\":\"mocha tests/**/**.ts tests/**.ts\",\"fix\":\"tslint -c tslint.json ./src/**/*.ts ./src/**/**/*.ts ./src/*.ts --fix\"},\"keywords\":[\"lint\",\"linter\",\"stylus\",\"stylus-linter\",\"stlint\"],\"author\":\"Chupurnov Valeriy<chupurnov@gmail.com>\",\"license\":\"MIT\",\"dependencies\":{\"@types/yargs\":\"^15.0.3\",\"async\":\"^2.6.3\",\"chalk\":\"^2.4.2\",\"columnify\":\"^1.5.4\",\"escaper\":\"^3.0.3\",\"glob\":\"^7.1.6\",\"native-require\":\"^1.1.4\",\"node-watch\":\"^0.6.3\",\"strip-json-comments\":\"^2.0.1\",\"stylus\":\"^0.54.7\",\"yargs\":\"^13.3.0\"},\"devDependencies\":{\"@types/async\":\"^2.4.2\",\"@types/chai\":\"^4.2.9\",\"@types/glob\":\"^7.1.1\",\"@types/mocha\":\"^5.2.7\",\"@types/node\":\"^11.15.7\",\"awesome-typescript-loader\":\"^5.2.1\",\"chai\":\"^4.2.0\",\"mocha\":\"^6.2.2\",\"ts-node\":\"^8.6.2\",\"tslint\":\"^5.20.1\",\"tslint-config-prettier\":\"^1.18.0\",\"tslint-plugin-prettier\":\"^2.1.0\",\"typescript\":\"^3.7.5\",\"typings\":\"^2.1.1\",\"webpack\":\"^4.41.6\",\"webpack-cli\":\"^3.3.11\",\"webpack-node-externals\":\"^1.7.2\"},\"mocha\":{\"require\":[\"ts-node/register\",\"tests/staff/bootstrap.ts\"]}}");
+
+/***/ }),
+
+/***/ "./src/autocomplete/index.ts":
+/*!***********************************!*\
+  !*** ./src/autocomplete/index.ts ***!
+  \***********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+// tslint:disable-next-line:completed-docs
+function defaultAutocomplete() {
+    return [
+        {
+            title: 'StLint is fantastic!'
+        },
+        {
+            title: 'Stylus is perfect!'
+        }
+    ];
+}
+exports.defaultAutocomplete = defaultAutocomplete;
+
+
+/***/ }),
+
+/***/ "./src/commander.ts":
+/*!**************************!*\
+  !*** ./src/commander.ts ***!
+  \**************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const lcfirst_1 = __webpack_require__(/*! ./core/helpers/lcfirst */ "./src/core/helpers/lcfirst.ts");
+const yargs = __webpack_require__(/*! yargs */ "yargs");
+const autocomplete_1 = __webpack_require__(/*! ./core/autocomplete */ "./src/core/autocomplete.ts");
+const linter_1 = __webpack_require__(/*! ./linter */ "./src/linter.ts");
+class Commander {
+    constructor(options = {}) {
+        this.linter = new linter_1.Linter(options);
+    }
+    exec(command) {
+        const ucommand = lcfirst_1.ucfirst(command);
+        if (this[`command${ucommand}`]) {
+            this[`command${ucommand}`]();
+        }
+        process.exit();
+    }
+    commandAutocomplete() {
+        const { content, offset, offsetline } = yargs.options({
+            content: { type: 'string' },
+            offset: { type: 'number' },
+            offsetline: { type: 'number' }
+        }).argv;
+        const config = this.linter.config;
+        const autocomplete = new autocomplete_1.Autocomplete(config.autocompletes);
+        console.clear();
+        console.log(JSON.stringify(autocomplete.getItems(content || '', offset || 0, offsetline || 0)));
+    }
+}
+exports.Commander = Commander;
+
 
 /***/ }),
 
@@ -1087,6 +1156,52 @@ exports.Value = Value;
 
 /***/ }),
 
+/***/ "./src/core/autocomplete.ts":
+/*!**********************************!*\
+  !*** ./src/core/autocomplete.ts ***!
+  \**********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const _require = __webpack_require__(/*! native-require */ "native-require");
+const index_1 = __webpack_require__(/*! ../autocomplete/index */ "./src/autocomplete/index.ts");
+class Autocomplete {
+    constructor(files) {
+        this.list = [];
+        if (files.length) {
+            this.list = files.map((file) => {
+                const func = _require(file);
+                if (typeof func === 'function') {
+                    return func;
+                }
+                return null;
+            })
+                .filter((f) => f);
+        }
+        this.list.push(index_1.defaultAutocomplete);
+    }
+    /**
+     * Apply some preprocessors function to content
+     *
+     * @param search
+     * @param offset
+     * @param lineOffset
+     */
+    getItems(search, offset, lineOffset) {
+        if (!this.list.length) {
+            return [];
+        }
+        return this.list.reduce((res, func) => res.concat(func(search, offset, lineOffset)), []);
+    }
+}
+exports.Autocomplete = Autocomplete;
+
+
+/***/ }),
+
 /***/ "./src/core/baseConfig.ts":
 /*!********************************!*\
   !*** ./src/core/baseConfig.ts ***!
@@ -1108,6 +1223,7 @@ class BaseConfig {
         this.configFile = '';
         this.extraRules = '';
         this.preprocessors = [];
+        this.autocompletes = [];
     }
     /**
      * Wrapper for path.statSync
@@ -1158,6 +1274,9 @@ class BaseConfig {
         }
         if (customConfig.preprocessors) {
             customConfig.preprocessors = customConfig.preprocessors.map(normalizePath);
+        }
+        if (customConfig.autocompletes) {
+            customConfig.autocompletes = customConfig.autocompletes.map(normalizePath);
         }
         this.extendsOption(customConfig, this);
     }
@@ -1726,6 +1845,7 @@ exports.isPlainObject = (obj) => {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.lcfirst = (str) => str[0].toLowerCase() + str.substr(1);
+exports.ucfirst = (str) => str[0].toUpperCase() + str.substr(1);
 
 
 /***/ }),
@@ -4425,6 +4545,17 @@ module.exports = require("typescript");
 /***/ (function(module, exports) {
 
 module.exports = require("util");
+
+/***/ }),
+
+/***/ "yargs":
+/*!************************!*\
+  !*** external "yargs" ***!
+  \************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("yargs");
 
 /***/ })
 

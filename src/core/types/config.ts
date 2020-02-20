@@ -11,7 +11,9 @@ export interface IConfig {
 
 	basepath: string
 	path: string
+
 	preprocessors: string[];
+	autocompletes: string[];
 
 	grep: string
 	doc: string

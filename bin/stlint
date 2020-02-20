@@ -5,6 +5,7 @@
 const yargs = require('yargs');
 const stlint = require('../').StylusLinter;
 const Linter = require('../').Linter;
+const Commander = require('../').Commander;
 
 const options = yargs
 	.usage('Usage: $0 file')
@@ -16,6 +17,11 @@ const options = yargs
 	.option('config', {
 		alias: 'c',
 		describe: 'Location of custom config file',
+		type: 'string'
+	})
+	.option('command', {
+		alias: 'cmd',
+		describe: 'Some command for run',
 		type: 'string'
 	})
 	.option('reporter', {
@@ -64,11 +70,17 @@ if (options.newline) {
 	options.content = options.content.replace(new RegExp(`${options.newline}`, 'g'), '\n');
 }
 
-if (options.info) {
+if (options.command) {
+	const commander = new Commander();
+	commander.exec(options.command);
+
+} else if (options.info) {
 	const linter = new Linter(options);
 	linter.info();
+
 } else if (options.doc) {
 	require('../').doc(options);
+
 } else {
 	stlint(options._[0], options.content, options);
 }
