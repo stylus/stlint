@@ -1,13 +1,14 @@
 import _require = require('native-require');
 import { defaultAutocomplete } from '../autocomplete/index';
 import { AutocompleteFunction, Suggestions } from './types/autocomplete';
+import { IConfig } from './types/config';
 
 export class Autocomplete {
 	private list: AutocompleteFunction[] = [];
 
-	constructor(files: string[]) {
-		if (files.length) {
-			this.list = files.map((file) => {
+	constructor(readonly config: IConfig) {
+		if (config.autocompletes.length) {
+			this.list = config.autocompletes.map((file) => {
 				const func = _require(file);
 
 				if (typeof func === 'function') {
@@ -36,7 +37,7 @@ export class Autocomplete {
 
 		return this.list.reduce(
 			(res, func) =>
-				res.concat(func(search, offset, lineOffset)), [] as Suggestions
+				res.concat(func.call(this, search, offset, lineOffset)), [] as Suggestions
 		);
 	}
 }

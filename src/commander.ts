@@ -29,7 +29,7 @@ export class Commander {
 
 		const config = this.linter.config;
 
-		const autocomplete = new Autocomplete(config.autocompletes);
+		const autocomplete = new Autocomplete(config);
 
 		console.clear();
 		console.log(
