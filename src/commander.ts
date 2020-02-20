@@ -21,10 +21,10 @@ export class Commander {
 	}
 
 	protected commandAutocomplete(): void {
-		const {content, offset, offsetline} = yargs.options({
-			content: {type: 'string'},
-			offset: {type: 'number'},
-			offsetline: {type: 'number'}
+		const { content, offset, offsetline } = yargs.options({
+			content: { type: 'string' },
+			offset: { type: 'number' },
+			offsetline: { type: 'number' }
 		}).argv;
 
 		const config = this.linter.config;
@@ -32,8 +32,14 @@ export class Commander {
 		const autocomplete = new Autocomplete(config.autocompletes);
 
 		console.clear();
-		console.log(JSON.stringify(
-			autocomplete.getItems(content || '', offset || 0, offsetline || 0)
-		));
+		console.log(
+			JSON.stringify({
+				suggests: autocomplete.getItems(
+					content || '',
+					offset || 0,
+					offsetline || 0
+				)
+			})
+		);
 	}
 }

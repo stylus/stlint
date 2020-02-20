@@ -1,4 +1,4 @@
-# Stylus Linter 
+# Stylus Linter
 [![Build Status](https://travis-ci.org/stylus/stlint.svg?branch=master)](https://travis-ci.org/stylus/stlint)
 [![NPM version](https://img.shields.io/npm/v/stlint.svg)](https://www.npmjs.org/package/stlint)
 [![NPM Downloads](https://img.shields.io/npm/dm/stlint.svg)](https://npmcharts.com/compare/stlint?minimal=true)
@@ -22,7 +22,7 @@ As part of your project
 npm i stlint -D
 ```
 
-As a cli tool: 
+As a cli tool:
 ```bash
 npm install stlint -g
 ```
@@ -44,6 +44,8 @@ npm install stlint -g
 
 `stlint styl/ --watch -c path/to/config/.configrc` Watch dir, use custom config
 
+`stlint --command autocomplete --content #e --offset 0 --lineoffset 0` Get autocomplete suggestions for `#` string
+
 ## CLI
 `-h` or `--help`    Display list of commands
 
@@ -61,7 +63,7 @@ npm install stlint -g
 
 `-r` or `--reporter` Reporter "raw", "json" or "silent"
 
-All another options from [config](#Config file) 
+All another options from [config](#Config file)
 
 ## Non CLI Usage
 ```javascript
@@ -128,7 +130,7 @@ For example, in the following code, some errors will be ignored.
 ```stylus
 $p = {
   a: #CCC
-  // @stlint-ignore  
+  // @stlint-ignore
   b: #ccc // need use uppercase notation will be ignored
   c: 10px
 }
@@ -141,7 +143,7 @@ $p = {
   background-color #ddd
 ```
 
-Respectively, in order not to display errors of the entire file, it is enough to add an 
+Respectively, in order not to display errors of the entire file, it is enough to add an
 `@stlint-disable` directive to its beginning
 
 ```stylus
@@ -154,7 +156,7 @@ $p = {
 .test
   margin-top 20px
   padding-top 20px
-  color #ccc 
+  color #ccc
   background-color #ddd
 ```
 
@@ -494,7 +496,7 @@ You can create folder and use it for extra rules
 {
   "extraRules": "/Users/v-chupurnov/WebstormProjects/test/rules/"
 }
-``` 
+```
 In this folder you can create native JavaScript files
 ```javascript
 const Rgb = require('stlint').ast.RGB;
@@ -539,7 +541,7 @@ And you need add this rule in your config
     }
   }
 }
-``` 
+```
 
 ## License
 

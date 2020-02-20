@@ -1,6 +1,6 @@
 {
   "name": "stlint",
-  "version": "1.0.60",
+  "version": "1.0.61",
   "description": "Stylus Linter",
   "main": "index.js",
   "bin": {
@@ -44,8 +44,10 @@
     "columnify": "^1.5.4",
     "escaper": "^3.0.3",
     "glob": "^7.1.6",
+    "husky": "^4.2.3",
     "native-require": "^1.1.4",
     "node-watch": "^0.6.3",
+    "prettier": "^1.19.1",
     "strip-json-comments": "^2.0.1",
     "stylus": "^0.54.7",
     "yargs": "^13.3.0"
@@ -73,6 +75,22 @@
     "require": [
       "ts-node/register",
       "tests/staff/bootstrap.ts"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{json}": [
+      "prettier --write --ignore-path ./build/*",
+      "git add"
+    ],
+    "*.{ts}": [
+      "tslint -c tslint.json",
+      "prettier --write",
+      "git add"
     ]
   }
 }
