@@ -111,7 +111,7 @@ Create `.stlintrc` file in project root
     "columnSplitter": " | ",
     "maxWidth": 70,
     "minWidth": 70,
-    "trancate": false
+    "truncate": false
   }
 }
 ```
