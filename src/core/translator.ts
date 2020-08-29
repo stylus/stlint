@@ -43,9 +43,7 @@ export class Translator extends Visitor<ISNode, Node> {
 	}
 
 	methodNotExists(method: string, node: ISNode): void {
-		const e = new Error(`No method ${method} line:${node.lineno}`);
-		(<any>e).lineno = node.lineno;
-		throw e;
+		// Ignore unknown stylus ast nodes
 	}
 
 	transpile(): Tree {
