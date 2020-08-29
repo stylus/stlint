@@ -76,21 +76,5 @@
       "ts-node/register",
       "tests/staff/bootstrap.ts"
     ]
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.{json}": [
-      "prettier --write --ignore-path ./build/*",
-      "git add"
-    ],
-    "*.{ts}": [
-      "tslint -c tslint.json",
-      "prettier --write",
-      "git add"
-    ]
   }
 }
