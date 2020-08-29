@@ -105,6 +105,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 "use strict";
 
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !exports.hasOwnProperty(p)) __createBinding(exports, m, p);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -114,27 +124,25 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-function __export(m) {
-    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-}
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.StylusLinter = exports.ast = void 0;
 const linter_1 = __webpack_require__(/*! ./src/linter */ "./src/linter.ts");
 const reader_1 = __webpack_require__(/*! ./src/core/reader */ "./src/core/reader.ts");
 const astList = __webpack_require__(/*! ./src/core/ast/index */ "./src/core/ast/index.ts");
-__export(__webpack_require__(/*! ./src/core/rule */ "./src/core/rule.ts"));
+__exportStar(__webpack_require__(/*! ./src/core/rule */ "./src/core/rule.ts"), exports);
 exports.ast = astList;
-__export(__webpack_require__(/*! ./src/doc */ "./src/doc.ts"));
-__export(__webpack_require__(/*! ./src/linter */ "./src/linter.ts"));
-__export(__webpack_require__(/*! ./src/commander */ "./src/commander.ts"));
-__export(__webpack_require__(/*! ./src/core/content */ "./src/core/content.ts"));
-__export(__webpack_require__(/*! ./src/core/parser */ "./src/core/parser.ts"));
-__export(__webpack_require__(/*! ./src/core/runner */ "./src/core/runner.ts"));
-__export(__webpack_require__(/*! ./src/core/visitor */ "./src/core/visitor.ts"));
-__export(__webpack_require__(/*! ./src/core/translator */ "./src/core/translator.ts"));
-__export(__webpack_require__(/*! ./src/core/line */ "./src/core/line.ts"));
-__export(__webpack_require__(/*! ./src/core/reader */ "./src/core/reader.ts"));
-__export(__webpack_require__(/*! ./src/core/checker */ "./src/core/checker.ts"));
-__export(__webpack_require__(/*! ./src/core/baseConfig */ "./src/core/baseConfig.ts"));
+__exportStar(__webpack_require__(/*! ./src/doc */ "./src/doc.ts"), exports);
+__exportStar(__webpack_require__(/*! ./src/linter */ "./src/linter.ts"), exports);
+__exportStar(__webpack_require__(/*! ./src/commander */ "./src/commander.ts"), exports);
+__exportStar(__webpack_require__(/*! ./src/core/content */ "./src/core/content.ts"), exports);
+__exportStar(__webpack_require__(/*! ./src/core/parser */ "./src/core/parser.ts"), exports);
+__exportStar(__webpack_require__(/*! ./src/core/runner */ "./src/core/runner.ts"), exports);
+__exportStar(__webpack_require__(/*! ./src/core/visitor */ "./src/core/visitor.ts"), exports);
+__exportStar(__webpack_require__(/*! ./src/core/translator */ "./src/core/translator.ts"), exports);
+__exportStar(__webpack_require__(/*! ./src/core/line */ "./src/core/line.ts"), exports);
+__exportStar(__webpack_require__(/*! ./src/core/reader */ "./src/core/reader.ts"), exports);
+__exportStar(__webpack_require__(/*! ./src/core/checker */ "./src/core/checker.ts"), exports);
+__exportStar(__webpack_require__(/*! ./src/core/baseConfig */ "./src/core/baseConfig.ts"), exports);
 /**
  * Main stylus checker
  *
@@ -175,10 +183,10 @@ exports.StylusLinter = StylusLinter;
 /*!**********************!*\
   !*** ./package.json ***!
   \**********************/
-/*! exports provided: name, version, description, main, bin, files, repository, bugs, scripts, keywords, author, license, dependencies, devDependencies, mocha, husky, lint-staged, default */
+/*! exports provided: name, version, description, main, bin, files, repository, bugs, scripts, keywords, author, license, dependencies, devDependencies, mocha, default */
 /***/ (function(module) {
 
-module.exports = JSON.parse("{\"name\":\"stlint\",\"version\":\"1.0.63\",\"description\":\"Stylus Linter\",\"main\":\"index.js\",\"bin\":{\"stlint\":\"./bin/stlint\"},\"files\":[\"bin/\",\"index.js\",\"src/\"],\"repository\":{\"type\":\"git\",\"url\":\"https://github.com/stylus/stlint\"},\"bugs\":{\"url\":\"https://github.com/stylus/stlint/issues\"},\"scripts\":{\"newversion\":\"npm test && npm version patch --no-git-tag-version && npm run build && npm run doc && npm run newversiongit && npm publish ./\",\"newversiongit\":\"git add --all  && git commit -m \\\"New version $npm_package_version. Read more https://github.com/stylus/stlint/releases/tag/$npm_package_version \\\" && git tag $npm_package_version && git push --tags origin HEAD:master\",\"start\":\"webpack --watch\",\"build\":\"webpack\",\"doc\":\"./bin/stlint --doc rules --fix\",\"test2\":\"./bin/stlint ./test.styl\",\"test\":\"mocha tests/**/**.ts tests/**.ts\",\"fix\":\"tslint -c tslint.json ./src/**/*.ts ./src/**/**/*.ts ./src/*.ts --fix\"},\"keywords\":[\"lint\",\"linter\",\"stylus\",\"stylus-linter\",\"stlint\"],\"author\":\"Chupurnov Valeriy<chupurnov@gmail.com>\",\"license\":\"MIT\",\"dependencies\":{\"@types/yargs\":\"^15.0.3\",\"async\":\"^2.6.3\",\"chalk\":\"^2.4.2\",\"columnify\":\"^1.5.4\",\"escaper\":\"^3.0.3\",\"glob\":\"^7.1.6\",\"husky\":\"^4.2.3\",\"native-require\":\"^1.1.4\",\"node-watch\":\"^0.6.3\",\"prettier\":\"^1.19.1\",\"strip-json-comments\":\"^2.0.1\",\"stylus\":\"^0.54.7\",\"yargs\":\"^13.3.0\"},\"devDependencies\":{\"@types/async\":\"^2.4.2\",\"@types/chai\":\"^4.2.9\",\"@types/glob\":\"^7.1.1\",\"@types/mocha\":\"^5.2.7\",\"@types/node\":\"^11.15.7\",\"awesome-typescript-loader\":\"^5.2.1\",\"chai\":\"^4.2.0\",\"mocha\":\"^6.2.2\",\"ts-node\":\"^8.6.2\",\"tslint\":\"^5.20.1\",\"tslint-config-prettier\":\"^1.18.0\",\"tslint-plugin-prettier\":\"^2.1.0\",\"typescript\":\"^3.7.5\",\"typings\":\"^2.1.1\",\"webpack\":\"^4.41.6\",\"webpack-cli\":\"^3.3.11\",\"webpack-node-externals\":\"^1.7.2\"},\"mocha\":{\"require\":[\"ts-node/register\",\"tests/staff/bootstrap.ts\"]},\"husky\":{\"hooks\":{\"pre-commit\":\"lint-staged\"}},\"lint-staged\":{\"*.{json}\":[\"prettier --write --ignore-path ./build/*\",\"git add\"],\"*.{ts}\":[\"tslint -c tslint.json\",\"prettier --write\",\"git add\"]}}");
+module.exports = JSON.parse("{\"name\":\"stlint\",\"version\":\"1.0.64\",\"description\":\"Stylus Linter\",\"main\":\"index.js\",\"bin\":{\"stlint\":\"./bin/stlint\"},\"files\":[\"bin/\",\"index.js\",\"src/\"],\"repository\":{\"type\":\"git\",\"url\":\"https://github.com/stylus/stlint\"},\"bugs\":{\"url\":\"https://github.com/stylus/stlint/issues\"},\"scripts\":{\"newversion\":\"npm test && npm version patch --no-git-tag-version && npm run build && npm run doc && npm run newversiongit && npm publish ./\",\"newversiongit\":\"git add --all  && git commit -m \\\"New version $npm_package_version. Read more https://github.com/stylus/stlint/releases/tag/$npm_package_version \\\" && git tag $npm_package_version && git push --tags origin HEAD:master\",\"start\":\"webpack --watch\",\"build\":\"webpack\",\"doc\":\"./bin/stlint --doc rules --fix\",\"test2\":\"./bin/stlint ./test.styl\",\"test\":\"mocha tests/**/**.ts tests/**.ts\",\"fix\":\"tslint -c tslint.json ./src/**/*.ts ./src/**/**/*.ts ./src/*.ts --fix\"},\"keywords\":[\"lint\",\"linter\",\"stylus\",\"stylus-linter\",\"stlint\"],\"author\":\"Chupurnov Valeriy<chupurnov@gmail.com>\",\"license\":\"MIT\",\"dependencies\":{\"@types/yargs\":\"^15.0.3\",\"async\":\"^2.6.3\",\"chalk\":\"^2.4.2\",\"columnify\":\"^1.5.4\",\"escaper\":\"^3.0.3\",\"glob\":\"^7.1.6\",\"husky\":\"^4.2.3\",\"native-require\":\"^1.1.4\",\"node-watch\":\"^0.6.3\",\"prettier\":\"^1.19.1\",\"strip-json-comments\":\"^2.0.1\",\"stylus\":\"^0.54.7\",\"yargs\":\"^13.3.0\"},\"devDependencies\":{\"@types/async\":\"^2.4.2\",\"@types/chai\":\"^4.2.9\",\"@types/glob\":\"^7.1.1\",\"@types/mocha\":\"^5.2.7\",\"@types/node\":\"^11.15.7\",\"awesome-typescript-loader\":\"^5.2.1\",\"chai\":\"^4.2.0\",\"mocha\":\"^6.2.2\",\"ts-node\":\"^8.6.2\",\"tslint\":\"^5.20.1\",\"tslint-config-prettier\":\"^1.18.0\",\"tslint-plugin-prettier\":\"^2.1.0\",\"typescript\":\"^3.7.5\",\"typings\":\"^2.1.1\",\"webpack\":\"^4.41.6\",\"webpack-cli\":\"^3.3.11\",\"webpack-node-externals\":\"^1.7.2\"},\"mocha\":{\"require\":[\"ts-node/register\",\"tests/staff/bootstrap.ts\"]}}");
 
 /***/ }),
 
@@ -192,6 +200,7 @@ module.exports = JSON.parse("{\"name\":\"stlint\",\"version\":\"1.0.63\",\"descr
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.defaultAutocomplete = void 0;
 // tslint:disable-next-line:completed-docs
 function defaultAutocomplete() {
     return [
@@ -218,6 +227,7 @@ exports.defaultAutocomplete = defaultAutocomplete;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Commander = void 0;
 const lcfirst_1 = __webpack_require__(/*! ./core/helpers/lcfirst */ "./src/core/helpers/lcfirst.ts");
 const yargs = __webpack_require__(/*! yargs */ "yargs");
 const autocomplete_1 = __webpack_require__(/*! ./core/autocomplete */ "./src/core/autocomplete.ts");
@@ -262,6 +272,7 @@ exports.Commander = Commander;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Config = void 0;
 const data = __webpack_require__(/*! ./defaultRules.json */ "./src/defaultRules.json");
 const baseConfig_1 = __webpack_require__(/*! ./core/baseConfig */ "./src/core/baseConfig.ts");
 const chalk_1 = __webpack_require__(/*! chalk */ "chalk");
@@ -325,6 +336,7 @@ exports.Config = Config;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Atrule = void 0;
 const node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
 class Atrule extends node_1.Node {
 }
@@ -343,6 +355,7 @@ exports.Atrule = Atrule;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.BinOp = void 0;
 const node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
 class BinOp extends node_1.Node {
     constructor() {
@@ -373,6 +386,7 @@ exports.BinOp = BinOp;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Block = void 0;
 const node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
 class Block extends node_1.Node {
 }
@@ -391,6 +405,7 @@ exports.Block = Block;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Bool = void 0;
 const node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
 class Bool extends node_1.Node {
 }
@@ -409,6 +424,7 @@ exports.Bool = Bool;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Call = void 0;
 const node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
 class Call extends node_1.Node {
     constructor() {
@@ -434,6 +450,7 @@ exports.Call = Call;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Comment = void 0;
 const node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
 class Comment extends node_1.Node {
     constructor() {
@@ -456,6 +473,7 @@ exports.Comment = Comment;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Condition = void 0;
 const node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
 class Condition extends node_1.Node {
     constructor() {
@@ -478,6 +496,7 @@ exports.Condition = Condition;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Each = void 0;
 const node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
 class Each extends node_1.Node {
 }
@@ -496,6 +515,7 @@ exports.Each = Each;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Feature = void 0;
 const node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
 class Feature extends node_1.Node {
     constructor() {
@@ -521,6 +541,7 @@ exports.Feature = Feature;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Func = void 0;
 const node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
 class Func extends node_1.Node {
     constructor() {
@@ -545,6 +566,7 @@ exports.Func = Func;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Group = void 0;
 const node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
 class Group extends node_1.Node {
 }
@@ -563,6 +585,7 @@ exports.Group = Group;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Ident = void 0;
 const node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
 class Ident extends node_1.Node {
     constructor() {
@@ -586,6 +609,7 @@ exports.Ident = Ident;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Import = void 0;
 const node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
 class Import extends node_1.Node {
     constructor() {
@@ -607,42 +631,49 @@ exports.Import = Import;
 
 "use strict";
 
-function __export(m) {
-    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-}
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !exports.hasOwnProperty(p)) __createBinding(exports, m, p);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-__export(__webpack_require__(/*! ./node */ "./src/core/ast/node.ts"));
-__export(__webpack_require__(/*! ./selector */ "./src/core/ast/selector.ts"));
-__export(__webpack_require__(/*! ./tree */ "./src/core/ast/tree.ts"));
-__export(__webpack_require__(/*! ./group */ "./src/core/ast/group.ts"));
-__export(__webpack_require__(/*! ./block */ "./src/core/ast/block.ts"));
-__export(__webpack_require__(/*! ./property */ "./src/core/ast/property.ts"));
-__export(__webpack_require__(/*! ./literal */ "./src/core/ast/literal.ts"));
-__export(__webpack_require__(/*! ./value */ "./src/core/ast/value.ts"));
-__export(__webpack_require__(/*! ./rgb */ "./src/core/ast/rgb.ts"));
-__export(__webpack_require__(/*! ./ident */ "./src/core/ast/ident.ts"));
-__export(__webpack_require__(/*! ./import */ "./src/core/ast/import.ts"));
-__export(__webpack_require__(/*! ./obj */ "./src/core/ast/obj.ts"));
-__export(__webpack_require__(/*! ./unit */ "./src/core/ast/unit.ts"));
-__export(__webpack_require__(/*! ./call */ "./src/core/ast/call.ts"));
-__export(__webpack_require__(/*! ./member */ "./src/core/ast/member.ts"));
-__export(__webpack_require__(/*! ./binop */ "./src/core/ast/binop.ts"));
-__export(__webpack_require__(/*! ./func */ "./src/core/ast/func.ts"));
-__export(__webpack_require__(/*! ./comment */ "./src/core/ast/comment.ts"));
-__export(__webpack_require__(/*! ./params */ "./src/core/ast/params.ts"));
-__export(__webpack_require__(/*! ./bool */ "./src/core/ast/bool.ts"));
-__export(__webpack_require__(/*! ./each */ "./src/core/ast/each.ts"));
-__export(__webpack_require__(/*! ./condition */ "./src/core/ast/condition.ts"));
-__export(__webpack_require__(/*! ./unaryop */ "./src/core/ast/unaryop.ts"));
-__export(__webpack_require__(/*! ./media */ "./src/core/ast/media.ts"));
-__export(__webpack_require__(/*! ./querylist */ "./src/core/ast/querylist.ts"));
-__export(__webpack_require__(/*! ./query */ "./src/core/ast/query.ts"));
-__export(__webpack_require__(/*! ./feature */ "./src/core/ast/feature.ts"));
-__export(__webpack_require__(/*! ./keyframes */ "./src/core/ast/keyframes.ts"));
-__export(__webpack_require__(/*! ./atrule */ "./src/core/ast/atrule.ts"));
-__export(__webpack_require__(/*! ./ternary */ "./src/core/ast/ternary.ts"));
-__export(__webpack_require__(/*! ./supports */ "./src/core/ast/supports.ts"));
-__export(__webpack_require__(/*! ./return */ "./src/core/ast/return.ts"));
+__exportStar(__webpack_require__(/*! ./node */ "./src/core/ast/node.ts"), exports);
+__exportStar(__webpack_require__(/*! ./selector */ "./src/core/ast/selector.ts"), exports);
+__exportStar(__webpack_require__(/*! ./tree */ "./src/core/ast/tree.ts"), exports);
+__exportStar(__webpack_require__(/*! ./group */ "./src/core/ast/group.ts"), exports);
+__exportStar(__webpack_require__(/*! ./block */ "./src/core/ast/block.ts"), exports);
+__exportStar(__webpack_require__(/*! ./property */ "./src/core/ast/property.ts"), exports);
+__exportStar(__webpack_require__(/*! ./literal */ "./src/core/ast/literal.ts"), exports);
+__exportStar(__webpack_require__(/*! ./value */ "./src/core/ast/value.ts"), exports);
+__exportStar(__webpack_require__(/*! ./rgb */ "./src/core/ast/rgb.ts"), exports);
+__exportStar(__webpack_require__(/*! ./ident */ "./src/core/ast/ident.ts"), exports);
+__exportStar(__webpack_require__(/*! ./import */ "./src/core/ast/import.ts"), exports);
+__exportStar(__webpack_require__(/*! ./obj */ "./src/core/ast/obj.ts"), exports);
+__exportStar(__webpack_require__(/*! ./unit */ "./src/core/ast/unit.ts"), exports);
+__exportStar(__webpack_require__(/*! ./call */ "./src/core/ast/call.ts"), exports);
+__exportStar(__webpack_require__(/*! ./member */ "./src/core/ast/member.ts"), exports);
+__exportStar(__webpack_require__(/*! ./binop */ "./src/core/ast/binop.ts"), exports);
+__exportStar(__webpack_require__(/*! ./func */ "./src/core/ast/func.ts"), exports);
+__exportStar(__webpack_require__(/*! ./comment */ "./src/core/ast/comment.ts"), exports);
+__exportStar(__webpack_require__(/*! ./params */ "./src/core/ast/params.ts"), exports);
+__exportStar(__webpack_require__(/*! ./bool */ "./src/core/ast/bool.ts"), exports);
+__exportStar(__webpack_require__(/*! ./each */ "./src/core/ast/each.ts"), exports);
+__exportStar(__webpack_require__(/*! ./condition */ "./src/core/ast/condition.ts"), exports);
+__exportStar(__webpack_require__(/*! ./unaryop */ "./src/core/ast/unaryop.ts"), exports);
+__exportStar(__webpack_require__(/*! ./media */ "./src/core/ast/media.ts"), exports);
+__exportStar(__webpack_require__(/*! ./querylist */ "./src/core/ast/querylist.ts"), exports);
+__exportStar(__webpack_require__(/*! ./query */ "./src/core/ast/query.ts"), exports);
+__exportStar(__webpack_require__(/*! ./feature */ "./src/core/ast/feature.ts"), exports);
+__exportStar(__webpack_require__(/*! ./keyframes */ "./src/core/ast/keyframes.ts"), exports);
+__exportStar(__webpack_require__(/*! ./atrule */ "./src/core/ast/atrule.ts"), exports);
+__exportStar(__webpack_require__(/*! ./ternary */ "./src/core/ast/ternary.ts"), exports);
+__exportStar(__webpack_require__(/*! ./supports */ "./src/core/ast/supports.ts"), exports);
+__exportStar(__webpack_require__(/*! ./return */ "./src/core/ast/return.ts"), exports);
 
 
 /***/ }),
@@ -657,6 +688,7 @@ __export(__webpack_require__(/*! ./return */ "./src/core/ast/return.ts"));
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Keyframes = void 0;
 const node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
 class Keyframes extends node_1.Node {
 }
@@ -675,6 +707,7 @@ exports.Keyframes = Keyframes;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Literal = void 0;
 const node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
 class Literal extends node_1.Node {
     constructor() {
@@ -700,6 +733,7 @@ exports.Literal = Literal;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Media = void 0;
 const node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
 class Media extends node_1.Node {
     constructor() {
@@ -722,6 +756,7 @@ exports.Media = Media;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Member = void 0;
 const node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
 class Member extends node_1.Node {
     constructor() {
@@ -748,6 +783,7 @@ exports.Member = Member;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Node = void 0;
 class Node {
     constructor(block, parent) {
         this.parent = null;
@@ -874,6 +910,7 @@ exports.Node = Node;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Obj = void 0;
 const node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
 class Obj extends node_1.Node {
 }
@@ -892,6 +929,7 @@ exports.Obj = Obj;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Params = void 0;
 const node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
 class Params extends node_1.Node {
 }
@@ -910,6 +948,7 @@ exports.Params = Params;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Property = void 0;
 const node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
 class Property extends node_1.Node {
     constructor() {
@@ -933,6 +972,7 @@ exports.Property = Property;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Query = void 0;
 const node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
 class Query extends node_1.Node {
     constructor() {
@@ -956,6 +996,7 @@ exports.Query = Query;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Querylist = void 0;
 const node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
 class Querylist extends node_1.Node {
 }
@@ -974,6 +1015,7 @@ exports.Querylist = Querylist;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Return = void 0;
 const node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
 class Return extends node_1.Node {
 }
@@ -992,6 +1034,7 @@ exports.Return = Return;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.RGB = void 0;
 const unit_1 = __webpack_require__(/*! ./unit */ "./src/core/ast/unit.ts");
 class RGB extends unit_1.Unit {
 }
@@ -1010,6 +1053,7 @@ exports.RGB = RGB;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Selector = void 0;
 const node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
 class Selector extends node_1.Node {
     constructor() {
@@ -1035,6 +1079,7 @@ exports.Selector = Selector;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Supports = void 0;
 const node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
 class Supports extends node_1.Node {
 }
@@ -1053,6 +1098,7 @@ exports.Supports = Supports;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Ternary = void 0;
 const node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
 class Ternary extends node_1.Node {
 }
@@ -1071,6 +1117,7 @@ exports.Ternary = Ternary;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Tree = void 0;
 const node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
 class Tree extends node_1.Node {
     constructor(block) {
@@ -1093,6 +1140,7 @@ exports.Tree = Tree;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.UnaryOp = void 0;
 const node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
 class UnaryOp extends node_1.Node {
     constructor() {
@@ -1116,6 +1164,7 @@ exports.UnaryOp = UnaryOp;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Unit = void 0;
 const node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
 class Unit extends node_1.Node {
     constructor() {
@@ -1138,6 +1187,7 @@ exports.Unit = Unit;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Value = void 0;
 const node_1 = __webpack_require__(/*! ./node */ "./src/core/ast/node.ts");
 class Value extends node_1.Node {
     get key() {
@@ -1168,6 +1218,7 @@ exports.Value = Value;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Autocomplete = void 0;
 const _require = __webpack_require__(/*! native-require */ "native-require");
 const index_1 = __webpack_require__(/*! ../autocomplete/index */ "./src/autocomplete/index.ts");
 class Autocomplete {
@@ -1215,6 +1266,7 @@ exports.Autocomplete = Autocomplete;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.BaseConfig = void 0;
 const index_1 = __webpack_require__(/*! ./helpers/index */ "./src/core/helpers/index.ts");
 const fs_1 = __webpack_require__(/*! fs */ "fs");
 const stripJsonComments = __webpack_require__(/*! strip-json-comments */ "strip-json-comments");
@@ -1329,6 +1381,7 @@ exports.BaseConfig = BaseConfig;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Checker = void 0;
 const rules = __webpack_require__(/*! ../rules/index */ "./src/rules/index.ts");
 const runner_1 = __webpack_require__(/*! ./runner */ "./src/core/runner.ts");
 const rule_1 = __webpack_require__(/*! ./rule */ "./src/core/rule.ts");
@@ -1502,6 +1555,7 @@ exports.Checker = Checker;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Content = void 0;
 const index_1 = __webpack_require__(/*! ./helpers/index */ "./src/core/helpers/index.ts");
 class Content {
     constructor(content) {
@@ -1585,6 +1639,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Documentator = void 0;
 const config_1 = __webpack_require__(/*! ../../config */ "./src/config.ts");
 const glob_1 = __webpack_require__(/*! glob */ "glob");
 const fs_1 = __webpack_require__(/*! fs */ "fs");
@@ -1688,6 +1743,7 @@ exports.Documentator = Documentator;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.readmePatcher = void 0;
 const fs_1 = __webpack_require__(/*! fs */ "fs");
 /**
  * Patch readme file
@@ -1734,6 +1790,7 @@ exports.readmePatcher = readmePatcher;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.calcPosition = void 0;
 const splitLines_1 = __webpack_require__(/*! ./splitLines */ "./src/core/helpers/splitLines.ts");
 /**
  * Calc position in text by line and column
@@ -1770,6 +1827,7 @@ exports.calcPosition = (line, column, content) => {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.checkPrefix = void 0;
 /**
  * Used in conjunction with the valid check (for valid css)
  *
@@ -1792,20 +1850,27 @@ exports.checkPrefix = (prop, css, valid) => valid.prefixes.some((prefix) => prop
 
 "use strict";
 
-function __export(m) {
-    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-}
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !exports.hasOwnProperty(p)) __createBinding(exports, m, p);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-__export(__webpack_require__(/*! ./calcPosition */ "./src/core/helpers/calcPosition.ts"));
-__export(__webpack_require__(/*! ./checkPrefix */ "./src/core/helpers/checkPrefix.ts"));
-__export(__webpack_require__(/*! ./isPlainObject */ "./src/core/helpers/isPlainObject.ts"));
-__export(__webpack_require__(/*! ./lcfirst */ "./src/core/helpers/lcfirst.ts"));
-__export(__webpack_require__(/*! ./mergeArray */ "./src/core/helpers/mergeArray.ts"));
-__export(__webpack_require__(/*! ./objToHash */ "./src/core/helpers/objToHash.ts"));
-__export(__webpack_require__(/*! ./shortcutColor */ "./src/core/helpers/shortcutColor.ts"));
-__export(__webpack_require__(/*! ./unwrapObject */ "./src/core/helpers/unwrapObject.ts"));
-__export(__webpack_require__(/*! ./splitLines */ "./src/core/helpers/splitLines.ts"));
-__export(__webpack_require__(/*! ./splitAndStrip */ "./src/core/helpers/splitAndStrip.ts"));
+__exportStar(__webpack_require__(/*! ./calcPosition */ "./src/core/helpers/calcPosition.ts"), exports);
+__exportStar(__webpack_require__(/*! ./checkPrefix */ "./src/core/helpers/checkPrefix.ts"), exports);
+__exportStar(__webpack_require__(/*! ./isPlainObject */ "./src/core/helpers/isPlainObject.ts"), exports);
+__exportStar(__webpack_require__(/*! ./lcfirst */ "./src/core/helpers/lcfirst.ts"), exports);
+__exportStar(__webpack_require__(/*! ./mergeArray */ "./src/core/helpers/mergeArray.ts"), exports);
+__exportStar(__webpack_require__(/*! ./objToHash */ "./src/core/helpers/objToHash.ts"), exports);
+__exportStar(__webpack_require__(/*! ./shortcutColor */ "./src/core/helpers/shortcutColor.ts"), exports);
+__exportStar(__webpack_require__(/*! ./unwrapObject */ "./src/core/helpers/unwrapObject.ts"), exports);
+__exportStar(__webpack_require__(/*! ./splitLines */ "./src/core/helpers/splitLines.ts"), exports);
+__exportStar(__webpack_require__(/*! ./splitAndStrip */ "./src/core/helpers/splitAndStrip.ts"), exports);
 
 
 /***/ }),
@@ -1820,6 +1885,7 @@ __export(__webpack_require__(/*! ./splitAndStrip */ "./src/core/helpers/splitAnd
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.isPlainObject = void 0;
 /**
  * Check if element is simple plaint object
  *
@@ -1847,6 +1913,7 @@ exports.isPlainObject = (obj) => {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ucfirst = exports.lcfirst = void 0;
 exports.lcfirst = (str) => str[0].toLowerCase() + str.substr(1);
 exports.ucfirst = (str) => str[0].toUpperCase() + str.substr(1);
 
@@ -1863,6 +1930,7 @@ exports.ucfirst = (str) => str[0].toUpperCase() + str.substr(1);
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.mergeArray = void 0;
 /**
  * Merge two array
  * @param a
@@ -1890,6 +1958,7 @@ exports.mergeArray = mergeArray;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.objTohash = void 0;
 const index_1 = __webpack_require__(/*! ../ast/index */ "./src/core/ast/index.ts");
 exports.objTohash = (node) => {
     const result = {};
@@ -1925,6 +1994,7 @@ exports.objTohash = (node) => {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.shortcutColor = void 0;
 const regOneElementColor = /([a-f0-9])\1{5}/i, regThreeElementColor = /([a-f0-9])\1([a-f0-9])\2([a-f0-9])\3/i;
 /**
  * Return shortcut for color if it possible
@@ -1954,6 +2024,7 @@ exports.shortcutColor = shortcutColor;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.splitAndStrip = void 0;
 /**
  * Split str by reg exp
  * @param re
@@ -1974,6 +2045,7 @@ exports.splitAndStrip = (re, line) => line.split(re).filter((str) => str.length 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.splitLines = void 0;
 /**
  * Split line on lines
  * @param content
@@ -2002,6 +2074,7 @@ exports.splitLines = (content) => {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.unwrapObject = void 0;
 const isPlainObject_1 = __webpack_require__(/*! ./isPlainObject */ "./src/core/helpers/isPlainObject.ts");
 exports.unwrapObject = (obj, prefix = []) => {
     let result = {};
@@ -2035,6 +2108,7 @@ exports.unwrapObject = (obj, prefix = []) => {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Line = void 0;
 class Line {
     constructor(line, lineno = 1, lines = []) {
         this.lineno = 1;
@@ -2099,6 +2173,7 @@ exports.Line = Line;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.StylusParser = void 0;
 const Parser = __webpack_require__(/*! stylus/lib/parser */ "stylus/lib/parser");
 const translator_1 = __webpack_require__(/*! ./translator */ "./src/core/translator.ts");
 class StylusParser {
@@ -2148,6 +2223,7 @@ exports.StylusParser = StylusParser;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Preprocessor = void 0;
 const content_1 = __webpack_require__(/*! ./content */ "./src/core/content.ts");
 const _require = __webpack_require__(/*! native-require */ "native-require");
 const safeComments_1 = __webpack_require__(/*! ../preprocessors/safeComments */ "./src/preprocessors/safeComments.ts");
@@ -2205,6 +2281,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Reader = void 0;
 const glob_1 = __webpack_require__(/*! glob */ "glob");
 const path_1 = __webpack_require__(/*! path */ "path");
 const async_1 = __webpack_require__(/*! async */ "async");
@@ -2313,6 +2390,7 @@ exports.Reader = Reader;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.log = exports.Reporter = void 0;
 const util_1 = __webpack_require__(/*! util */ "util");
 class Reporter {
     constructor(options) {
@@ -2423,6 +2501,7 @@ exports.log = (val) => console.log(util_1.inspect(val, {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.JsonReporter = void 0;
 const reporter_1 = __webpack_require__(/*! ../reporter */ "./src/core/reporter.ts");
 class JsonReporter extends reporter_1.Reporter {
     /**
@@ -2453,6 +2532,7 @@ exports.JsonReporter = JsonReporter;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.RawReporter = void 0;
 const columnify = __webpack_require__(/*! columnify */ "columnify");
 const chalk_1 = __webpack_require__(/*! chalk */ "chalk");
 const reporter_1 = __webpack_require__(/*! ../reporter */ "./src/core/reporter.ts");
@@ -2504,6 +2584,7 @@ exports.RawReporter = RawReporter;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.SilentReporter = void 0;
 const reporter_1 = __webpack_require__(/*! ../reporter */ "./src/core/reporter.ts");
 class SilentReporter extends reporter_1.Reporter {
     log() {
@@ -2528,6 +2609,7 @@ exports.SilentReporter = SilentReporter;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Rule = void 0;
 const index_1 = __webpack_require__(/*! ./helpers/index */ "./src/core/helpers/index.ts");
 const index_2 = __webpack_require__(/*! ./ast/index */ "./src/core/ast/index.ts");
 const initContext = () => ({
@@ -2668,6 +2750,7 @@ Rule.context = initContext();
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Runner = void 0;
 const visitor_1 = __webpack_require__(/*! ./visitor */ "./src/core/visitor.ts");
 const index_1 = __webpack_require__(/*! ./ast/index */ "./src/core/ast/index.ts");
 class Runner extends visitor_1.Visitor {
@@ -2699,6 +2782,7 @@ exports.Runner = Runner;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Translator = void 0;
 const visitor_1 = __webpack_require__(/*! ./visitor */ "./src/core/visitor.ts");
 const index_1 = __webpack_require__(/*! ./ast/index */ "./src/core/ast/index.ts");
 class Translator extends visitor_1.Visitor {
@@ -3138,6 +3222,7 @@ exports.Translator = Translator;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Visitor = void 0;
 class Visitor {
     constructor(root) {
         this.root = root;
@@ -3192,6 +3277,7 @@ module.exports = JSON.parse("{\"mixedSpaces\":{\"indentPref\":\"tab\"},\"prefixV
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.doc = void 0;
 exports.doc = (options = {}) => {
     const { Documentator } = __webpack_require__(/*! ./core/documentator/documentator */ "./src/core/documentator/documentator.ts");
     const documentator = new Documentator(options);
@@ -3211,6 +3297,7 @@ exports.doc = (options = {}) => {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Linter = void 0;
 const reporter_1 = __webpack_require__(/*! ./core/reporter */ "./src/core/reporter.ts");
 const parser_1 = __webpack_require__(/*! ./core/parser */ "./src/core/parser.ts");
 const checker_1 = __webpack_require__(/*! ./core/checker */ "./src/core/checker.ts");
@@ -3383,6 +3470,7 @@ exports.Linter = Linter;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.safeComments = void 0;
 const Escaper = __webpack_require__(/*! escaper */ "escaper");
 /**
  * Replace all comments to safe (without error) value
@@ -3421,6 +3509,7 @@ exports.safeComments = safeComments;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Brackets = void 0;
 const rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
 const index_1 = __webpack_require__(/*! ../core/helpers/index */ "./src/core/helpers/index.ts");
 const ignoreRe = /\(.*\)|@extend|\(|if|for(?!\w)|else|return|@block|@media|@import|@require|,$/, stripRe = /(?=\S)\[\S+]|([.#])\w+/, equalsRe = /( =|\?=|\+=|-=)+/, validJSON = __webpack_require__(/*! ../data/valid.json */ "./src/data/valid.json");
@@ -3491,6 +3580,7 @@ exports.Brackets = Brackets;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Colons = void 0;
 const rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
 const validJSON = __webpack_require__(/*! ../data/valid.json */ "./src/data/valid.json");
 /**
@@ -3551,6 +3641,7 @@ exports.Colons = Colons;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Color = void 0;
 const rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
 const index_1 = __webpack_require__(/*! ../core/ast/index */ "./src/core/ast/index.ts");
 const index_2 = __webpack_require__(/*! ../core/helpers/index */ "./src/core/helpers/index.ts");
@@ -3667,6 +3758,7 @@ exports.Color = Color;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.CommaInObject = void 0;
 const rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
 const reg = /(,)(\s)*$/, keyValue = /:/, hashEnd = /}/;
 /**
@@ -3709,6 +3801,7 @@ exports.CommaInObject = CommaInObject;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.DepthControl = void 0;
 const rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
 const index_1 = __webpack_require__(/*! ../core/ast/index */ "./src/core/ast/index.ts");
 /**
@@ -3796,6 +3889,7 @@ exports.DepthControl = DepthControl;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.EmptyLines = void 0;
 const rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
 /**
  * Check if document has several empty lines
@@ -3824,23 +3918,30 @@ exports.EmptyLines = EmptyLines;
 
 "use strict";
 
-function __export(m) {
-    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-}
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !exports.hasOwnProperty(p)) __createBinding(exports, m, p);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-__export(__webpack_require__(/*! ./color */ "./src/rules/color.ts"));
-__export(__webpack_require__(/*! ./colons */ "./src/rules/colons.ts"));
-__export(__webpack_require__(/*! ./leadingZero */ "./src/rules/leadingZero.ts"));
-__export(__webpack_require__(/*! ./useMixinInsteadUnit */ "./src/rules/useMixinInsteadUnit.ts"));
-__export(__webpack_require__(/*! ./semicolons */ "./src/rules/semicolons.ts"));
-__export(__webpack_require__(/*! ./quotePref */ "./src/rules/quotePref.ts"));
-__export(__webpack_require__(/*! ./sortOrder */ "./src/rules/sortOrder.ts"));
-__export(__webpack_require__(/*! ./prefixVarsWithDollar */ "./src/rules/prefixVarsWithDollar.ts"));
-__export(__webpack_require__(/*! ./mixedSpaces */ "./src/rules/mixedSpaces.ts"));
-__export(__webpack_require__(/*! ./commaInObject */ "./src/rules/commaInObject.ts"));
-__export(__webpack_require__(/*! ./depthControl */ "./src/rules/depthControl.ts"));
-__export(__webpack_require__(/*! ./emptyLines */ "./src/rules/emptyLines.ts"));
-__export(__webpack_require__(/*! ./brackets */ "./src/rules/brackets.ts"));
+__exportStar(__webpack_require__(/*! ./color */ "./src/rules/color.ts"), exports);
+__exportStar(__webpack_require__(/*! ./colons */ "./src/rules/colons.ts"), exports);
+__exportStar(__webpack_require__(/*! ./leadingZero */ "./src/rules/leadingZero.ts"), exports);
+__exportStar(__webpack_require__(/*! ./useMixinInsteadUnit */ "./src/rules/useMixinInsteadUnit.ts"), exports);
+__exportStar(__webpack_require__(/*! ./semicolons */ "./src/rules/semicolons.ts"), exports);
+__exportStar(__webpack_require__(/*! ./quotePref */ "./src/rules/quotePref.ts"), exports);
+__exportStar(__webpack_require__(/*! ./sortOrder */ "./src/rules/sortOrder.ts"), exports);
+__exportStar(__webpack_require__(/*! ./prefixVarsWithDollar */ "./src/rules/prefixVarsWithDollar.ts"), exports);
+__exportStar(__webpack_require__(/*! ./mixedSpaces */ "./src/rules/mixedSpaces.ts"), exports);
+__exportStar(__webpack_require__(/*! ./commaInObject */ "./src/rules/commaInObject.ts"), exports);
+__exportStar(__webpack_require__(/*! ./depthControl */ "./src/rules/depthControl.ts"), exports);
+__exportStar(__webpack_require__(/*! ./emptyLines */ "./src/rules/emptyLines.ts"), exports);
+__exportStar(__webpack_require__(/*! ./brackets */ "./src/rules/brackets.ts"), exports);
 
 
 /***/ }),
@@ -3855,6 +3956,7 @@ __export(__webpack_require__(/*! ./brackets */ "./src/rules/brackets.ts"));
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.LeadingZero = void 0;
 const rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
 const decimalRe = /[^\d+](0+\.\d+)|[\s,(:](\.\d+)/i;
 const leadZeroRe = /([^\d+])(0+\.\d+)/;
@@ -3893,6 +3995,7 @@ exports.LeadingZero = LeadingZero;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.MixedSpaces = void 0;
 const rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
 /**
  * check for mixed spaces and tabs
@@ -3921,6 +4024,7 @@ exports.MixedSpaces = MixedSpaces;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.PrefixVarsWithDollar = void 0;
 const rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
 const index_1 = __webpack_require__(/*! ../core/ast/index */ "./src/core/ast/index.ts");
 /**
@@ -3963,6 +4067,7 @@ exports.PrefixVarsWithDollar = PrefixVarsWithDollar;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.QuotePref = void 0;
 const rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
 const stringRe = /(?=["'])(?:"[^"\\]*(?:\\[\s\S][^"\\]*)*"|'[^'\\]*(?:\\[\s\S][^'\\]*)*')/g;
 /**
@@ -4013,6 +4118,7 @@ exports.QuotePref = QuotePref;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Semicolons = void 0;
 const rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
 // we only want to check semicolons on properties/values
 const ignoreRe = /(^[*#.])|[&>/]|{|}|if|for(?!\w)|else|@block|@media|([}{=,])$/igm;
@@ -4063,6 +4169,7 @@ exports.Semicolons = Semicolons;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.SortOrder = void 0;
 const rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
 const index_1 = __webpack_require__(/*! ../core/ast/index */ "./src/core/ast/index.ts");
 const line_1 = __webpack_require__(/*! ../core/line */ "./src/core/line.ts");
@@ -4360,6 +4467,7 @@ exports.SortOrder = SortOrder;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.useMixinInsteadUnit = void 0;
 const rule_1 = __webpack_require__(/*! ../core/rule */ "./src/core/rule.ts");
 /**
  * Allo or deny some mixin instead of unit statement

@@ -1,6 +1,6 @@
 {
   "name": "stlint",
-  "version": "1.0.63",
+  "version": "1.0.64",
   "description": "Stylus Linter",
   "main": "index.js",
   "bin": {
