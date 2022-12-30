@@ -60,7 +60,7 @@
     "@types/node": "^11.15.7",
     "awesome-typescript-loader": "^5.2.1",
     "chai": "^4.2.0",
-    "mocha": "^6.2.2",
+    "mocha": "^10.2.0",
     "ts-node": "^8.6.2",
     "tslint": "^5.20.1",
     "tslint-config-prettier": "^1.18.0",
